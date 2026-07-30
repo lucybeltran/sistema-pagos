@@ -138,6 +138,7 @@
         .nav-item[data-theme-color="teal"]:hover, .nav-item[data-theme-color="teal"].active-nav-item { color: #2dd4bf !important; }
         .nav-item[data-theme-color="orange"]:hover, .nav-item[data-theme-color="orange"].active-nav-item { color: #f97316 !important; }
         .nav-item[data-theme-color="violet"]:hover, .nav-item[data-theme-color="violet"].active-nav-item { color: #a78bfa !important; }
+        .nav-item[data-theme-color="cyan"]:hover, .nav-item[data-theme-color="cyan"].active-nav-item { color: #06b6d4 !important; }
 
         .nav-item[data-theme-color="amber"]:hover i, .nav-item[data-theme-color="amber"].active-nav-item i { color: #f59e0b !important; }
         .nav-item[data-theme-color="emerald"]:hover i, .nav-item[data-theme-color="emerald"].active-nav-item i { color: #10b981 !important; }
@@ -147,6 +148,7 @@
         .nav-item[data-theme-color="teal"]:hover i, .nav-item[data-theme-color="teal"].active-nav-item i { color: #2dd4bf !important; }
         .nav-item[data-theme-color="orange"]:hover i, .nav-item[data-theme-color="orange"].active-nav-item i { color: #f97316 !important; }
         .nav-item[data-theme-color="violet"]:hover i, .nav-item[data-theme-color="violet"].active-nav-item i { color: #a78bfa !important; }
+        .nav-item[data-theme-color="cyan"]:hover i, .nav-item[data-theme-color="cyan"].active-nav-item i { color: #06b6d4 !important; }
         
         /* Global button hover spark styles */
         .global-button-spark {
@@ -613,6 +615,11 @@
                     Anticipos
                 </a>
 
+                <a href="{{ route('fondos-caja.index') }}" data-theme-color="cyan" class="nav-item flex items-center px-3 py-2.5 text-sm font-medium rounded-lg relative z-10 transition-colors duration-200 {{ request()->routeIs('fondos-caja.*') ? 'active-nav-item text-cyan-500' : 'text-slate-450 hover:text-slate-200' }}">
+                    <i class="fa-solid fa-money-bill-trend-up w-6 text-center mr-3 text-base"></i>
+                    Recargar Caja / Fondos
+                </a>
+
                 <a href="{{ route('pagos.index') }}" data-theme-color="teal" class="nav-item flex items-center px-3 py-2.5 text-sm font-medium rounded-lg relative z-10 transition-colors duration-200 {{ request()->routeIs('pagos.*') ? 'active-nav-item text-teal-500' : 'text-slate-450 hover:text-slate-200' }}">
                     <i class="fa-solid fa-receipt w-6 text-center mr-3 text-base"></i>
                     Pagos / Recibos
@@ -685,6 +692,7 @@
             <a href="{{ route('trabajadores.index') }}" class="block px-3 py-2 rounded-md text-base font-medium {{ request()->routeIs('trabajadores.*') ? 'bg-sky-500/10 text-sky-400' : 'text-slate-300 hover:bg-slate-800' }}">Trabajadores / Contratistas</a>
             <a href="{{ route('contratos.index') }}" class="block px-3 py-2 rounded-md text-base font-medium {{ request()->routeIs('contratos.*') ? 'bg-indigo-500/10 text-indigo-400' : 'text-slate-300 hover:bg-slate-800' }}">Contratos</a>
             <a href="{{ route('anticipos.index') }}" class="block px-3 py-2 rounded-md text-base font-medium {{ request()->routeIs('anticipos.*') ? 'bg-rose-500/10 text-rose-450' : 'text-slate-300 hover:bg-slate-800' }}">Anticipos</a>
+            <a href="{{ route('fondos-caja.index') }}" class="block px-3 py-2 rounded-md text-base font-medium {{ request()->routeIs('fondos-caja.*') ? 'bg-cyan-500/10 text-cyan-400' : 'text-slate-300 hover:bg-slate-800' }}">Recargar Caja / Fondos</a>
             <a href="{{ route('pagos.index') }}" class="block px-3 py-2 rounded-md text-base font-medium {{ request()->routeIs('pagos.*') ? 'bg-teal-500/10 text-teal-400' : 'text-slate-300 hover:bg-slate-800' }}">Pagos / Recibos</a>
             
             <div class="px-3 pt-3 pb-1 text-[10px] font-bold uppercase tracking-wider text-slate-500 font-mono">Compra y Venta de Mineral</div>
@@ -937,7 +945,8 @@
                         rose: { border: 'rgba(244, 63, 94, 0.4)', bg: 'rgba(244, 63, 94, 0.12)', shadow: 'rgba(244, 63, 94, 0.2)' },
                         teal: { border: 'rgba(20, 184, 166, 0.4)', bg: 'rgba(20, 184, 166, 0.12)', shadow: 'rgba(20, 184, 166, 0.2)' },
                         orange: { border: 'rgba(249, 115, 22, 0.4)', bg: 'rgba(249, 115, 22, 0.12)', shadow: 'rgba(249, 115, 22, 0.2)' },
-                        violet: { border: 'rgba(139, 92, 246, 0.4)', bg: 'rgba(139, 92, 246, 0.12)', shadow: 'rgba(139, 92, 246, 0.2)' }
+                        violet: { border: 'rgba(139, 92, 246, 0.4)', bg: 'rgba(139, 92, 246, 0.12)', shadow: 'rgba(139, 92, 246, 0.2)' },
+                        cyan: { border: 'rgba(6, 182, 212, 0.4)', bg: 'rgba(6, 182, 212, 0.12)', shadow: 'rgba(6, 182, 212, 0.2)' }
                     };
                     
                     const theme = themes[colorType] || themes.amber;

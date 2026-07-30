@@ -51,6 +51,7 @@ Route::middleware('auth')->group(function () {
     Route::post('/pagos', [PagoController::class, 'store'])->name('pagos.store');
     Route::get('/pagos/trabajador-data/{id}', [PagoController::class, 'getTrabajadorData'])->name('pagos.trabajador-data');
     Route::get('/pagos/{pago}', [PagoController::class, 'show'])->name('pagos.show');
+    Route::get('/fondos-caja', [PagoController::class, 'fondosIndex'])->name('fondos-caja.index');
     Route::post('/fondos-pagos', [PagoController::class, 'storeFondo'])->name('fondos-pagos.store');
     Route::delete('/fondos-pagos/{id}', [PagoController::class, 'destroyFondo'])->name('fondos-pagos.destroy');
 

@@ -38,7 +38,7 @@ class CashFundingAndWorkerRolesTest extends TestCase
             'monto' => 1000.00,
             'observacion' => 'Retiro Inicial'
         ]);
-        $reloadResponse->assertRedirect(route('pagos.index'));
+        $reloadResponse->assertRedirect(route('fondos-caja.index'));
         $this->assertDatabaseHas('fondos_pagos', [
             'monto' => 1000.00,
             'observacion' => 'Retiro Inicial'
@@ -82,7 +82,7 @@ class CashFundingAndWorkerRolesTest extends TestCase
         // 5. Act & Assert: Delete reload
         $reload = FondoPago::first();
         $deleteResponse = $this->delete(route('fondos-pagos.destroy', $reload->id));
-        $deleteResponse->assertRedirect(route('pagos.index'));
+        $deleteResponse->assertRedirect(route('fondos-caja.index'));
         $this->assertDatabaseMissing('fondos_pagos', ['id' => $reload->id]);
     }
 

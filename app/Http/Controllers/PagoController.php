@@ -31,6 +31,24 @@ class PagoController extends Controller
         ));
     }
 
+    public function fondosIndex()
+    {
+        $fondos = \App\Models\FondoPago::orderBy('fecha', 'desc')->orderBy('id', 'desc')->get();
+        
+        $total_recargado = \App\Models\FondoPago::sum('monto');
+        $total_gastado_pagos = Pago::sum('monto_pagado');
+        $total_gastado_anticipos = \App\Models\Anticipo::sum('monto');
+        $total_gastado = $total_gastado_pagos + $total_gastado_anticipos;
+        $saldo_caja = $total_recargado - $total_gastado;
+
+        return view('pagos.fondos', compact(
+            'fondos',
+            'total_recargado',
+            'total_gastado',
+            'saldo_caja'
+        ));
+    }
+
     public function storeFondo(Request $request)
     {
         $request->validate([
@@ -41,7 +59,7 @@ class PagoController extends Controller
 
         \App\Models\FondoPago::create($request->all());
 
-        return redirect()->route('pagos.index')->with('success', 'Recarga de fondo de caja registrada con éxito.');
+        return redirect()->route('fondos-caja.index')->with('success', 'Recarga de fondo de caja registrada con éxito.');
     }
 
     public function destroyFondo($id)
@@ -49,7 +67,7 @@ class PagoController extends Controller
         $fondo = \App\Models\FondoPago::findOrFail($id);
         $fondo->delete();
 
-        return redirect()->route('pagos.index')->with('success', 'Registro de recarga eliminado con éxito.');
+        return redirect()->route('fondos-caja.index')->with('success', 'Registro de recarga eliminado con éxito.');
     }
 
     public function create()
