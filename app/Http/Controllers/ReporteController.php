@@ -21,6 +21,12 @@ class ReporteController extends Controller
         $totalContratosActivos = Contrato::where('estado', 'activo')->count();
         $totalAnticiposPendientes = Anticipo::where('saldo', '>', 0)->sum('saldo');
         
+        // Calculate available cash balance
+        $total_recargado = \App\Models\FondoPago::sum('monto');
+        $total_gastado_pagos = Pago::sum('monto_pagado');
+        $total_gastado_anticipos = Anticipo::sum('monto');
+        $saldo_caja = $total_recargado - ($total_gastado_pagos + $total_gastado_anticipos);
+        
         $recientesAnticipos = Anticipo::with('trabajador')->orderBy('fecha', 'desc')->take(5)->get();
         $recientesPagos = Pago::with('trabajador')->orderBy('fecha', 'desc')->take(5)->get();
 
@@ -63,6 +69,7 @@ class ReporteController extends Controller
             'totalBocaminas',
             'totalContratosActivos',
             'totalAnticiposPendientes',
+            'saldo_caja',
             'recientesAnticipos',
             'recientesPagos',
             'produccionBocaminas',

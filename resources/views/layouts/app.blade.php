@@ -124,6 +124,29 @@
             border-color: #f59e0b;
             box-shadow: 0 0 10px rgba(245, 158, 11, 0.3);
         }
+
+        /* Custom sidebar menu items hover and active colors */
+        .nav-item {
+            transition: all 0.25s ease !important;
+        }
+        
+        .nav-item[data-theme-color="amber"]:hover, .nav-item[data-theme-color="amber"].active-nav-item { color: #f59e0b !important; }
+        .nav-item[data-theme-color="emerald"]:hover, .nav-item[data-theme-color="emerald"].active-nav-item { color: #10b981 !important; }
+        .nav-item[data-theme-color="sky"]:hover, .nav-item[data-theme-color="sky"].active-nav-item { color: #0ea5e9 !important; }
+        .nav-item[data-theme-color="indigo"]:hover, .nav-item[data-theme-color="indigo"].active-nav-item { color: #818cf8 !important; }
+        .nav-item[data-theme-color="rose"]:hover, .nav-item[data-theme-color="rose"].active-nav-item { color: #fb7185 !important; }
+        .nav-item[data-theme-color="teal"]:hover, .nav-item[data-theme-color="teal"].active-nav-item { color: #2dd4bf !important; }
+        .nav-item[data-theme-color="orange"]:hover, .nav-item[data-theme-color="orange"].active-nav-item { color: #f97316 !important; }
+        .nav-item[data-theme-color="violet"]:hover, .nav-item[data-theme-color="violet"].active-nav-item { color: #a78bfa !important; }
+
+        .nav-item[data-theme-color="amber"]:hover i, .nav-item[data-theme-color="amber"].active-nav-item i { color: #f59e0b !important; }
+        .nav-item[data-theme-color="emerald"]:hover i, .nav-item[data-theme-color="emerald"].active-nav-item i { color: #10b981 !important; }
+        .nav-item[data-theme-color="sky"]:hover i, .nav-item[data-theme-color="sky"].active-nav-item i { color: #0ea5e9 !important; }
+        .nav-item[data-theme-color="indigo"]:hover i, .nav-item[data-theme-color="indigo"].active-nav-item i { color: #818cf8 !important; }
+        .nav-item[data-theme-color="rose"]:hover i, .nav-item[data-theme-color="rose"].active-nav-item i { color: #fb7185 !important; }
+        .nav-item[data-theme-color="teal"]:hover i, .nav-item[data-theme-color="teal"].active-nav-item i { color: #2dd4bf !important; }
+        .nav-item[data-theme-color="orange"]:hover i, .nav-item[data-theme-color="orange"].active-nav-item i { color: #f97316 !important; }
+        .nav-item[data-theme-color="violet"]:hover i, .nav-item[data-theme-color="violet"].active-nav-item i { color: #a78bfa !important; }
         
         /* Global button hover spark styles */
         .global-button-spark {
@@ -548,11 +571,11 @@
         <div class="flex flex-col flex-grow pt-5 pb-4 overflow-y-auto">
             <!-- Logo area -->
             <div class="flex items-center flex-shrink-0 px-6 space-x-3">
-                <div class="flex items-center justify-center w-10 h-10 rounded-lg bg-gradient-to-br from-amber-500 to-orange-600 gold-glow">
-                    <i class="fa-solid fa-gem text-slate-950 text-lg"></i>
+                <div class="flex items-center justify-center w-10 h-10 rounded-lg bg-slate-900 border border-amber-500/30 shadow-[0_0_15px_rgba(245,158,11,0.15)]">
+                    <i class="fa-solid fa-gem text-amber-500 text-lg"></i>
                 </div>
                 <div>
-                    <h1 class="text-lg font-bold tracking-wider text-amber-500 uppercase">Control Pagos</h1>
+                    <h1 class="text-lg font-bold tracking-wider text-slate-100 uppercase">Control <span class="text-amber-500/90 font-extrabold">Pagos</span></h1>
                     <span class="text-[10px] text-slate-400 font-mono tracking-widest block -mt-1">MINERÍA</span>
                 </div>
             </div>
@@ -562,7 +585,7 @@
                 <!-- Sliding Liquid Glass Pill -->
                 <div id="nav-indicator-pill" class="absolute left-3 right-3 rounded-lg opacity-0 pointer-events-none transition-all duration-300 z-0"></div>
 
-                <a href="{{ route('dashboard') }}" class="nav-item flex items-center px-3 py-2.5 text-sm font-medium rounded-lg relative z-10 transition-colors duration-200 {{ request()->routeIs('dashboard') ? 'active-nav-item text-amber-500' : 'text-slate-450 hover:text-slate-200' }}">
+                <a href="{{ route('dashboard') }}" data-theme-color="amber" class="nav-item flex items-center px-3 py-2.5 text-sm font-medium rounded-lg relative z-10 transition-colors duration-200 {{ request()->routeIs('dashboard') ? 'active-nav-item text-amber-500' : 'text-slate-450 hover:text-slate-200' }}">
                     <i class="fa-solid fa-chart-line w-6 text-center mr-3 text-base"></i>
                     Tablero Principal
                 </a>
@@ -570,27 +593,27 @@
                 <!-- CATEGORY: PLANILLA DE PAGOS -->
                 <div class="px-3 pt-4 pb-1.5 text-[10px] font-bold uppercase tracking-wider text-slate-500 font-mono no-print">Pagos y Anticipos al Personal</div>
 
-                <a href="{{ route('bocaminas.index') }}" class="nav-item flex items-center px-3 py-2.5 text-sm font-medium rounded-lg relative z-10 transition-colors duration-200 {{ request()->routeIs('bocaminas.*') ? 'active-nav-item text-amber-500' : 'text-slate-450 hover:text-slate-200' }}">
+                <a href="{{ route('bocaminas.index') }}" data-theme-color="emerald" class="nav-item flex items-center px-3 py-2.5 text-sm font-medium rounded-lg relative z-10 transition-colors duration-200 {{ request()->routeIs('bocaminas.*') ? 'active-nav-item text-emerald-500' : 'text-slate-450 hover:text-slate-200' }}">
                     <i class="fa-solid fa-mountain w-6 text-center mr-3 text-base"></i>
                     Bocaminas
                 </a>
 
-                <a href="{{ route('trabajadores.index') }}" class="nav-item flex items-center px-3 py-2.5 text-sm font-medium rounded-lg relative z-10 transition-colors duration-200 {{ request()->routeIs('trabajadores.*') ? 'active-nav-item text-amber-500' : 'text-slate-450 hover:text-slate-200' }}">
+                <a href="{{ route('trabajadores.index') }}" data-theme-color="sky" class="nav-item flex items-center px-3 py-2.5 text-sm font-medium rounded-lg relative z-10 transition-colors duration-200 {{ request()->routeIs('trabajadores.*') ? 'active-nav-item text-sky-500' : 'text-slate-450 hover:text-slate-200' }}">
                     <i class="fa-solid fa-user-group w-6 text-center mr-3 text-base"></i>
                     Trabajadores / Contratistas
                 </a>
 
-                <a href="{{ route('contratos.index') }}" class="nav-item flex items-center px-3 py-2.5 text-sm font-medium rounded-lg relative z-10 transition-colors duration-200 {{ request()->routeIs('contratos.*') ? 'active-nav-item text-amber-500' : 'text-slate-450 hover:text-slate-200' }}">
+                <a href="{{ route('contratos.index') }}" data-theme-color="indigo" class="nav-item flex items-center px-3 py-2.5 text-sm font-medium rounded-lg relative z-10 transition-colors duration-200 {{ request()->routeIs('contratos.*') ? 'active-nav-item text-indigo-500' : 'text-slate-450 hover:text-slate-200' }}">
                     <i class="fa-solid fa-file-contract w-6 text-center mr-3 text-base"></i>
                     Contratos
                 </a>
 
-                <a href="{{ route('anticipos.index') }}" class="nav-item flex items-center px-3 py-2.5 text-sm font-medium rounded-lg relative z-10 transition-colors duration-200 {{ request()->routeIs('anticipos.*') ? 'active-nav-item text-amber-500' : 'text-slate-450 hover:text-slate-200' }}">
+                <a href="{{ route('anticipos.index') }}" data-theme-color="rose" class="nav-item flex items-center px-3 py-2.5 text-sm font-medium rounded-lg relative z-10 transition-colors duration-200 {{ request()->routeIs('anticipos.*') ? 'active-nav-item text-rose-500' : 'text-slate-450 hover:text-slate-200' }}">
                     <i class="fa-solid fa-money-bill-transfer w-6 text-center mr-3 text-base"></i>
                     Anticipos
                 </a>
 
-                <a href="{{ route('pagos.index') }}" class="nav-item flex items-center px-3 py-2.5 text-sm font-medium rounded-lg relative z-10 transition-colors duration-200 {{ request()->routeIs('pagos.*') ? 'active-nav-item text-amber-500' : 'text-slate-450 hover:text-slate-200' }}">
+                <a href="{{ route('pagos.index') }}" data-theme-color="teal" class="nav-item flex items-center px-3 py-2.5 text-sm font-medium rounded-lg relative z-10 transition-colors duration-200 {{ request()->routeIs('pagos.*') ? 'active-nav-item text-teal-500' : 'text-slate-450 hover:text-slate-200' }}">
                     <i class="fa-solid fa-receipt w-6 text-center mr-3 text-base"></i>
                     Pagos / Recibos
                 </a>
@@ -598,7 +621,7 @@
                 <!-- CATEGORY: MINERALES -->
                 <div class="px-3 pt-5 pb-1.5 text-[10px] font-bold uppercase tracking-wider text-slate-500 font-mono no-print">Compra y Venta de Mineral</div>
 
-                <a href="{{ route('transacciones-minerales.index') }}" class="nav-item flex items-center px-3 py-2.5 text-sm font-medium rounded-lg relative z-10 transition-colors duration-200 {{ request()->routeIs('transacciones-minerales.*') ? 'active-nav-item text-amber-500' : 'text-slate-450 hover:text-slate-200' }}">
+                <a href="{{ route('transacciones-minerales.index') }}" data-theme-color="orange" class="nav-item flex items-center px-3 py-2.5 text-sm font-medium rounded-lg relative z-10 transition-colors duration-200 {{ request()->routeIs('transacciones-minerales.*') ? 'active-nav-item text-orange-500' : 'text-slate-450 hover:text-slate-200' }}">
                     <i class="fa-solid fa-scale-balanced w-6 text-center mr-3 text-base"></i>
                     Compra y Venta
                 </a>
@@ -606,7 +629,7 @@
                 <!-- CATEGORY: REPORTES -->
                 <div class="px-3 pt-5 pb-1.5 text-[10px] font-bold uppercase tracking-wider text-slate-500 font-mono no-print">Estadísticas y Reportes</div>
 
-                <a href="{{ route('reportes.index') }}" class="nav-item flex items-center px-3 py-2.5 text-sm font-medium rounded-lg relative z-10 transition-colors duration-200 {{ request()->routeIs('reportes.*') ? 'active-nav-item text-amber-500' : 'text-slate-450 hover:text-slate-200' }}">
+                <a href="{{ route('reportes.index') }}" data-theme-color="violet" class="nav-item flex items-center px-3 py-2.5 text-sm font-medium rounded-lg relative z-10 transition-colors duration-200 {{ request()->routeIs('reportes.*') ? 'active-nav-item text-violet-500' : 'text-slate-450 hover:text-slate-200' }}">
                     <i class="fa-solid fa-chart-pie w-6 text-center mr-3 text-base"></i>
                     Reportes
                 </a>
@@ -638,10 +661,10 @@
     <div x-data="{ open: false }" class="no-print md:hidden fixed top-0 w-full bg-slate-900 border-b border-slate-800 z-30">
         <div class="flex items-center justify-between h-16 px-4">
             <div class="flex items-center space-x-3">
-                <div class="flex items-center justify-center w-8 h-8 rounded bg-gradient-to-br from-amber-500 to-orange-600 gold-glow">
-                    <i class="fa-solid fa-gem text-slate-950 text-sm"></i>
+                <div class="flex items-center justify-center w-8 h-8 rounded bg-slate-950/60 border border-amber-500/30 shadow-[0_0_10px_rgba(245,158,11,0.15)]">
+                    <i class="fa-solid fa-gem text-amber-500 text-xs"></i>
                 </div>
-                <h1 class="text-md font-bold tracking-wider text-amber-500 uppercase">SCP Minero</h1>
+                <h1 class="text-md font-bold tracking-wider text-slate-100 uppercase">SCP <span class="text-amber-500/90 font-extrabold">Minero</span></h1>
             </div>
             <div class="flex items-center space-x-2">
                 <button onclick="toggleTheme()" class="p-2 rounded text-amber-500 hover:text-amber-400 focus:outline-none" title="Cambiar Modo (Día/Noche)">
@@ -658,17 +681,17 @@
             <a href="{{ route('dashboard') }}" class="block px-3 py-2 rounded-md text-base font-medium {{ request()->routeIs('dashboard') ? 'bg-amber-500/10 text-amber-500' : 'text-slate-300 hover:bg-slate-800' }}">Tablero Principal</a>
             
             <div class="px-3 pt-3 pb-1 text-[10px] font-bold uppercase tracking-wider text-slate-500 font-mono">Pagos y Anticipos al Personal</div>
-            <a href="{{ route('bocaminas.index') }}" class="block px-3 py-2 rounded-md text-base font-medium {{ request()->routeIs('bocaminas.*') ? 'bg-amber-500/10 text-amber-500' : 'text-slate-300 hover:bg-slate-800' }}">Bocaminas</a>
-            <a href="{{ route('trabajadores.index') }}" class="block px-3 py-2 rounded-md text-base font-medium {{ request()->routeIs('trabajadores.*') ? 'bg-amber-500/10 text-amber-500' : 'text-slate-300 hover:bg-slate-800' }}">Trabajadores / Contratistas</a>
-            <a href="{{ route('contratos.index') }}" class="block px-3 py-2 rounded-md text-base font-medium {{ request()->routeIs('contratos.*') ? 'bg-amber-500/10 text-amber-500' : 'text-slate-300 hover:bg-slate-800' }}">Contratos</a>
-            <a href="{{ route('anticipos.index') }}" class="block px-3 py-2 rounded-md text-base font-medium {{ request()->routeIs('anticipos.*') ? 'bg-amber-500/10 text-amber-500' : 'text-slate-300 hover:bg-slate-800' }}">Anticipos</a>
-            <a href="{{ route('pagos.index') }}" class="block px-3 py-2 rounded-md text-base font-medium {{ request()->routeIs('pagos.*') ? 'bg-amber-500/10 text-amber-500' : 'text-slate-300 hover:bg-slate-800' }}">Pagos / Recibos</a>
+            <a href="{{ route('bocaminas.index') }}" class="block px-3 py-2 rounded-md text-base font-medium {{ request()->routeIs('bocaminas.*') ? 'bg-emerald-500/10 text-emerald-400' : 'text-slate-300 hover:bg-slate-800' }}">Bocaminas</a>
+            <a href="{{ route('trabajadores.index') }}" class="block px-3 py-2 rounded-md text-base font-medium {{ request()->routeIs('trabajadores.*') ? 'bg-sky-500/10 text-sky-400' : 'text-slate-300 hover:bg-slate-800' }}">Trabajadores / Contratistas</a>
+            <a href="{{ route('contratos.index') }}" class="block px-3 py-2 rounded-md text-base font-medium {{ request()->routeIs('contratos.*') ? 'bg-indigo-500/10 text-indigo-400' : 'text-slate-300 hover:bg-slate-800' }}">Contratos</a>
+            <a href="{{ route('anticipos.index') }}" class="block px-3 py-2 rounded-md text-base font-medium {{ request()->routeIs('anticipos.*') ? 'bg-rose-500/10 text-rose-450' : 'text-slate-300 hover:bg-slate-800' }}">Anticipos</a>
+            <a href="{{ route('pagos.index') }}" class="block px-3 py-2 rounded-md text-base font-medium {{ request()->routeIs('pagos.*') ? 'bg-teal-500/10 text-teal-400' : 'text-slate-300 hover:bg-slate-800' }}">Pagos / Recibos</a>
             
             <div class="px-3 pt-3 pb-1 text-[10px] font-bold uppercase tracking-wider text-slate-500 font-mono">Compra y Venta de Mineral</div>
-            <a href="{{ route('transacciones-minerales.index') }}" class="block px-3 py-2 rounded-md text-base font-medium {{ request()->routeIs('transacciones-minerales.*') ? 'bg-amber-500/10 text-amber-500' : 'text-slate-300 hover:bg-slate-800' }}">Compra y Venta</a>
+            <a href="{{ route('transacciones-minerales.index') }}" class="block px-3 py-2 rounded-md text-base font-medium {{ request()->routeIs('transacciones-minerales.*') ? 'bg-orange-500/10 text-orange-500' : 'text-slate-300 hover:bg-slate-800' }}">Compra y Venta</a>
             
             <div class="px-3 pt-3 pb-1 text-[10px] font-bold uppercase tracking-wider text-slate-500 font-mono">Estadísticas y Reportes</div>
-            <a href="{{ route('reportes.index') }}" class="block px-3 py-2 rounded-md text-base font-medium {{ request()->routeIs('reportes.*') ? 'bg-amber-500/10 text-amber-500' : 'text-slate-300 hover:bg-slate-800' }}">Reportes</a>
+            <a href="{{ route('reportes.index') }}" class="block px-3 py-2 rounded-md text-base font-medium {{ request()->routeIs('reportes.*') ? 'bg-violet-500/10 text-violet-400' : 'text-slate-300 hover:bg-slate-800' }}">Reportes</a>
             
             <form action="{{ route('logout') }}" method="POST" class="block w-full">
                 @csrf
@@ -904,23 +927,47 @@
                         pill.style.opacity = '0';
                         return;
                     }
+                    
+                    const colorType = el.getAttribute('data-theme-color') || 'amber';
+                    const themes = {
+                        amber: { border: 'rgba(245, 158, 11, 0.4)', bg: 'rgba(245, 158, 11, 0.12)', shadow: 'rgba(245, 158, 11, 0.2)' },
+                        emerald: { border: 'rgba(16, 185, 129, 0.4)', bg: 'rgba(16, 185, 129, 0.12)', shadow: 'rgba(16, 185, 129, 0.2)' },
+                        sky: { border: 'rgba(14, 165, 233, 0.4)', bg: 'rgba(14, 165, 233, 0.12)', shadow: 'rgba(14, 165, 233, 0.2)' },
+                        indigo: { border: 'rgba(99, 102, 241, 0.4)', bg: 'rgba(99, 102, 241, 0.12)', shadow: 'rgba(99, 102, 241, 0.2)' },
+                        rose: { border: 'rgba(244, 63, 94, 0.4)', bg: 'rgba(244, 63, 94, 0.12)', shadow: 'rgba(244, 63, 94, 0.2)' },
+                        teal: { border: 'rgba(20, 184, 166, 0.4)', bg: 'rgba(20, 184, 166, 0.12)', shadow: 'rgba(20, 184, 166, 0.2)' },
+                        orange: { border: 'rgba(249, 115, 22, 0.4)', bg: 'rgba(249, 115, 22, 0.12)', shadow: 'rgba(249, 115, 22, 0.2)' },
+                        violet: { border: 'rgba(139, 92, 246, 0.4)', bg: 'rgba(139, 92, 246, 0.12)', shadow: 'rgba(139, 92, 246, 0.2)' }
+                    };
+                    
+                    const theme = themes[colorType] || themes.amber;
+                    
                     pill.style.opacity = '1';
                     pill.style.top = `${el.offsetTop}px`;
                     pill.style.height = `${el.offsetHeight}px`;
-                    pill.style.background = 'linear-gradient(135deg, rgba(245, 158, 11, 0.22), rgba(249, 115, 22, 0.12))';
-                    pill.style.border = '1.5px solid rgba(245, 158, 11, 0.45)';
-                    pill.style.boxShadow = '0 0 20px rgba(245, 158, 11, 0.35)';
-                    pill.style.transition = 'all 0.45s cubic-bezier(0.175, 0.885, 0.32, 1.275)'; // Liquid Elastic Bounce
+                    pill.style.background = theme.bg;
+                    pill.style.border = `1.5px solid ${theme.border}`;
+                    pill.style.boxShadow = `0 4px 15px ${theme.shadow}`;
+                    pill.style.transition = 'all 0.35s cubic-bezier(0.25, 1, 0.5, 1)'; // Sleeker, more professional ease
                 }
                 
                 if (activeItem) {
-                    setTimeout(() => positionPill(activeItem), 80);
+                    positionPill(activeItem);
+                    // Delayed check to handle dynamic fonts or image sizes loading
+                    setTimeout(() => positionPill(activeItem), 100);
+                    setTimeout(() => positionPill(activeItem), 400);
+                    window.addEventListener('load', () => positionPill(activeItem));
                 }
                 
                 items.forEach(item => {
                     item.addEventListener('mouseenter', () => positionPill(item));
                 });
                 nav.addEventListener('mouseleave', () => positionPill(activeItem));
+                
+                window.addEventListener('resize', () => {
+                    const active = nav.querySelector('.active-nav-item');
+                    if (active) positionPill(active);
+                });
             }
 
             // 3. Global buttons interaction (including nav items for premium sparks hover)

@@ -22,7 +22,7 @@
     </div>
 
     <!-- Stats Grid -->
-    <div class="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-4">
+    <div class="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-5">
         <!-- Stat Card 1 -->
         <div class="glass-card rounded-xl p-6 relative overflow-hidden group hover:border-amber-500/25 transition duration-300">
             <div class="absolute top-0 right-0 p-3 opacity-10 text-6xl text-amber-500 group-hover:opacity-20 transition duration-300">
@@ -61,6 +61,16 @@
             <p class="text-sm font-medium text-slate-400 uppercase tracking-wider">Anticipos Pendientes</p>
             <p class="mt-2 text-3xl font-bold text-amber-500">Bs. {{ number_format($totalAnticiposPendientes, 2) }}</p>
             <div class="mt-2 text-xs text-slate-500 font-mono">Saldo por descontar</div>
+        </div>
+
+        <!-- Stat Card 5: Saldo Caja Chica (Recargas) -->
+        <div class="glass-card rounded-xl p-6 relative overflow-hidden group hover:border-emerald-500/25 transition duration-300">
+            <div class="absolute top-0 right-0 p-3 opacity-10 text-6xl text-emerald-500 group-hover:opacity-20 transition duration-300">
+                <i class="fa-solid fa-vault"></i>
+            </div>
+            <p class="text-sm font-medium text-slate-400 uppercase tracking-wider">Saldo Caja Chica</p>
+            <p class="mt-2 text-3xl font-bold {{ $saldo_caja >= 0 ? 'text-emerald-400' : 'text-rose-450' }}">Bs. {{ number_format($saldo_caja, 2) }}</p>
+            <div class="mt-2 text-xs text-slate-500 font-mono">Efectivo físico disponible</div>
         </div>
     </div>
 

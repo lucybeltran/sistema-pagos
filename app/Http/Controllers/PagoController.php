@@ -56,7 +56,13 @@ class PagoController extends Controller
     {
         $trabajadores = Trabajador::with('bocamina')->where('estado', 'activo')->get();
         $bocaminas = \App\Models\Bocamina::all();
-        return view('pagos.create', compact('trabajadores', 'bocaminas'));
+
+        $total_recargado = \App\Models\FondoPago::sum('monto');
+        $total_gastado_pagos = Pago::sum('monto_pagado');
+        $total_gastado_anticipos = Anticipo::sum('monto');
+        $saldo_caja = $total_recargado - ($total_gastado_pagos + $total_gastado_anticipos);
+
+        return view('pagos.create', compact('trabajadores', 'bocaminas', 'saldo_caja'));
     }
 
     public function getTrabajadorData($id)

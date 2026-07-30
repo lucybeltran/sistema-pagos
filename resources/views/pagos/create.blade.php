@@ -23,6 +23,14 @@
                 <i class="fa-solid fa-calculator mr-2 text-amber-500"></i> Datos de Liquidación
             </h3>
             
+            <!-- Available Cash Balance Indicator -->
+            <div class="p-3.5 rounded-lg border {{ $saldo_caja >= 0 ? 'bg-emerald-500/5 border-emerald-500/20 text-emerald-400' : 'bg-rose-500/5 border-rose-500/20 text-rose-450' }} flex items-center justify-between text-xs font-semibold">
+                <span class="flex items-center">
+                    <i class="fa-solid fa-vault mr-2 {{ $saldo_caja >= 0 ? 'text-emerald-500' : 'text-rose-500' }}"></i> Saldo en Caja:
+                </span>
+                <span class="font-mono font-bold text-sm">Bs. {{ number_format($saldo_caja, 2) }}</span>
+            </div>
+            
             <div class="space-y-4">
                 <div>
                     <label for="bocamina_filtro_id" class="block text-sm font-medium text-slate-300">Filtrar por Bocamina</label>
