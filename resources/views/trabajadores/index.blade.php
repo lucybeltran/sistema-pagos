@@ -11,6 +11,7 @@
     nombre: '', 
     telefono: '', 
     bocamina_id: '',
+    rol: 'obrero',
     estado: 'activo', 
     editActionUrl: '',
     
@@ -31,6 +32,7 @@
         this.nombre = '';
         this.telefono = '';
         this.bocamina_id = '';
+        this.rol = 'obrero';
         this.estado = 'activo';
         this.openModal = true;
     },
@@ -41,6 +43,7 @@
         this.nombre = trabajador.nombre;
         this.telefono = trabajador.telefono || '';
         this.bocamina_id = trabajador.bocamina_id;
+        this.rol = trabajador.rol || 'obrero';
         this.estado = trabajador.estado;
         this.editActionUrl = '/trabajadores/' + trabajador.id;
         this.openModal = true;
@@ -50,17 +53,17 @@
     <!-- Header -->
     <div class="flex flex-col md:flex-row md:items-center md:justify-between space-y-4 md:space-y-0">
         <div>
-            <h1 class="text-3xl font-bold tracking-tight text-slate-100">Registro de Trabajadores / Contratistas</h1>
-            <p class="text-sm text-slate-400 mt-1">Administra el personal de la empresa asignado a cada bocamina.</p>
+            <h1 class="text-3xl font-bold tracking-tight text-slate-100">Registro de Personal</h1>
+            <p class="text-sm text-slate-400 mt-1">Administra obreros, contratistas, choferes, serenos y demás personal de las bocaminas.</p>
         </div>
         <button @click="openCreate()" class="btn-vibrant-amber inline-flex items-center justify-center px-4 py-2.5 rounded-lg text-sm font-bold shadow-lg self-start">
-            <i class="fa-solid fa-user-plus mr-2"></i> Nuevo Trabajador / Contratista
+            <i class="fa-solid fa-user-plus mr-2"></i> Nuevo Personal
         </button>
     </div>
 
     <!-- Filters Section -->
     <div class="glass-card rounded-xl p-6 no-print">
-        <form action="{{ route('trabajadores.index') }}" method="GET" class="grid grid-cols-1 gap-4 sm:grid-cols-4 items-end">
+        <form action="{{ route('trabajadores.index') }}" method="GET" class="grid grid-cols-1 gap-4 sm:grid-cols-5 items-end">
             <div>
                 <label for="buscar" class="block text-xs font-semibold uppercase tracking-wider text-slate-400">Buscar por Nombre o CI</label>
                 <input type="text" name="buscar" id="buscar" value="{{ request('buscar') }}" 
@@ -68,6 +71,19 @@
                        placeholder="Ej. Juan Pérez / 483920">
             </div>
             
+            <div>
+                <label for="rol_filter" class="block text-xs font-semibold uppercase tracking-wider text-slate-400">Rol / Cargo</label>
+                <select name="rol" id="rol_filter" 
+                        class="mt-1 block w-full px-3 py-2 bg-slate-900 border border-slate-700/80 rounded-lg text-slate-100 focus:outline-none focus:ring-1 focus:ring-amber-500 focus:border-amber-500 text-sm">
+                    <option value="">Todos los Roles</option>
+                    <option value="obrero" {{ request('rol') === 'obrero' ? 'selected' : '' }}>Obrero / Minero</option>
+                    <option value="contratista" {{ request('rol') === 'contratista' ? 'selected' : '' }}>Contratista</option>
+                    <option value="chofer" {{ request('rol') === 'chofer' ? 'selected' : '' }}>Chofer</option>
+                    <option value="sereno" {{ request('rol') === 'sereno' ? 'selected' : '' }}>Sereno (Guardia)</option>
+                    <option value="otro" {{ request('rol') === 'otro' ? 'selected' : '' }}>Otro</option>
+                </select>
+            </div>
+
             <div>
                 <label for="bocamina_id_filter" class="block text-xs font-semibold uppercase tracking-wider text-slate-400">Filtrar por Bocamina</label>
                 <select name="bocamina_id" id="bocamina_id_filter" 
@@ -108,6 +124,7 @@
                     <tr class="text-left text-xs font-semibold text-slate-400 uppercase tracking-wider bg-slate-900/40">
                         <th class="px-6 py-4 font-semibold">C.I.</th>
                         <th class="px-6 py-4 font-semibold">Nombre Completo</th>
+                        <th class="px-6 py-4 font-semibold">Rol / Cargo</th>
                         <th class="px-6 py-4 font-semibold">Teléfono</th>
                         <th class="px-6 py-4 font-semibold">Bocamina Asignada</th>
                         <th class="px-6 py-4 font-semibold">Estado</th>
@@ -116,38 +133,49 @@
                 </thead>
                 <tbody class="divide-y divide-slate-800/40 text-sm text-slate-300">
                     @forelse($trabajadores as $trabajador)
-                        <tr class="hover:bg-slate-900/10 transition duration-150">
-                            <td class="px-6 py-4 font-mono font-medium text-slate-200">{{ $trabajador->ci }}</td>
-                            <td class="px-6 py-4 font-medium text-slate-100">{{ $trabajador->nombre }}</td>
-                            <td class="px-6 py-4 font-mono">{{ $trabajador->telefono ?: '-' }}</td>
-                            <td class="px-6 py-4">
-                                <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-slate-800 text-slate-300 border border-slate-700">
-                                    <i class="fa-solid fa-mountain mr-1.5 text-amber-500"></i> {{ $trabajador->bocamina->nombre }}
-                                </span>
-                            </td>
-                            <td class="px-6 py-4">
-                                <span class="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-semibold {{ $trabajador->estado === 'activo' ? 'bg-emerald-500/10 text-emerald-400 border border-emerald-500/25' : 'bg-slate-800 text-slate-400 border border-slate-700' }}">
-                                    {{ ucfirst($trabajador->estado) }}
-                                </span>
-                            </td>
-                            <td class="px-6 py-4 no-print">
-                                <div class="flex space-x-2">
-                                    <button @click="openEdit({{ $trabajador }})" class="p-2 rounded-lg bg-slate-800/80 hover:bg-amber-500/20 text-slate-300 hover:text-amber-400 border border-slate-700/60 hover:border-amber-500/40 transition-all duration-300 hover:scale-105 active:scale-95 shadow-sm" title="Editar">
-                                        <i class="fa-solid fa-pen-to-square text-xs"></i>
-                                    </button>
-                                    <form action="{{ route('trabajadores.destroy', $trabajador->id) }}" method="POST" class="inline" onsubmit="return confirm('¿Estás seguro de eliminar este trabajador?')">
-                                        @csrf
-                                        @method('DELETE')
-                                        <button type="submit" class="p-2 rounded-lg bg-slate-800/80 hover:bg-red-500/20 text-slate-300 hover:text-red-400 border border-slate-700/60 hover:border-red-500/40 transition-all duration-300 hover:scale-105 active:scale-95 shadow-sm" title="Eliminar">
-                                            <i class="fa-solid fa-trash text-xs"></i>
+                        @if(!request('rol') || $trabajador->rol === request('rol'))
+                            <tr class="hover:bg-slate-900/10 transition duration-150">
+                                <td class="px-6 py-4 font-mono font-medium text-slate-200">{{ $trabajador->ci }}</td>
+                                <td class="px-6 py-4 font-medium text-slate-100">{{ $trabajador->nombre }}</td>
+                                <td class="px-6 py-4">
+                                    <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-semibold capitalize
+                                        @if($trabajador->rol === 'contratista') bg-amber-500/10 text-amber-400 border border-amber-500/25
+                                        @elseif($trabajador->rol === 'chofer') bg-sky-500/10 text-sky-400 border border-sky-500/25
+                                        @elseif($trabajador->rol === 'sereno') bg-purple-500/10 text-purple-400 border border-purple-500/25
+                                        @else bg-slate-850 text-slate-300 border border-slate-700 @endif">
+                                        {{ $trabajador->rol ?: 'Obrero' }}
+                                    </span>
+                                </td>
+                                <td class="px-6 py-4 font-mono">{{ $trabajador->telefono ?: '-' }}</td>
+                                <td class="px-6 py-4">
+                                    <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-slate-800/60 text-slate-300 border border-slate-700">
+                                        <i class="fa-solid fa-mountain mr-1.5 text-amber-500"></i> {{ $trabajador->bocamina->nombre }}
+                                    </span>
+                                </td>
+                                <td class="px-6 py-4">
+                                    <span class="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-semibold {{ $trabajador->estado === 'activo' ? 'bg-emerald-500/10 text-emerald-400 border border-emerald-500/25' : 'bg-slate-800 text-slate-400 border border-slate-700' }}">
+                                        {{ ucfirst($trabajador->estado) }}
+                                    </span>
+                                </td>
+                                <td class="px-6 py-4 no-print">
+                                    <div class="flex space-x-2">
+                                        <button @click="openEdit({{ $trabajador }})" class="p-2 rounded-lg bg-slate-800/80 hover:bg-amber-500/20 text-slate-300 hover:text-amber-400 border border-slate-700/60 hover:border-amber-500/40 transition-all duration-300 hover:scale-105 active:scale-95 shadow-sm" title="Editar">
+                                            <i class="fa-solid fa-pen-to-square text-xs"></i>
                                         </button>
-                                    </form>
-                                </div>
-                            </td>
-                        </tr>
+                                        <form action="{{ route('trabajadores.destroy', $trabajador->id) }}" method="POST" class="inline" onsubmit="return confirm('¿Estás seguro de eliminar este trabajador?')">
+                                            @csrf
+                                            @method('DELETE')
+                                            <button type="submit" class="p-2 rounded-lg bg-slate-800/80 hover:bg-red-500/20 text-slate-300 hover:text-red-400 border border-slate-700/60 hover:border-red-500/40 transition-all duration-300 hover:scale-105 active:scale-95 shadow-sm" title="Eliminar">
+                                                <i class="fa-solid fa-trash text-xs"></i>
+                                            </button>
+                                        </form>
+                                    </div>
+                                </td>
+                            </tr>
+                        @endif
                     @empty
                         <tr>
-                            <td colspan="6" class="px-6 py-12 text-center text-slate-500">
+                            <td colspan="7" class="px-6 py-12 text-center text-slate-500">
                                 <i class="fa-solid fa-user-slash text-4xl mb-3 block text-slate-600"></i>
                                 No se encontraron trabajadores.
                             </td>
@@ -163,7 +191,7 @@
         <div @click.away="openModal = false" class="glass-card w-full max-w-md rounded-2xl overflow-hidden shadow-2xl border border-slate-800/80 relative">
             <!-- Modal Header -->
             <div class="px-6 py-4 border-b border-slate-800/80 flex items-center justify-between bg-slate-900/60">
-                <h3 class="text-lg font-bold text-slate-100" x-text="editMode ? 'Editar Trabajador / Contratista' : 'Nuevo Trabajador / Contratista'"></h3>
+                <h3 class="text-lg font-bold text-slate-100" x-text="editMode ? 'Editar Personal' : 'Nuevo Personal'"></h3>
                 <button @click="openModal = false" class="text-slate-400 hover:text-slate-200">
                     <i class="fa-solid fa-xmark text-lg"></i>
                 </button>
@@ -193,6 +221,19 @@
                             <i class="fa-solid fa-circle-xmark mr-1"></i> Cada palabra debe comenzar con mayúscula.
                         </div>
                     </div>
+                    
+                    <div>
+                        <label for="modal_rol" class="block text-sm font-medium text-slate-300">Rol / Cargo</label>
+                        <select id="modal_rol" name="rol" required x-model="rol"
+                                class="mt-1 block w-full px-3 py-2 bg-slate-900 border border-slate-700 rounded-lg text-slate-100 focus:outline-none focus:ring-1 focus:ring-amber-500 focus:border-amber-500 text-sm">
+                            <option value="obrero">Obrero / Minero</option>
+                            <option value="contratista">Contratista</option>
+                            <option value="chofer">Chofer</option>
+                            <option value="sereno">Sereno (Guardia)</option>
+                            <option value="otro">Otro</option>
+                        </select>
+                    </div>
+
                     <div>
                         <label for="modal_telefono" class="block text-sm font-medium text-slate-300">Teléfono / Celular (Opcional)</label>
                         <input id="modal_telefono" name="telefono" type="text" x-model="telefono"

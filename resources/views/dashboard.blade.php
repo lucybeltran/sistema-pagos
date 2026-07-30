@@ -183,9 +183,20 @@
         const produccionBocaminas = @json($produccionBocaminas);
         const pagosMensuales = @json($pagosMensuales);
 
+        // Helper to get colors based on theme
+        function getChartThemeColors() {
+            const isLight = document.documentElement.classList.contains('light-theme');
+            return {
+                gridColor: isLight ? 'rgba(15, 23, 42, 0.08)' : 'rgba(255, 255, 255, 0.05)',
+                tickColor: isLight ? '#475569' : '#94a3b8'
+            };
+        }
+
+        let colors = getChartThemeColors();
+
         // Chart 1: Bocaminas
         const bocaminasCtx = document.getElementById('bocaminasChart').getContext('2d');
-        new Chart(bocaminasCtx, {
+        const bocaminasChart = new Chart(bocaminasCtx, {
             type: 'bar',
             data: {
                 labels: produccionBocaminas.map(b => b.nombre),
@@ -206,12 +217,12 @@
                 },
                 scales: {
                     x: {
-                        grid: { color: 'rgba(255, 255, 255, 0.05)' },
-                        ticks: { color: '#94a3b8' }
+                        grid: { color: colors.gridColor },
+                        ticks: { color: colors.tickColor }
                     },
                     y: {
-                        grid: { color: 'rgba(255, 255, 255, 0.05)' },
-                        ticks: { color: '#94a3b8' }
+                        grid: { color: colors.gridColor },
+                        ticks: { color: colors.tickColor }
                     }
                 }
             }
@@ -219,7 +230,7 @@
 
         // Chart 2: Pagos Mensuales
         const pagosCtx = document.getElementById('pagosChart').getContext('2d');
-        new Chart(pagosCtx, {
+        const pagosChart = new Chart(pagosCtx, {
             type: 'line',
             data: {
                 labels: pagosMensuales.map(p => p.etiqueta),
@@ -232,7 +243,7 @@
                     fill: true,
                     tension: 0.3,
                     pointBackgroundColor: '#f59e0b',
-                    pointBorderColor: '#020617',
+                    pointBorderColor: document.documentElement.classList.contains('light-theme') ? '#f8fafc' : '#020617',
                     pointHoverRadius: 6
                 }]
             },
@@ -244,15 +255,39 @@
                 },
                 scales: {
                     x: {
-                        grid: { color: 'rgba(255, 255, 255, 0.05)' },
-                        ticks: { color: '#94a3b8' }
+                        grid: { color: colors.gridColor },
+                        ticks: { color: colors.tickColor }
                     },
                     y: {
-                        grid: { color: 'rgba(255, 255, 255, 0.05)' },
-                        ticks: { color: '#94a3b8' }
+                        grid: { color: colors.gridColor },
+                        ticks: { color: colors.tickColor }
                     }
                 }
             }
+        });
+
+        // Listen for theme change events to dynamically update chart colors
+        window.addEventListener('theme-changed', function() {
+            const newColors = getChartThemeColors();
+            
+            // Update Bocaminas Chart
+            bocaminasChart.options.scales.x.grid.color = newColors.gridColor;
+            bocaminasChart.options.scales.x.ticks.color = newColors.tickColor;
+            bocaminasChart.options.scales.y.grid.color = newColors.gridColor;
+            bocaminasChart.options.scales.y.ticks.color = newColors.tickColor;
+            bocaminasChart.update();
+
+            // Update Pagos Chart
+            pagosChart.options.scales.x.grid.color = newColors.gridColor;
+            pagosChart.options.scales.x.ticks.color = newColors.tickColor;
+            pagosChart.options.scales.y.grid.color = newColors.gridColor;
+            pagosChart.options.scales.y.ticks.color = newColors.tickColor;
+            
+            // Adjust point border color for line chart based on light/dark background
+            const isLight = document.documentElement.classList.contains('light-theme');
+            pagosChart.data.datasets[0].pointBorderColor = isLight ? '#f8fafc' : '#020617';
+            
+            pagosChart.update();
         });
     });
 </script>

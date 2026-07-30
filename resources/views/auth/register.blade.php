@@ -1,6 +1,13 @@
 <!DOCTYPE html>
 <html lang="es" class="h-full bg-slate-950 text-slate-100">
 <head>
+    <script>
+        // Inline script to prevent theme flash
+        const currentTheme = localStorage.getItem('theme') || 'dark';
+        if (currentTheme === 'light') {
+            document.documentElement.classList.add('light-theme');
+        }
+    </script>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Registrar Administrador - SCPM</title>
@@ -279,6 +286,67 @@
         .card-close-decor:hover {
             color: #f59e0b;
             transform: rotate(90deg);
+        }
+
+        /* --- LIGHT THEME (DAY MODE) OVERRIDES --- */
+        .light-theme {
+            --bg-main: #f8fafc;
+            --bg-card: rgba(255, 255, 255, 0.9);
+            --border-card: rgba(15, 23, 42, 0.08);
+            --text-main: #0f172a;
+            --text-muted: #64748b;
+            --bg-input: rgba(255, 255, 255, 0.95);
+            --border-input: rgba(15, 23, 42, 0.15);
+            --text-input: #0f172a;
+        }
+        .light-theme body {
+            background-color: var(--bg-main) !important;
+            color: var(--text-main) !important;
+        }
+        .light-theme .bg-overlay {
+            background: radial-gradient(circle at center, rgba(255, 255, 255, 0.55) 0%, rgba(241, 245, 249, 0.9) 100%) !important;
+        }
+        .light-theme .glass-card {
+            background: var(--bg-card) !important;
+            border-color: var(--border-card) !important;
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04) !important;
+        }
+        .light-theme .glass-card h2,
+        .light-theme .glass-card h3 {
+            color: #ea580c !important;
+        }
+        .light-theme .glass-card p {
+            color: #475569 !important;
+        }
+        .light-theme .glass-label {
+            color: #475569 !important;
+        }
+        .light-theme .glass-input {
+            background: var(--bg-input) !important;
+            border: 1px solid var(--border-input) !important;
+            color: var(--text-input) !important;
+        }
+        .light-theme .glass-input:focus {
+            background: #ffffff !important;
+            border-color: #f59e0b !important;
+            box-shadow: 0 0 15px rgba(245, 158, 11, 0.25) !important;
+        }
+        .light-theme .text-slate-400 {
+            color: #475569 !important;
+        }
+        .light-theme .text-slate-300 {
+            color: #334155 !important;
+        }
+        .light-theme .text-slate-200 {
+            color: #1e293b !important;
+        }
+        .light-theme #particle-canvas {
+            opacity: 0.15 !important;
+        }
+        .light-theme .card-close-decor {
+            color: #475569 !important;
+            border-color: rgba(15, 23, 42, 0.08) !important;
+            background: rgba(255, 255, 255, 0.9) !important;
         }
     </style>
 </head>

@@ -1,6 +1,13 @@
 <!DOCTYPE html>
 <html lang="es" class="h-full bg-slate-950 text-slate-100">
 <head>
+    <script>
+        // Inline script to prevent theme flash
+        const currentTheme = localStorage.getItem('theme') || 'dark';
+        if (currentTheme === 'light') {
+            document.documentElement.classList.add('light-theme');
+        }
+    </script>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>@yield('title', 'Sistema de Pagos Mineros') - SCPM</title>
@@ -24,6 +31,46 @@
     <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
 
     <style>
+        :root {
+            --bg-main: #020617;
+            --bg-card: rgba(15, 23, 42, 0.45);
+            --border-card: rgba(255, 255, 255, 0.06);
+            --text-main: #f8fafc;
+            --text-muted: #94a3b8;
+            --bg-sidebar: rgba(15, 23, 42, 0.8);
+            --border-sidebar: rgba(255, 255, 255, 0.06);
+            --bg-header: rgba(15, 23, 42, 0.7);
+            --text-nav: #94a3b8;
+            --text-nav-hover: #f8fafc;
+            --bg-input: rgba(15, 23, 42, 0.45);
+            --border-input: rgba(255, 255, 255, 0.08);
+            --text-input: #f8fafc;
+            --canvas-opacity: 0.4;
+        }
+
+        .light-theme {
+            --bg-main: #f8fafc;
+            --bg-card: rgba(255, 255, 255, 0.85);
+            --border-card: rgba(15, 23, 42, 0.08);
+            --text-main: #0f172a;
+            --text-muted: #64748b;
+            --bg-sidebar: rgba(241, 245, 249, 0.95);
+            --border-sidebar: rgba(15, 23, 42, 0.08);
+            --bg-header: rgba(241, 245, 249, 0.8);
+            --text-nav: #475569;
+            --text-nav-hover: #0f172a;
+            --bg-input: rgba(255, 255, 255, 0.95);
+            --border-input: rgba(15, 23, 42, 0.15);
+            --text-input: #0f172a;
+            --canvas-opacity: 0.12;
+        }
+
+        html, body {
+            background-color: var(--bg-main) !important;
+            color: var(--text-main) !important;
+            transition: background-color 0.3s ease, color 0.3s ease;
+        }
+
         body {
             font-family: 'Outfit', sans-serif;
         }
@@ -35,6 +82,9 @@
         ::-webkit-scrollbar-track {
             background: #0f172a;
         }
+        .light-theme ::-webkit-scrollbar-track {
+            background: #f1f5f9;
+        }
         ::-webkit-scrollbar-thumb {
             background: #f59e0b;
             border-radius: 3px;
@@ -44,12 +94,16 @@
         }
         /* Glassmorphism card utilities */
         .glass-card {
-            background: rgba(15, 23, 42, 0.45);
+            background: var(--bg-card) !important;
             backdrop-filter: blur(16px);
             -webkit-backdrop-filter: blur(16px);
-            border: 1px solid rgba(255, 255, 255, 0.06);
+            border: 1px solid var(--border-card) !important;
             position: relative;
             overflow: hidden;
+            transition: background 0.3s ease, border-color 0.3s ease, box-shadow 0.3s ease;
+        }
+        .light-theme .glass-card {
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.04), 0 4px 6px -2px rgba(0, 0, 0, 0.02) !important;
         }
         .glass-card::before {
             content: '';
@@ -324,6 +378,164 @@
             color: #f59e0b !important;
             filter: drop-shadow(0 0 6px rgba(245, 158, 11, 0.4)) !important;
         }
+
+        /* --- LIGHT THEME (DAY MODE) OVERRIDES --- */
+        .light-theme .text-slate-100 { color: #0f172a !important; }
+        .light-theme .text-slate-200 { color: #1e293b !important; }
+        .light-theme .text-slate-300 { color: #334155 !important; }
+        .light-theme .text-slate-400 { color: #475569 !important; }
+        .light-theme .text-slate-450 { color: #64748b !important; }
+        .light-theme .text-slate-500 { color: #64748b !important; }
+        
+        .light-theme .sidebar-bg {
+            background-color: var(--bg-sidebar) !important;
+            border-right: 1px solid var(--border-sidebar) !important;
+            transition: background-color 0.3s ease, border-color 0.3s ease;
+        }
+        
+        .light-theme .header-bg {
+            background-color: var(--bg-header) !important;
+            border-bottom: 1px solid var(--border-sidebar) !important;
+            transition: background-color 0.3s ease, border-color 0.3s ease;
+        }
+        
+        .light-theme .md\:hidden.fixed.top-0 {
+            background-color: var(--bg-sidebar) !important;
+            border-bottom: 1px solid var(--border-sidebar) !important;
+            transition: background-color 0.3s ease, border-color 0.3s ease;
+        }
+        .light-theme .md\:hidden.fixed.top-0 h1 {
+            color: #ea580c !important;
+        }
+        .light-theme .md\:hidden.fixed.top-0 button {
+            color: #475569 !important;
+        }
+        .light-theme .md\:hidden.fixed.top-0 button:hover {
+            color: #0f172a !important;
+        }
+        
+        .light-theme .md\:hidden.fixed.top-0 div[x-show="open"] {
+            background-color: var(--bg-sidebar) !important;
+            border-bottom: 1px solid var(--border-sidebar) !important;
+        }
+        .light-theme .md\:hidden.fixed.top-0 div[x-show="open"] a {
+            color: #475569 !important;
+        }
+        .light-theme .md\:hidden.fixed.top-0 div[x-show="open"] a:hover {
+            background-color: rgba(15, 23, 42, 0.05) !important;
+            color: #0f172a !important;
+        }
+        
+        .light-theme #particle-canvas {
+            opacity: var(--canvas-opacity) !important;
+            transition: opacity 0.3s ease;
+        }
+        
+        .light-theme .nav-item {
+            color: #475569 !important;
+        }
+        .light-theme .nav-item:hover {
+            color: #ea580c !important;
+        }
+        .light-theme .nav-item.active-nav-item {
+            color: #ea580c !important;
+        }
+        
+        .light-theme .border-t.border-slate-800\/80 {
+            border-top-color: rgba(15, 23, 42, 0.08) !important;
+        }
+        .light-theme .border-t.border-slate-800\/80 p {
+            color: #0f172a !important;
+        }
+        .light-theme .border-t.border-slate-800\/80 button {
+            color: #ea580c !important;
+        }
+        
+        .light-theme #realtime-clock {
+            color: #475569 !important;
+        }
+        
+        .light-theme .bg-slate-900\/40 {
+            background-color: rgba(15, 23, 42, 0.04) !important;
+        }
+        .light-theme th {
+            color: #475569 !important;
+        }
+        .light-theme td {
+            color: #334155 !important;
+        }
+        .light-theme td.text-slate-100 {
+            color: #0f172a !important;
+        }
+        .light-theme td.text-slate-200 {
+            color: #1e293b !important;
+        }
+        .light-theme tr.hover\:bg-slate-900\/10:hover {
+            background-color: rgba(15, 23, 42, 0.03) !important;
+        }
+        
+        .light-theme input[type="text"], 
+        .light-theme input[type="email"], 
+        .light-theme input[type="password"], 
+        .light-theme input[type="number"], 
+        .light-theme input[type="date"], 
+        .light-theme select, 
+        .light-theme textarea {
+            background: rgba(255, 255, 255, 0.95) !important;
+            border: 1px solid rgba(15, 23, 42, 0.15) !important;
+            color: #0f172a !important;
+        }
+        
+        .light-theme input[type="text"]:focus, 
+        .light-theme input[type="email"]:focus, 
+        .light-theme input[type="password"]:focus, 
+        .light-theme input[type="number"]:focus, 
+        .light-theme input[type="date"]:focus, 
+        .light-theme select:focus, 
+        .light-theme textarea:focus {
+            background: #ffffff !important;
+            border-color: #f59e0b !important;
+            box-shadow: 0 0 10px rgba(245, 158, 11, 0.15) !important;
+        }
+        
+        .light-theme .bg-slate-800 {
+            background-color: #e2e8f0 !important;
+            color: #334155 !important;
+        }
+        .light-theme .bg-slate-800:hover {
+            background-color: #cbd5e1 !important;
+        }
+        
+        .light-theme .border-slate-700,
+        .light-theme .border-slate-800,
+        .light-theme .border-slate-700\/80,
+        .light-theme .border-slate-800\/60 {
+            border-color: rgba(15, 23, 42, 0.08) !important;
+        }
+        
+        .light-theme .toast-item {
+            background: rgba(255, 255, 255, 0.95) !important;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1) !important;
+            border-color: rgba(15, 23, 42, 0.06) !important;
+        }
+        .light-theme .toast-item .text-slate-100 {
+            color: #0f172a !important;
+        }
+        
+        .light-theme #custom-confirm-modal {
+            background: rgba(15, 23, 42, 0.45) !important;
+        }
+        .light-theme #custom-confirm-modal .glass-card {
+            background: #ffffff !important;
+            border-color: rgba(239, 68, 68, 0.3) !important;
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04) !important;
+        }
+        .light-theme #custom-confirm-modal h3 {
+            color: #ef4444 !important;
+        }
+        .light-theme #custom-confirm-modal p {
+            color: #334155 !important;
+        }
     </style>
 </head>
 <body class="h-full flex overflow-hidden bg-slate-950 relative">
@@ -332,7 +544,7 @@
     <canvas id="particle-canvas" class="fixed inset-0 pointer-events-none z-0 opacity-40"></canvas>
 
     <!-- Sidebar (no-print) -->
-    <div class="no-print hidden md:flex md:w-64 md:flex-col md:fixed md:inset-y-0 bg-slate-900/80 backdrop-blur-md border-r border-slate-800/60 z-20">
+    <div class="no-print hidden md:flex md:w-64 md:flex-col md:fixed md:inset-y-0 sidebar-bg z-20">
         <div class="flex flex-col flex-grow pt-5 pb-4 overflow-y-auto">
             <!-- Logo area -->
             <div class="flex items-center flex-shrink-0 px-6 space-x-3">
@@ -346,7 +558,7 @@
             </div>
             
             <!-- Navigation -->
-            <nav class="mt-8 flex-1 px-4 space-y-1 relative" id="main-nav">
+            <nav class="mt-6 flex-1 px-4 space-y-1 relative" id="main-nav">
                 <!-- Sliding Liquid Glass Pill -->
                 <div id="nav-indicator-pill" class="absolute left-3 right-3 rounded-lg opacity-0 pointer-events-none transition-all duration-300 z-0"></div>
 
@@ -355,6 +567,9 @@
                     Tablero Principal
                 </a>
                 
+                <!-- CATEGORY: PLANILLA DE PAGOS -->
+                <div class="px-3 pt-4 pb-1.5 text-[10px] font-bold uppercase tracking-wider text-slate-500 font-mono no-print">Pagos y Anticipos al Personal</div>
+
                 <a href="{{ route('bocaminas.index') }}" class="nav-item flex items-center px-3 py-2.5 text-sm font-medium rounded-lg relative z-10 transition-colors duration-200 {{ request()->routeIs('bocaminas.*') ? 'active-nav-item text-amber-500' : 'text-slate-450 hover:text-slate-200' }}">
                     <i class="fa-solid fa-mountain w-6 text-center mr-3 text-base"></i>
                     Bocaminas
@@ -379,6 +594,17 @@
                     <i class="fa-solid fa-receipt w-6 text-center mr-3 text-base"></i>
                     Pagos / Recibos
                 </a>
+
+                <!-- CATEGORY: MINERALES -->
+                <div class="px-3 pt-5 pb-1.5 text-[10px] font-bold uppercase tracking-wider text-slate-500 font-mono no-print">Compra y Venta de Mineral</div>
+
+                <a href="{{ route('transacciones-minerales.index') }}" class="nav-item flex items-center px-3 py-2.5 text-sm font-medium rounded-lg relative z-10 transition-colors duration-200 {{ request()->routeIs('transacciones-minerales.*') ? 'active-nav-item text-amber-500' : 'text-slate-450 hover:text-slate-200' }}">
+                    <i class="fa-solid fa-scale-balanced w-6 text-center mr-3 text-base"></i>
+                    Compra y Venta
+                </a>
+
+                <!-- CATEGORY: REPORTES -->
+                <div class="px-3 pt-5 pb-1.5 text-[10px] font-bold uppercase tracking-wider text-slate-500 font-mono no-print">Estadísticas y Reportes</div>
 
                 <a href="{{ route('reportes.index') }}" class="nav-item flex items-center px-3 py-2.5 text-sm font-medium rounded-lg relative z-10 transition-colors duration-200 {{ request()->routeIs('reportes.*') ? 'active-nav-item text-amber-500' : 'text-slate-450 hover:text-slate-200' }}">
                     <i class="fa-solid fa-chart-pie w-6 text-center mr-3 text-base"></i>
@@ -417,20 +643,31 @@
                 </div>
                 <h1 class="text-md font-bold tracking-wider text-amber-500 uppercase">SCP Minero</h1>
             </div>
-            <button @click="open = !open" class="text-slate-400 hover:text-slate-200 focus:outline-none">
-                <i class="fa-solid fa-bars text-xl"></i>
-            </button>
+            <div class="flex items-center space-x-2">
+                <button onclick="toggleTheme()" class="p-2 rounded text-amber-500 hover:text-amber-400 focus:outline-none" title="Cambiar Modo (Día/Noche)">
+                    <i id="theme-toggle-icon-mobile" class="fa-solid fa-sun text-lg"></i>
+                </button>
+                <button @click="open = !open" class="text-slate-400 hover:text-slate-200 focus:outline-none">
+                    <i class="fa-solid fa-bars text-xl"></i>
+                </button>
+            </div>
         </div>
         
         <!-- Mobile menu list -->
         <div x-show="open" @click.away="open = false" class="px-2 pt-2 pb-4 space-y-1 bg-slate-900 border-b border-slate-800">
             <a href="{{ route('dashboard') }}" class="block px-3 py-2 rounded-md text-base font-medium {{ request()->routeIs('dashboard') ? 'bg-amber-500/10 text-amber-500' : 'text-slate-300 hover:bg-slate-800' }}">Tablero Principal</a>
+            
+            <div class="px-3 pt-3 pb-1 text-[10px] font-bold uppercase tracking-wider text-slate-500 font-mono">Pagos y Anticipos al Personal</div>
             <a href="{{ route('bocaminas.index') }}" class="block px-3 py-2 rounded-md text-base font-medium {{ request()->routeIs('bocaminas.*') ? 'bg-amber-500/10 text-amber-500' : 'text-slate-300 hover:bg-slate-800' }}">Bocaminas</a>
             <a href="{{ route('trabajadores.index') }}" class="block px-3 py-2 rounded-md text-base font-medium {{ request()->routeIs('trabajadores.*') ? 'bg-amber-500/10 text-amber-500' : 'text-slate-300 hover:bg-slate-800' }}">Trabajadores / Contratistas</a>
             <a href="{{ route('contratos.index') }}" class="block px-3 py-2 rounded-md text-base font-medium {{ request()->routeIs('contratos.*') ? 'bg-amber-500/10 text-amber-500' : 'text-slate-300 hover:bg-slate-800' }}">Contratos</a>
-
             <a href="{{ route('anticipos.index') }}" class="block px-3 py-2 rounded-md text-base font-medium {{ request()->routeIs('anticipos.*') ? 'bg-amber-500/10 text-amber-500' : 'text-slate-300 hover:bg-slate-800' }}">Anticipos</a>
             <a href="{{ route('pagos.index') }}" class="block px-3 py-2 rounded-md text-base font-medium {{ request()->routeIs('pagos.*') ? 'bg-amber-500/10 text-amber-500' : 'text-slate-300 hover:bg-slate-800' }}">Pagos / Recibos</a>
+            
+            <div class="px-3 pt-3 pb-1 text-[10px] font-bold uppercase tracking-wider text-slate-500 font-mono">Compra y Venta de Mineral</div>
+            <a href="{{ route('transacciones-minerales.index') }}" class="block px-3 py-2 rounded-md text-base font-medium {{ request()->routeIs('transacciones-minerales.*') ? 'bg-amber-500/10 text-amber-500' : 'text-slate-300 hover:bg-slate-800' }}">Compra y Venta</a>
+            
+            <div class="px-3 pt-3 pb-1 text-[10px] font-bold uppercase tracking-wider text-slate-500 font-mono">Estadísticas y Reportes</div>
             <a href="{{ route('reportes.index') }}" class="block px-3 py-2 rounded-md text-base font-medium {{ request()->routeIs('reportes.*') ? 'bg-amber-500/10 text-amber-500' : 'text-slate-300 hover:bg-slate-800' }}">Reportes</a>
             
             <form action="{{ route('logout') }}" method="POST" class="block w-full">
@@ -443,8 +680,12 @@
     <!-- Main Content Area -->
     <div class="flex flex-col flex-1 w-full md:pl-64 overflow-hidden">
         <!-- Top bar (only for desktop desktop, no-print) -->
-        <header class="no-print hidden md:flex items-center justify-end h-16 bg-slate-900/70 backdrop-blur-md border-b border-slate-800/60 px-8 flex-shrink-0 relative z-20">
+        <header class="no-print hidden md:flex items-center justify-end h-16 header-bg px-8 flex-shrink-0 relative z-20">
             <div class="flex items-center space-x-4">
+                <button onclick="toggleTheme()" class="p-2 rounded-lg bg-slate-850 hover:bg-slate-800 border border-slate-700/50 text-amber-500 hover:text-amber-400 transition-colors duration-150 flex items-center justify-center no-print" title="Cambiar Modo (Día/Noche)">
+                    <i id="theme-toggle-icon" class="fa-solid fa-sun"></i>
+                </button>
+                <div class="h-4 w-px bg-slate-800"></div>
                 <span class="text-xs text-slate-400 flex items-center space-x-1">
                     <span class="w-2 h-2 bg-emerald-500 rounded-full animate-ping mr-1"></span>
                     Servidor Local Conectado
@@ -973,13 +1214,57 @@
                 
                 spark.animate([
                     { transform: 'translate(0, 0) scale(1)', opacity: 1 },
-                    { transform: `translate(${vx}px, ${vy}px) scale(0)', opacity: 0 }
+                    { transform: `translate(${vx}px, ${vy}px) scale(0)`, opacity: 0 }
                 ], {
                     duration: Math.random() * 500 + 400,
                     easing: 'cubic-bezier(0.1, 0.8, 0.3, 1)'
                 }).onfinish = () => spark.remove();
             }
         }
+
+        // --- DYNAMIC DAY/NIGHT MODE TOGGLER ---
+        function toggleTheme() {
+            const html = document.documentElement;
+            const icons = [document.getElementById('theme-toggle-icon'), document.getElementById('theme-toggle-icon-mobile')];
+            if (html.classList.contains('light-theme')) {
+                html.classList.remove('light-theme');
+                localStorage.setItem('theme', 'dark');
+                icons.forEach(icon => {
+                    if (icon) {
+                        icon.classList.remove('fa-moon');
+                        icon.classList.add('fa-sun');
+                    }
+                });
+            } else {
+                html.classList.add('light-theme');
+                localStorage.setItem('theme', 'light');
+                icons.forEach(icon => {
+                    if (icon) {
+                        icon.classList.remove('fa-sun');
+                        icon.classList.add('fa-moon');
+                    }
+                });
+            }
+            
+            // Dispatch a global event so views (like dashboard charts) can adapt dynamically
+            window.dispatchEvent(new CustomEvent('theme-changed', { detail: { theme: localStorage.getItem('theme') } }));
+        }
+
+        document.addEventListener('DOMContentLoaded', () => {
+            const html = document.documentElement;
+            const icons = [document.getElementById('theme-toggle-icon'), document.getElementById('theme-toggle-icon-mobile')];
+            icons.forEach(icon => {
+                if (icon) {
+                    if (html.classList.contains('light-theme')) {
+                        icon.classList.remove('fa-sun');
+                        icon.classList.add('fa-moon');
+                    } else {
+                        icon.classList.remove('fa-moon');
+                        icon.classList.add('fa-sun');
+                    }
+                }
+            });
+        });
     </script>
     @stack('scripts')
 </body>

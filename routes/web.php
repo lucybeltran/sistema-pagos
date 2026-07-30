@@ -9,6 +9,7 @@ use App\Http\Controllers\TrabajoController;
 use App\Http\Controllers\AnticipoController;
 use App\Http\Controllers\PagoController;
 use App\Http\Controllers\ReporteController;
+use App\Http\Controllers\TransaccionMineralController;
 
 // Public routes / Authentication
 Route::middleware('guest')->group(function () {
@@ -32,7 +33,7 @@ Route::middleware('auth')->group(function () {
     Route::resource('bocaminas', BocaminaController::class)->only(['index', 'store', 'update', 'destroy']);
 
     // Trabajadores
-    Route::resource('trabajadores', TrabajadorController::class)->only(['index', 'store', 'update', 'destroy']);
+    Route::resource('trabajadores', TrabajadorController::class)->only(['index', 'store', 'update', 'destroy'])->parameters(['trabajadores' => 'trabajador']);
 
     // Contratos
     Route::resource('contratos', ContratoController::class);
@@ -50,6 +51,11 @@ Route::middleware('auth')->group(function () {
     Route::post('/pagos', [PagoController::class, 'store'])->name('pagos.store');
     Route::get('/pagos/trabajador-data/{id}', [PagoController::class, 'getTrabajadorData'])->name('pagos.trabajador-data');
     Route::get('/pagos/{pago}', [PagoController::class, 'show'])->name('pagos.show');
+    Route::post('/fondos-pagos', [PagoController::class, 'storeFondo'])->name('fondos-pagos.store');
+    Route::delete('/fondos-pagos/{id}', [PagoController::class, 'destroyFondo'])->name('fondos-pagos.destroy');
+
+    // Compra y Venta de Concentrados/Sacos
+    Route::resource('transacciones-minerales', TransaccionMineralController::class);
 
     // Reportes
     Route::get('/reportes', [ReporteController::class, 'index'])->name('reportes.index');

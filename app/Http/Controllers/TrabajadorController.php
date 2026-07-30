@@ -46,6 +46,7 @@ class TrabajadorController extends Controller
             ],
             'telefono' => 'nullable|numeric|digits:8',
             'bocamina_id' => 'required|exists:bocaminas,id',
+            'rol' => 'required|in:obrero,contratista,chofer,sereno,otro',
             'estado' => 'required|in:activo,inactivo',
         ], [
             'nombre.regex' => 'Cada nombre y apellido debe comenzar con mayúscula (Ej. Juan Carlos Pérez).',
@@ -70,6 +71,7 @@ class TrabajadorController extends Controller
             ],
             'telefono' => 'nullable|numeric|digits:8',
             'bocamina_id' => 'required|exists:bocaminas,id',
+            'rol' => 'required|in:obrero,contratista,chofer,sereno,otro',
             'estado' => 'required|in:activo,inactivo',
         ], [
             'nombre.regex' => 'Cada nombre y apellido debe comenzar con mayúscula (Ej. Juan Carlos Pérez).',
