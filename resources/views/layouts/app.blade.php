@@ -591,39 +591,78 @@
                     <i class="fa-solid fa-chart-line w-6 text-center mr-3 text-base"></i>
                     Tablero Principal
                 </a>
-                
-                <!-- CATEGORY: PLANILLA DE PAGOS -->
-                <div class="px-3 pt-4 pb-1.5 text-[10px] font-bold uppercase tracking-wider text-slate-500 font-mono no-print">Pagos y Anticipos al Personal</div>
+                                <!-- CATEGORY: PLANILLA DE PAGOS (Collapsible Header) -->
+                <div x-data="{ parentOpen: true }" class="space-y-1">
+                    
+                    <!-- Parent Toggle Button -->
+                    <button @click="parentOpen = !parentOpen" class="dropdown-toggle w-full flex items-center justify-between px-3 pt-4 pb-1.5 text-[10px] font-bold uppercase tracking-wider text-slate-450 hover:text-slate-200 font-mono no-print focus:outline-none">
+                        <span>Pagos y Anticipos al Personal</span>
+                        <i class="fa-solid fa-chevron-down text-[8px] transition-transform duration-200" :class="parentOpen ? '' : '-rotate-90'"></i>
+                    </button>
 
-                <a href="{{ route('bocaminas.index') }}" data-theme-color="emerald" class="nav-item flex items-center px-3 py-2.5 text-sm font-medium rounded-lg relative z-10 transition-colors duration-200 {{ request()->routeIs('bocaminas.*') ? 'active-nav-item text-emerald-500' : 'text-slate-450 hover:text-slate-200' }}">
-                    <i class="fa-solid fa-mountain w-6 text-center mr-3 text-base"></i>
-                    Bocaminas
-                </a>
+                    <!-- Parent Contents -->
+                    <div x-show="parentOpen" class="space-y-3 pl-1.5 my-1">
+                        
+                        <!-- SUB-GROUP 1: Personal -->
+                        <div x-data="{ open: {{ request()->routeIs('bocaminas.*', 'trabajadores.*', 'contratos.*') ? 'true' : 'true' }} }" class="space-y-1">
+                            <button @click="open = !open" class="dropdown-toggle w-full flex items-center justify-between px-3 py-1.5 text-xs font-semibold text-slate-350 hover:text-slate-200 uppercase tracking-wider font-mono focus:outline-none">
+                                <span class="flex items-center text-slate-300">
+                                    <span class="mr-2">👷</span> Personal
+                                </span>
+                                <i class="fa-solid fa-chevron-down text-[9px] text-slate-500 transition-transform duration-200" :class="open ? '' : '-rotate-90'"></i>
+                            </button>
+                            
+                            <div x-show="open" class="pl-3 border-l border-slate-800 ml-3 space-y-1">
+                                <a href="{{ route('bocaminas.index') }}" data-theme-color="emerald" class="nav-item flex items-center px-3 py-1.5 text-sm font-medium rounded-lg relative z-10 transition-colors duration-200 {{ request()->routeIs('bocaminas.*') ? 'active-nav-item text-emerald-500' : 'text-slate-450 hover:text-slate-200' }}">
+                                    <span class="text-slate-650 font-mono mr-2 select-none">├─</span>
+                                    Bocaminas
+                                </a>
+                                <a href="{{ route('trabajadores.index') }}" data-theme-color="sky" class="nav-item flex items-center px-3 py-1.5 text-sm font-medium rounded-lg relative z-10 transition-colors duration-200 {{ request()->routeIs('trabajadores.*') ? 'active-nav-item text-sky-500' : 'text-slate-450 hover:text-slate-200' }}">
+                                    <span class="text-slate-650 font-mono mr-2 select-none">├─</span>
+                                    Trabajadores
+                                </a>
+                                <a href="{{ route('contratos.index') }}" data-theme-color="indigo" class="nav-item flex items-center px-3 py-1.5 text-sm font-medium rounded-lg relative z-10 transition-colors duration-200 {{ request()->routeIs('contratos.*') ? 'active-nav-item text-indigo-500' : 'text-slate-450 hover:text-slate-200' }}">
+                                    <span class="text-slate-650 font-mono mr-2 select-none">└─</span>
+                                    Tipos de Contrato
+                                </a>
+                            </div>
+                        </div>
 
-                <a href="{{ route('trabajadores.index') }}" data-theme-color="sky" class="nav-item flex items-center px-3 py-2.5 text-sm font-medium rounded-lg relative z-10 transition-colors duration-200 {{ request()->routeIs('trabajadores.*') ? 'active-nav-item text-sky-500' : 'text-slate-450 hover:text-slate-200' }}">
-                    <i class="fa-solid fa-user-group w-6 text-center mr-3 text-base"></i>
-                    Trabajadores / Contratistas
-                </a>
+                        <!-- SUB-GROUP 2: Movimientos -->
+                        <div x-data="{ open: {{ request()->routeIs('fondos-caja.*', 'anticipos.*', 'pagos.*') ? 'true' : 'true' }} }" class="space-y-1">
+                            <button @click="open = !open" class="dropdown-toggle w-full flex items-center justify-between px-3 py-1.5 text-xs font-semibold text-slate-350 hover:text-slate-200 uppercase tracking-wider font-mono focus:outline-none">
+                                <span class="flex items-center text-slate-300">
+                                    <span class="mr-2">💰</span> Movimientos
+                                </span>
+                                <i class="fa-solid fa-chevron-down text-[9px] text-slate-500 transition-transform duration-200" :class="open ? '' : '-rotate-90'"></i>
+                            </button>
+                            
+                            <div x-show="open" class="pl-3 border-l border-slate-800 ml-3 space-y-1">
+                                <a href="{{ route('fondos-caja.index') }}" data-theme-color="cyan" class="nav-item flex items-center px-3 py-1.5 text-sm font-medium rounded-lg relative z-10 transition-colors duration-200 {{ request()->routeIs('fondos-caja.*') ? 'active-nav-item text-cyan-500' : 'text-slate-450 hover:text-slate-200' }}">
+                                    <span class="text-slate-650 font-mono mr-2 select-none">├─</span>
+                                    Caja del Personal
+                                </a>
+                                <a href="{{ route('anticipos.index') }}" data-theme-color="rose" class="nav-item flex items-center px-3 py-1.5 text-sm font-medium rounded-lg relative z-10 transition-colors duration-200 {{ request()->routeIs('anticipos.*') ? 'active-nav-item text-rose-500' : 'text-slate-450 hover:text-slate-200' }}">
+                                    <span class="text-slate-650 font-mono mr-2 select-none">├─</span>
+                                    Anticipos
+                                </a>
+                                <a href="{{ route('pagos.index') }}" data-theme-color="teal" class="nav-item flex items-center px-3 py-1.5 text-sm font-medium rounded-lg relative z-10 transition-colors duration-200 {{ request()->routeIs('pagos.*') ? 'active-nav-item text-teal-500' : 'text-slate-450 hover:text-slate-200' }}">
+                                    <span class="text-slate-650 font-mono mr-2 select-none">└─</span>
+                                    Pagos
+                                </a>
+                            </div>
+                        </div>
 
-                <a href="{{ route('contratos.index') }}" data-theme-color="indigo" class="nav-item flex items-center px-3 py-2.5 text-sm font-medium rounded-lg relative z-10 transition-colors duration-200 {{ request()->routeIs('contratos.*') ? 'active-nav-item text-indigo-500' : 'text-slate-450 hover:text-slate-200' }}">
-                    <i class="fa-solid fa-file-contract w-6 text-center mr-3 text-base"></i>
-                    Contratos
-                </a>
-
-                <a href="{{ route('anticipos.index') }}" data-theme-color="rose" class="nav-item flex items-center px-3 py-2.5 text-sm font-medium rounded-lg relative z-10 transition-colors duration-200 {{ request()->routeIs('anticipos.*') ? 'active-nav-item text-rose-500' : 'text-slate-450 hover:text-slate-200' }}">
-                    <i class="fa-solid fa-money-bill-transfer w-6 text-center mr-3 text-base"></i>
-                    Anticipos
-                </a>
-
-                <a href="{{ route('fondos-caja.index') }}" data-theme-color="cyan" class="nav-item flex items-center px-3 py-2.5 text-sm font-medium rounded-lg relative z-10 transition-colors duration-200 {{ request()->routeIs('fondos-caja.*') ? 'active-nav-item text-cyan-500' : 'text-slate-450 hover:text-slate-200' }}">
-                    <i class="fa-solid fa-money-bill-trend-up w-6 text-center mr-3 text-base"></i>
-                    Recargar Caja / Fondos
-                </a>
-
-                <a href="{{ route('pagos.index') }}" data-theme-color="teal" class="nav-item flex items-center px-3 py-2.5 text-sm font-medium rounded-lg relative z-10 transition-colors duration-200 {{ request()->routeIs('pagos.*') ? 'active-nav-item text-teal-500' : 'text-slate-450 hover:text-slate-200' }}">
-                    <i class="fa-solid fa-receipt w-6 text-center mr-3 text-base"></i>
-                    Pagos / Recibos
-                </a>
+                        <!-- SUB-GROUP 3: Reportes -->
+                        <div class="space-y-1">
+                            <a href="{{ route('reportes.index') }}" data-theme-color="violet" class="nav-item flex items-center px-3 py-2 text-sm font-medium rounded-lg relative z-10 transition-colors duration-200 {{ request()->routeIs('reportes.*') ? 'active-nav-item text-violet-500' : 'text-slate-450 hover:text-slate-200' }}">
+                                <span class="mr-3 text-base">📊</span>
+                                Reportes
+                            </a>
+                        </div>
+                        
+                    </div>
+                </div>
 
                 <!-- CATEGORY: MINERALES -->
                 <div class="px-3 pt-5 pb-1.5 text-[10px] font-bold uppercase tracking-wider text-slate-500 font-mono no-print">Compra y Venta de Mineral</div>
@@ -688,19 +727,24 @@
             <a href="{{ route('dashboard') }}" class="block px-3 py-2 rounded-md text-base font-medium {{ request()->routeIs('dashboard') ? 'bg-amber-500/10 text-amber-500' : 'text-slate-300 hover:bg-slate-800' }}">Tablero Principal</a>
             
             <div class="px-3 pt-3 pb-1 text-[10px] font-bold uppercase tracking-wider text-slate-500 font-mono">Pagos y Anticipos al Personal</div>
-            <a href="{{ route('bocaminas.index') }}" class="block px-3 py-2 rounded-md text-base font-medium {{ request()->routeIs('bocaminas.*') ? 'bg-emerald-500/10 text-emerald-400' : 'text-slate-300 hover:bg-slate-800' }}">Bocaminas</a>
-            <a href="{{ route('trabajadores.index') }}" class="block px-3 py-2 rounded-md text-base font-medium {{ request()->routeIs('trabajadores.*') ? 'bg-sky-500/10 text-sky-400' : 'text-slate-300 hover:bg-slate-800' }}">Trabajadores / Contratistas</a>
-            <a href="{{ route('contratos.index') }}" class="block px-3 py-2 rounded-md text-base font-medium {{ request()->routeIs('contratos.*') ? 'bg-indigo-500/10 text-indigo-400' : 'text-slate-300 hover:bg-slate-800' }}">Contratos</a>
-            <a href="{{ route('anticipos.index') }}" class="block px-3 py-2 rounded-md text-base font-medium {{ request()->routeIs('anticipos.*') ? 'bg-rose-500/10 text-rose-450' : 'text-slate-300 hover:bg-slate-800' }}">Anticipos</a>
-            <a href="{{ route('fondos-caja.index') }}" class="block px-3 py-2 rounded-md text-base font-medium {{ request()->routeIs('fondos-caja.*') ? 'bg-cyan-500/10 text-cyan-400' : 'text-slate-300 hover:bg-slate-800' }}">Recargar Caja / Fondos</a>
-            <a href="{{ route('pagos.index') }}" class="block px-3 py-2 rounded-md text-base font-medium {{ request()->routeIs('pagos.*') ? 'bg-teal-500/10 text-teal-400' : 'text-slate-300 hover:bg-slate-800' }}">Pagos / Recibos</a>
+            <div class="pl-2 border-l border-slate-800 ml-2 space-y-1">
+                <div class="px-3 py-1 text-xs font-semibold text-slate-400 uppercase tracking-wider font-mono">👷 Personal</div>
+                <a href="{{ route('bocaminas.index') }}" class="block px-6 py-1.5 rounded-md text-sm font-medium {{ request()->routeIs('bocaminas.*') ? 'bg-emerald-500/10 text-emerald-400' : 'text-slate-450 hover:bg-slate-800' }}">├─ Bocaminas</a>
+                <a href="{{ route('trabajadores.index') }}" class="block px-6 py-1.5 rounded-md text-sm font-medium {{ request()->routeIs('trabajadores.*') ? 'bg-sky-500/10 text-sky-400' : 'text-slate-450 hover:bg-slate-800' }}">├─ Trabajadores</a>
+                <a href="{{ route('contratos.index') }}" class="block px-6 py-1.5 rounded-md text-sm font-medium {{ request()->routeIs('contratos.*') ? 'bg-indigo-500/10 text-indigo-400' : 'text-slate-450 hover:bg-slate-800' }}">└─ Tipos de Contrato</a>
+                
+                <div class="px-3 py-1 text-xs font-semibold text-slate-400 uppercase tracking-wider font-mono mt-2">💰 Movimientos</div>
+                <a href="{{ route('fondos-caja.index') }}" class="block px-6 py-1.5 rounded-md text-sm font-medium {{ request()->routeIs('fondos-caja.*') ? 'bg-cyan-500/10 text-cyan-400' : 'text-slate-450 hover:bg-slate-800' }}">├─ Caja del Personal</a>
+                <a href="{{ route('anticipos.index') }}" class="block px-6 py-1.5 rounded-md text-sm font-medium {{ request()->routeIs('anticipos.*') ? 'bg-rose-500/10 text-rose-450' : 'text-slate-450 hover:bg-slate-800' }}">├─ Anticipos</a>
+                <a href="{{ route('pagos.index') }}" class="block px-6 py-1.5 rounded-md text-sm font-medium {{ request()->routeIs('pagos.*') ? 'bg-teal-500/10 text-teal-400' : 'text-slate-450 hover:bg-slate-800' }}">└─ Pagos</a>
+                
+                <a href="{{ route('reportes.index') }}" class="block px-3 py-2 rounded-md text-sm font-medium mt-2 {{ request()->routeIs('reportes.*') ? 'bg-violet-500/10 text-violet-400' : 'text-slate-350 hover:bg-slate-800' }}">📊 Reportes</a>
+            </div>
             
             <div class="px-3 pt-3 pb-1 text-[10px] font-bold uppercase tracking-wider text-slate-500 font-mono">Compra y Venta de Mineral</div>
             <a href="{{ route('transacciones-minerales.index') }}" class="block px-3 py-2 rounded-md text-base font-medium {{ request()->routeIs('transacciones-minerales.*') ? 'bg-orange-500/10 text-orange-500' : 'text-slate-300 hover:bg-slate-800' }}">Compra y Venta</a>
             
-            <div class="px-3 pt-3 pb-1 text-[10px] font-bold uppercase tracking-wider text-slate-500 font-mono">Estadísticas y Reportes</div>
-            <a href="{{ route('reportes.index') }}" class="block px-3 py-2 rounded-md text-base font-medium {{ request()->routeIs('reportes.*') ? 'bg-violet-500/10 text-violet-400' : 'text-slate-300 hover:bg-slate-800' }}">Reportes</a>
-            
+
             <form action="{{ route('logout') }}" method="POST" class="block w-full">
                 @csrf
                 <button type="submit" class="block w-full text-left px-3 py-2 rounded-md text-base font-medium text-red-400 hover:bg-slate-800">Cerrar Sesión</button>
@@ -971,11 +1015,24 @@
                 items.forEach(item => {
                     item.addEventListener('mouseenter', () => positionPill(item));
                 });
-                nav.addEventListener('mouseleave', () => positionPill(activeItem));
+                nav.addEventListener('mouseleave', () => {
+                    let currentActive = nav.querySelector('.active-nav-item');
+                    positionPill(currentActive);
+                });
                 
                 window.addEventListener('resize', () => {
                     const active = nav.querySelector('.active-nav-item');
                     if (active) positionPill(active);
+                });
+
+                // Toggles adjustment for glass pill position
+                document.addEventListener('click', (e) => {
+                    if (e.target.closest('.dropdown-toggle')) {
+                        setTimeout(() => {
+                            const active = nav.querySelector('.active-nav-item');
+                            if (active) positionPill(active);
+                        }, 220); // wait for collapse transitions
+                    }
                 });
             }
 
