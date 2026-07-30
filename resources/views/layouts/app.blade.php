@@ -389,18 +389,18 @@
         }
         .nav-item:hover {
             transform: translateX(6px) !important;
-            color: #f59e0b !important;
+            color: #f59e0b;
         }
         .nav-item i {
             transition: transform 0.35s cubic-bezier(0.25, 0.8, 0.25, 1), color 0.35s ease !important;
         }
         .nav-item:hover i {
             transform: scale(1.2) rotate(8deg) !important;
-            color: #f97316 !important;
+            color: #f97316;
             filter: drop-shadow(0 0 5px rgba(249, 115, 22, 0.6)) !important;
         }
         .nav-item.active-nav-item i {
-            color: #f59e0b !important;
+            color: #f59e0b;
             filter: drop-shadow(0 0 6px rgba(245, 158, 11, 0.4)) !important;
         }
 
@@ -561,6 +561,52 @@
         .light-theme #custom-confirm-modal p {
             color: #334155 !important;
         }
+
+        /* Premium CSS Tree View Connectors */
+        .tree-container {
+            position: relative;
+            margin-left: 22px;
+            padding-left: 0;
+        }
+        .tree-sub-item {
+            position: relative;
+            margin-left: 4px;
+            padding-left: 14px !important;
+            transition: all 0.25s ease !important;
+        }
+        .tree-sub-item::before {
+            content: '';
+            position: absolute;
+            left: -12px;
+            top: -8px;
+            bottom: 50%;
+            width: 1.5px;
+            background: rgba(148, 163, 184, 0.15); /* Sleek slate vertical line */
+            transition: background 0.25s ease, opacity 0.25s ease;
+        }
+        .tree-sub-item::after {
+            content: '';
+            position: absolute;
+            left: -12px;
+            top: 50%;
+            width: 16px;
+            height: 1.5px;
+            background: rgba(148, 163, 184, 0.15); /* Sleek slate horizontal branch */
+            transition: background 0.25s ease, opacity 0.25s ease;
+        }
+        /* Extend vertical line down for all but the last item */
+        .tree-sub-item:not(:last-child)::before {
+            bottom: -8px;
+        }
+        /* Active or Hover item highlights its branch lines */
+        .tree-sub-item:hover::before, .tree-sub-item.active-nav-item::before {
+            background: currentColor;
+            opacity: 0.35;
+        }
+        .tree-sub-item:hover::after, .tree-sub-item.active-nav-item::after {
+            background: currentColor;
+            opacity: 0.35;
+        }
     </style>
 </head>
 <body class="h-full flex overflow-hidden bg-slate-950 relative">
@@ -590,12 +636,11 @@
                 <a href="{{ route('dashboard') }}" data-theme-color="amber" class="nav-item flex items-center px-3 py-2.5 text-sm font-medium rounded-lg relative z-10 transition-colors duration-200 {{ request()->routeIs('dashboard') ? 'active-nav-item text-amber-500' : 'text-slate-450 hover:text-slate-200' }}">
                     <i class="fa-solid fa-chart-line w-6 text-center mr-3 text-base"></i>
                     Tablero Principal
-                </a>
-                                <!-- CATEGORY: PLANILLA DE PAGOS (Collapsible Header) -->
+                </a>                                <!-- CATEGORY: PLANILLA DE PAGOS (Collapsible Header) -->
                 <div x-data="{ parentOpen: true }" class="space-y-1">
                     
                     <!-- Parent Toggle Button -->
-                    <button @click="parentOpen = !parentOpen" class="dropdown-toggle w-full flex items-center justify-between px-3 pt-4 pb-1.5 text-[10px] font-bold uppercase tracking-wider text-slate-450 hover:text-slate-200 font-mono no-print focus:outline-none">
+                    <button @click="parentOpen = !parentOpen" class="dropdown-toggle w-full flex items-center justify-between px-3 pt-4 pb-1.5 text-[10px] font-bold uppercase tracking-wider text-slate-455 hover:text-slate-200 font-mono no-print focus:outline-none">
                         <span>Pagos y Anticipos al Personal</span>
                         <i class="fa-solid fa-chevron-down text-[8px] transition-transform duration-200" :class="parentOpen ? '' : '-rotate-90'"></i>
                     </button>
@@ -607,22 +652,19 @@
                         <div x-data="{ open: {{ request()->routeIs('bocaminas.*', 'trabajadores.*', 'contratos.*') ? 'true' : 'true' }} }" class="space-y-1">
                             <button @click="open = !open" class="dropdown-toggle w-full flex items-center justify-between px-3 py-1.5 text-xs font-semibold text-slate-350 hover:text-slate-200 uppercase tracking-wider font-mono focus:outline-none">
                                 <span class="flex items-center text-slate-300">
-                                    <span class="mr-2">👷</span> Personal
+                                    <i class="fa-solid fa-users-gear text-slate-450 mr-2 text-[11px]"></i> Personal
                                 </span>
                                 <i class="fa-solid fa-chevron-down text-[9px] text-slate-500 transition-transform duration-200" :class="open ? '' : '-rotate-90'"></i>
                             </button>
                             
-                            <div x-show="open" class="pl-3 border-l border-slate-800 ml-3 space-y-1">
-                                <a href="{{ route('bocaminas.index') }}" data-theme-color="emerald" class="nav-item flex items-center px-3 py-1.5 text-sm font-medium rounded-lg relative z-10 transition-colors duration-200 {{ request()->routeIs('bocaminas.*') ? 'active-nav-item text-emerald-500' : 'text-slate-450 hover:text-slate-200' }}">
-                                    <span class="text-slate-650 font-mono mr-2 select-none">├─</span>
+                            <div x-show="open" class="tree-container">
+                                <a href="{{ route('bocaminas.index') }}" data-theme-color="emerald" class="nav-item tree-sub-item flex items-center py-1.5 text-sm font-medium rounded-lg relative z-10 transition-colors duration-200 {{ request()->routeIs('bocaminas.*') ? 'active-nav-item text-emerald-500' : 'text-slate-450 hover:text-slate-200' }}">
                                     Bocaminas
                                 </a>
-                                <a href="{{ route('trabajadores.index') }}" data-theme-color="sky" class="nav-item flex items-center px-3 py-1.5 text-sm font-medium rounded-lg relative z-10 transition-colors duration-200 {{ request()->routeIs('trabajadores.*') ? 'active-nav-item text-sky-500' : 'text-slate-450 hover:text-slate-200' }}">
-                                    <span class="text-slate-650 font-mono mr-2 select-none">├─</span>
+                                <a href="{{ route('trabajadores.index') }}" data-theme-color="sky" class="nav-item tree-sub-item flex items-center py-1.5 text-sm font-medium rounded-lg relative z-10 transition-colors duration-200 {{ request()->routeIs('trabajadores.*') ? 'active-nav-item text-sky-500' : 'text-slate-450 hover:text-slate-200' }}">
                                     Trabajadores
                                 </a>
-                                <a href="{{ route('contratos.index') }}" data-theme-color="indigo" class="nav-item flex items-center px-3 py-1.5 text-sm font-medium rounded-lg relative z-10 transition-colors duration-200 {{ request()->routeIs('contratos.*') ? 'active-nav-item text-indigo-500' : 'text-slate-450 hover:text-slate-200' }}">
-                                    <span class="text-slate-650 font-mono mr-2 select-none">└─</span>
+                                <a href="{{ route('contratos.index') }}" data-theme-color="indigo" class="nav-item tree-sub-item flex items-center py-1.5 text-sm font-medium rounded-lg relative z-10 transition-colors duration-200 {{ request()->routeIs('contratos.*') ? 'active-nav-item text-indigo-500' : 'text-slate-450 hover:text-slate-200' }}">
                                     Tipos de Contrato
                                 </a>
                             </div>
@@ -632,22 +674,19 @@
                         <div x-data="{ open: {{ request()->routeIs('fondos-caja.*', 'anticipos.*', 'pagos.*') ? 'true' : 'true' }} }" class="space-y-1">
                             <button @click="open = !open" class="dropdown-toggle w-full flex items-center justify-between px-3 py-1.5 text-xs font-semibold text-slate-350 hover:text-slate-200 uppercase tracking-wider font-mono focus:outline-none">
                                 <span class="flex items-center text-slate-300">
-                                    <span class="mr-2">💰</span> Movimientos
+                                    <i class="fa-solid fa-money-bill-transfer text-slate-450 mr-2 text-[11px]"></i> Movimientos
                                 </span>
                                 <i class="fa-solid fa-chevron-down text-[9px] text-slate-500 transition-transform duration-200" :class="open ? '' : '-rotate-90'"></i>
                             </button>
                             
-                            <div x-show="open" class="pl-3 border-l border-slate-800 ml-3 space-y-1">
-                                <a href="{{ route('fondos-caja.index') }}" data-theme-color="cyan" class="nav-item flex items-center px-3 py-1.5 text-sm font-medium rounded-lg relative z-10 transition-colors duration-200 {{ request()->routeIs('fondos-caja.*') ? 'active-nav-item text-cyan-500' : 'text-slate-450 hover:text-slate-200' }}">
-                                    <span class="text-slate-650 font-mono mr-2 select-none">├─</span>
+                            <div x-show="open" class="tree-container">
+                                <a href="{{ route('fondos-caja.index') }}" data-theme-color="cyan" class="nav-item tree-sub-item flex items-center py-1.5 text-sm font-medium rounded-lg relative z-10 transition-colors duration-200 {{ request()->routeIs('fondos-caja.*') ? 'active-nav-item text-cyan-500' : 'text-slate-450 hover:text-slate-200' }}">
                                     Caja del Personal
                                 </a>
-                                <a href="{{ route('anticipos.index') }}" data-theme-color="rose" class="nav-item flex items-center px-3 py-1.5 text-sm font-medium rounded-lg relative z-10 transition-colors duration-200 {{ request()->routeIs('anticipos.*') ? 'active-nav-item text-rose-500' : 'text-slate-450 hover:text-slate-200' }}">
-                                    <span class="text-slate-650 font-mono mr-2 select-none">├─</span>
+                                <a href="{{ route('anticipos.index') }}" data-theme-color="rose" class="nav-item tree-sub-item flex items-center py-1.5 text-sm font-medium rounded-lg relative z-10 transition-colors duration-200 {{ request()->routeIs('anticipos.*') ? 'active-nav-item text-rose-500' : 'text-slate-450 hover:text-slate-200' }}">
                                     Anticipos
                                 </a>
-                                <a href="{{ route('pagos.index') }}" data-theme-color="teal" class="nav-item flex items-center px-3 py-1.5 text-sm font-medium rounded-lg relative z-10 transition-colors duration-200 {{ request()->routeIs('pagos.*') ? 'active-nav-item text-teal-500' : 'text-slate-450 hover:text-slate-200' }}">
-                                    <span class="text-slate-650 font-mono mr-2 select-none">└─</span>
+                                <a href="{{ route('pagos.index') }}" data-theme-color="teal" class="nav-item tree-sub-item flex items-center py-1.5 text-sm font-medium rounded-lg relative z-10 transition-colors duration-200 {{ request()->routeIs('pagos.*') ? 'active-nav-item text-teal-500' : 'text-slate-450 hover:text-slate-200' }}">
                                     Pagos
                                 </a>
                             </div>
@@ -656,11 +695,10 @@
                         <!-- SUB-GROUP 3: Reportes -->
                         <div class="space-y-1">
                             <a href="{{ route('reportes.index') }}" data-theme-color="violet" class="nav-item flex items-center px-3 py-2 text-sm font-medium rounded-lg relative z-10 transition-colors duration-200 {{ request()->routeIs('reportes.*') ? 'active-nav-item text-violet-500' : 'text-slate-450 hover:text-slate-200' }}">
-                                <span class="mr-3 text-base">📊</span>
+                                <i class="fa-solid fa-chart-simple w-6 text-center mr-3 text-base"></i>
                                 Reportes
                             </a>
                         </div>
-                        
                     </div>
                 </div>
 
@@ -670,14 +708,6 @@
                 <a href="{{ route('transacciones-minerales.index') }}" data-theme-color="orange" class="nav-item flex items-center px-3 py-2.5 text-sm font-medium rounded-lg relative z-10 transition-colors duration-200 {{ request()->routeIs('transacciones-minerales.*') ? 'active-nav-item text-orange-500' : 'text-slate-450 hover:text-slate-200' }}">
                     <i class="fa-solid fa-scale-balanced w-6 text-center mr-3 text-base"></i>
                     Compra y Venta
-                </a>
-
-                <!-- CATEGORY: REPORTES -->
-                <div class="px-3 pt-5 pb-1.5 text-[10px] font-bold uppercase tracking-wider text-slate-500 font-mono no-print">Estadísticas y Reportes</div>
-
-                <a href="{{ route('reportes.index') }}" data-theme-color="violet" class="nav-item flex items-center px-3 py-2.5 text-sm font-medium rounded-lg relative z-10 transition-colors duration-200 {{ request()->routeIs('reportes.*') ? 'active-nav-item text-violet-500' : 'text-slate-450 hover:text-slate-200' }}">
-                    <i class="fa-solid fa-chart-pie w-6 text-center mr-3 text-base"></i>
-                    Reportes
                 </a>
             </nav>
             
