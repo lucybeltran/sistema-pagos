@@ -92,6 +92,7 @@ class CashFundingAndWorkerRolesTest extends TestCase
         $this->actingAs($user);
 
         $bocamina = Bocamina::create(['nombre' => 'Test Mine', 'descripcion' => 'Test']);
+        $tipoContrato = \App\Models\TipoContrato::create(['nombre' => 'Diario', 'estado' => 'activo']);
 
         // Create worker with role 'sereno'
         $workerData = [
@@ -99,6 +100,7 @@ class CashFundingAndWorkerRolesTest extends TestCase
             'nombre' => 'Pedro Watchman',
             'telefono' => '71111111',
             'bocamina_id' => $bocamina->id,
+            'tipo_contrato_id' => $tipoContrato->id,
             'rol' => 'sereno',
             'estado' => 'activo'
         ];

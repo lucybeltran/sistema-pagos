@@ -16,7 +16,7 @@
     <!-- Google Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     
     <!-- FontAwesome Icons -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
@@ -46,6 +46,25 @@
             --border-input: rgba(255, 255, 255, 0.08);
             --text-input: #f8fafc;
             --canvas-opacity: 0.4;
+        }
+
+        [x-cloak] {
+            display: none !important;
+        }
+
+        /* Light theme autofill overrides */
+        .light-theme input:-webkit-autofill,
+        .light-theme input:-webkit-autofill:hover, 
+        .light-theme input:-webkit-autofill:focus,
+        .light-theme textarea:-webkit-autofill,
+        .light-theme textarea:-webkit-autofill:hover,
+        .light-theme textarea:-webkit-autofill:focus,
+        .light-theme select:-webkit-autofill,
+        .light-theme select:-webkit-autofill:hover,
+        .light-theme select:-webkit-autofill:focus {
+            -webkit-text-fill-color: #0f172a !important;
+            -webkit-box-shadow: 0 0 0px 1000px #ffffff inset !important;
+            transition: background-color 5000s ease-in-out 0s !important;
         }
 
         .light-theme {
@@ -127,28 +146,159 @@
 
         /* Custom sidebar menu items hover and active colors */
         .nav-item {
-            transition: all 0.25s ease !important;
+            color: #94a3b8 !important;
+            transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1) !important;
+            border: 1.2px solid transparent !important;
+            background: transparent !important;
+            border-radius: 12px !important;
         }
-        
-        .nav-item[data-theme-color="amber"]:hover, .nav-item[data-theme-color="amber"].active-nav-item { color: #f59e0b !important; }
-        .nav-item[data-theme-color="emerald"]:hover, .nav-item[data-theme-color="emerald"].active-nav-item { color: #10b981 !important; }
-        .nav-item[data-theme-color="sky"]:hover, .nav-item[data-theme-color="sky"].active-nav-item { color: #0ea5e9 !important; }
-        .nav-item[data-theme-color="indigo"]:hover, .nav-item[data-theme-color="indigo"].active-nav-item { color: #818cf8 !important; }
-        .nav-item[data-theme-color="rose"]:hover, .nav-item[data-theme-color="rose"].active-nav-item { color: #fb7185 !important; }
-        .nav-item[data-theme-color="teal"]:hover, .nav-item[data-theme-color="teal"].active-nav-item { color: #2dd4bf !important; }
-        .nav-item[data-theme-color="orange"]:hover, .nav-item[data-theme-color="orange"].active-nav-item { color: #f97316 !important; }
-        .nav-item[data-theme-color="violet"]:hover, .nav-item[data-theme-color="violet"].active-nav-item { color: #a78bfa !important; }
-        .nav-item[data-theme-color="cyan"]:hover, .nav-item[data-theme-color="cyan"].active-nav-item { color: #06b6d4 !important; }
+        .light-theme .nav-item {
+            color: #475569 !important;
+        }
 
-        .nav-item[data-theme-color="amber"]:hover i, .nav-item[data-theme-color="amber"].active-nav-item i { color: #f59e0b !important; }
-        .nav-item[data-theme-color="emerald"]:hover i, .nav-item[data-theme-color="emerald"].active-nav-item i { color: #10b981 !important; }
-        .nav-item[data-theme-color="sky"]:hover i, .nav-item[data-theme-color="sky"].active-nav-item i { color: #0ea5e9 !important; }
+        /* AMBER */
+        .nav-item[data-theme-color="amber"]:hover, .nav-item[data-theme-color="amber"].active-nav-item {
+            color: #fbbf24 !important;
+            background: linear-gradient(95deg, rgba(245, 158, 11, 0.15) 0%, rgba(245, 158, 11, 0.03) 100%) !important;
+            border: 1.2px solid rgba(245, 158, 11, 0.45) !important;
+            box-shadow: 0 4px 12px rgba(245, 158, 11, 0.12) !important;
+        }
+        .nav-item[data-theme-color="amber"]:hover i, .nav-item[data-theme-color="amber"].active-nav-item i { color: #fbbf24 !important; }
+        .light-theme .nav-item[data-theme-color="amber"]:hover, .light-theme .nav-item[data-theme-color="amber"].active-nav-item {
+            color: #b45309 !important;
+            background: linear-gradient(95deg, rgba(245, 158, 11, 0.16) 0%, rgba(245, 158, 11, 0.05) 100%) !important;
+            border: 1.2px solid rgba(245, 158, 11, 0.4) !important;
+            box-shadow: 0 3px 8px rgba(245, 158, 11, 0.05) !important;
+        }
+        .light-theme .nav-item[data-theme-color="amber"]:hover i, .light-theme .nav-item[data-theme-color="amber"].active-nav-item i { color: #b45309 !important; }
+
+        /* EMERALD */
+        .nav-item[data-theme-color="emerald"]:hover, .nav-item[data-theme-color="emerald"].active-nav-item {
+            color: #34d399 !important;
+            background: linear-gradient(95deg, rgba(16, 185, 129, 0.15) 0%, rgba(16, 185, 129, 0.03) 100%) !important;
+            border: 1.2px solid rgba(16, 185, 129, 0.45) !important;
+            box-shadow: 0 4px 12px rgba(16, 185, 129, 0.12) !important;
+        }
+        .nav-item[data-theme-color="emerald"]:hover i, .nav-item[data-theme-color="emerald"].active-nav-item i { color: #34d399 !important; }
+        .light-theme .nav-item[data-theme-color="emerald"]:hover, .light-theme .nav-item[data-theme-color="emerald"].active-nav-item {
+            color: #047857 !important;
+            background: linear-gradient(95deg, rgba(16, 185, 129, 0.16) 0%, rgba(16, 185, 129, 0.05) 100%) !important;
+            border: 1.2px solid rgba(16, 185, 129, 0.4) !important;
+            box-shadow: 0 3px 8px rgba(16, 185, 129, 0.05) !important;
+        }
+        .light-theme .nav-item[data-theme-color="emerald"]:hover i, .light-theme .nav-item[data-theme-color="emerald"].active-nav-item i { color: #047857 !important; }
+
+        /* SKY */
+        .nav-item[data-theme-color="sky"]:hover, .nav-item[data-theme-color="sky"].active-nav-item {
+            color: #38bdf8 !important;
+            background: linear-gradient(95deg, rgba(14, 165, 233, 0.15) 0%, rgba(14, 165, 233, 0.03) 100%) !important;
+            border: 1.2px solid rgba(14, 165, 233, 0.45) !important;
+            box-shadow: 0 4px 12px rgba(14, 165, 233, 0.12) !important;
+        }
+        .nav-item[data-theme-color="sky"]:hover i, .nav-item[data-theme-color="sky"].active-nav-item i { color: #38bdf8 !important; }
+        .light-theme .nav-item[data-theme-color="sky"]:hover, .light-theme .nav-item[data-theme-color="sky"].active-nav-item {
+            color: #0369a1 !important;
+            background: linear-gradient(95deg, rgba(14, 165, 233, 0.16) 0%, rgba(14, 165, 233, 0.05) 100%) !important;
+            border: 1.2px solid rgba(14, 165, 233, 0.4) !important;
+            box-shadow: 0 3px 8px rgba(14, 165, 233, 0.05) !important;
+        }
+        .light-theme .nav-item[data-theme-color="sky"]:hover i, .light-theme .nav-item[data-theme-color="sky"].active-nav-item i { color: #0369a1 !important; }
+
+        /* INDIGO */
+        .nav-item[data-theme-color="indigo"]:hover, .nav-item[data-theme-color="indigo"].active-nav-item {
+            color: #818cf8 !important;
+            background: linear-gradient(95deg, rgba(129, 140, 248, 0.15) 0%, rgba(129, 140, 248, 0.03) 100%) !important;
+            border: 1.2px solid rgba(129, 140, 248, 0.45) !important;
+            box-shadow: 0 4px 12px rgba(129, 140, 248, 0.12) !important;
+        }
         .nav-item[data-theme-color="indigo"]:hover i, .nav-item[data-theme-color="indigo"].active-nav-item i { color: #818cf8 !important; }
-        .nav-item[data-theme-color="rose"]:hover i, .nav-item[data-theme-color="rose"].active-nav-item i { color: #fb7185 !important; }
+        .light-theme .nav-item[data-theme-color="indigo"]:hover, .light-theme .nav-item[data-theme-color="indigo"].active-nav-item {
+            color: #4338ca !important;
+            background: linear-gradient(95deg, rgba(129, 140, 248, 0.16) 0%, rgba(129, 140, 248, 0.05) 100%) !important;
+            border: 1.2px solid rgba(129, 140, 248, 0.4) !important;
+            box-shadow: 0 3px 8px rgba(129, 140, 248, 0.05) !important;
+        }
+        .light-theme .nav-item[data-theme-color="indigo"]:hover i, .light-theme .nav-item[data-theme-color="indigo"].active-nav-item i { color: #4338ca !important; }
+
+        /* ROSE */
+        .nav-item[data-theme-color="rose"]:hover, .nav-item[data-theme-color="rose"].active-nav-item {
+            color: #fda4af !important;
+            background: linear-gradient(95deg, rgba(251, 113, 133, 0.15) 0%, rgba(251, 113, 133, 0.03) 100%) !important;
+            border: 1.2px solid rgba(251, 113, 133, 0.45) !important;
+            box-shadow: 0 4px 12px rgba(251, 113, 133, 0.12) !important;
+        }
+        .nav-item[data-theme-color="rose"]:hover i, .nav-item[data-theme-color="rose"].active-nav-item i { color: #fda4af !important; }
+        .light-theme .nav-item[data-theme-color="rose"]:hover, .light-theme .nav-item[data-theme-color="rose"].active-nav-item {
+            color: #be123c !important;
+            background: linear-gradient(95deg, rgba(251, 113, 133, 0.16) 0%, rgba(251, 113, 133, 0.05) 100%) !important;
+            border: 1.2px solid rgba(251, 113, 133, 0.4) !important;
+            box-shadow: 0 3px 8px rgba(251, 113, 133, 0.05) !important;
+        }
+        .light-theme .nav-item[data-theme-color="rose"]:hover i, .light-theme .nav-item[data-theme-color="rose"].active-nav-item i { color: #be123c !important; }
+
+        /* TEAL */
+        .nav-item[data-theme-color="teal"]:hover, .nav-item[data-theme-color="teal"].active-nav-item {
+            color: #2dd4bf !important;
+            background: linear-gradient(95deg, rgba(45, 212, 191, 0.15) 0%, rgba(45, 212, 191, 0.03) 100%) !important;
+            border: 1.2px solid rgba(45, 212, 191, 0.45) !important;
+            box-shadow: 0 4px 12px rgba(45, 212, 191, 0.12) !important;
+        }
         .nav-item[data-theme-color="teal"]:hover i, .nav-item[data-theme-color="teal"].active-nav-item i { color: #2dd4bf !important; }
-        .nav-item[data-theme-color="orange"]:hover i, .nav-item[data-theme-color="orange"].active-nav-item i { color: #f97316 !important; }
-        .nav-item[data-theme-color="violet"]:hover i, .nav-item[data-theme-color="violet"].active-nav-item i { color: #a78bfa !important; }
-        .nav-item[data-theme-color="cyan"]:hover i, .nav-item[data-theme-color="cyan"].active-nav-item i { color: #06b6d4 !important; }
+        .light-theme .nav-item[data-theme-color="teal"]:hover, .light-theme .nav-item[data-theme-color="teal"].active-nav-item {
+            color: #0f766e !important;
+            background: linear-gradient(95deg, rgba(45, 212, 191, 0.16) 0%, rgba(45, 212, 191, 0.05) 100%) !important;
+            border: 1.2px solid rgba(45, 212, 191, 0.4) !important;
+            box-shadow: 0 3px 8px rgba(45, 212, 191, 0.05) !important;
+        }
+        .light-theme .nav-item[data-theme-color="teal"]:hover i, .light-theme .nav-item[data-theme-color="teal"].active-nav-item i { color: #0f766e !important; }
+
+        /* ORANGE */
+        .nav-item[data-theme-color="orange"]:hover, .nav-item[data-theme-color="orange"].active-nav-item {
+            color: #ff9d43 !important;
+            background: linear-gradient(95deg, rgba(249, 115, 22, 0.15) 0%, rgba(249, 115, 22, 0.03) 100%) !important;
+            border: 1.2px solid rgba(249, 115, 22, 0.45) !important;
+            box-shadow: 0 4px 12px rgba(249, 115, 22, 0.12) !important;
+        }
+        .nav-item[data-theme-color="orange"]:hover i, .nav-item[data-theme-color="orange"].active-nav-item i { color: #ff9d43 !important; }
+        .light-theme .nav-item[data-theme-color="orange"]:hover, .light-theme .nav-item[data-theme-color="orange"].active-nav-item {
+            color: #c2410c !important;
+            background: linear-gradient(95deg, rgba(249, 115, 22, 0.16) 0%, rgba(249, 115, 22, 0.05) 100%) !important;
+            border: 1.2px solid rgba(249, 115, 22, 0.4) !important;
+            box-shadow: 0 3px 8px rgba(249, 115, 22, 0.05) !important;
+        }
+        .light-theme .nav-item[data-theme-color="orange"]:hover i, .light-theme .nav-item[data-theme-color="orange"].active-nav-item i { color: #c2410c !important; }
+
+        /* VIOLET */
+        .nav-item[data-theme-color="violet"]:hover, .nav-item[data-theme-color="violet"].active-nav-item {
+            color: #c084fc !important;
+            background: linear-gradient(95deg, rgba(167, 139, 250, 0.15) 0%, rgba(167, 139, 250, 0.03) 100%) !important;
+            border: 1.2px solid rgba(167, 139, 250, 0.45) !important;
+            box-shadow: 0 4px 12px rgba(167, 139, 250, 0.12) !important;
+        }
+        .nav-item[data-theme-color="violet"]:hover i, .nav-item[data-theme-color="violet"].active-nav-item i { color: #c084fc !important; }
+        .light-theme .nav-item[data-theme-color="violet"]:hover, .light-theme .nav-item[data-theme-color="violet"].active-nav-item {
+            color: #6d28d9 !important;
+            background: linear-gradient(95deg, rgba(167, 139, 250, 0.16) 0%, rgba(167, 139, 250, 0.05) 100%) !important;
+            border: 1.2px solid rgba(167, 139, 250, 0.4) !important;
+            box-shadow: 0 3px 8px rgba(167, 139, 250, 0.05) !important;
+        }
+        .light-theme .nav-item[data-theme-color="violet"]:hover i, .light-theme .nav-item[data-theme-color="violet"].active-nav-item i { color: #6d28d9 !important; }
+
+        /* CYAN */
+        .nav-item[data-theme-color="cyan"]:hover, .nav-item[data-theme-color="cyan"].active-nav-item {
+            color: #22d3ee !important;
+            background: linear-gradient(95deg, rgba(6, 182, 212, 0.15) 0%, rgba(6, 182, 212, 0.03) 100%) !important;
+            border: 1.2px solid rgba(6, 182, 212, 0.45) !important;
+            box-shadow: 0 4px 12px rgba(6, 182, 212, 0.12) !important;
+        }
+        .nav-item[data-theme-color="cyan"]:hover i, .nav-item[data-theme-color="cyan"].active-nav-item i { color: #22d3ee !important; }
+        .light-theme .nav-item[data-theme-color="cyan"]:hover, .light-theme .nav-item[data-theme-color="cyan"].active-nav-item {
+            color: #0e7490 !important;
+            background: linear-gradient(95deg, rgba(6, 182, 212, 0.16) 0%, rgba(6, 182, 212, 0.05) 100%) !important;
+            border: 1.2px solid rgba(6, 182, 212, 0.4) !important;
+            box-shadow: 0 3px 8px rgba(6, 182, 212, 0.05) !important;
+        }
+        .light-theme .nav-item[data-theme-color="cyan"]:hover i, .light-theme .nav-item[data-theme-color="cyan"].active-nav-item i { color: #0e7490 !important; }
         
         /* Global button hover spark styles */
         .global-button-spark {
@@ -383,25 +533,72 @@
             transition: background-color 5000s ease-in-out 0s !important;
         }
 
-        /* Sidebar Navigation Hover Animations */
+        /* Sidebar Navigation Hover & Active Structural Styles */
         .nav-item {
-            transition: all 0.35s cubic-bezier(0.25, 0.8, 0.25, 1) !important;
+            transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1) !important;
+            border-left: none !important;
+            padding-left: 10px !important;
+            font-size: 13px !important;
+            margin: 2px 0;
+            border-radius: 6px !important;
+            display: flex;
+            align-items: center;
         }
         .nav-item:hover {
-            transform: translateX(6px) !important;
-            color: #f59e0b;
+            transform: translateX(3px) !important;
         }
         .nav-item i {
-            transition: transform 0.35s cubic-bezier(0.25, 0.8, 0.25, 1), color 0.35s ease !important;
+            transition: transform 0.2s ease, color 0.2s ease !important;
         }
         .nav-item:hover i {
-            transform: scale(1.2) rotate(8deg) !important;
-            color: #f97316;
-            filter: drop-shadow(0 0 5px rgba(249, 115, 22, 0.6)) !important;
+            transform: scale(1.08) !important;
         }
+        
+        /* Clean minimalist category containers */
+        .sidebar-category-card {
+            background: transparent !important;
+            border: none !important;
+            box-shadow: none !important;
+            padding: 0 !important;
+            margin-top: 24px !important;
+            margin-bottom: 8px !important;
+        }
+        
+        /* Category Header Styles */
+        .category-header-btn {
+            background: transparent !important;
+            border-radius: 0;
+            padding: 4px 8px !important;
+            font-size: 10px !important;
+            font-weight: 700 !important;
+            letter-spacing: 0.1em !important;
+            color: #64748b !important;
+            text-transform: uppercase !important;
+            transition: color 0.2s ease;
+        }
+        .category-header-btn:hover {
+            background: transparent !important;
+            color: #94a3b8 !important;
+        }
+        .light-theme .category-header-btn {
+            color: #64748b !important;
+        }
+        
         .nav-item.active-nav-item i {
-            color: #f59e0b;
-            filter: drop-shadow(0 0 6px rgba(245, 158, 11, 0.4)) !important;
+            filter: none !important;
+        }
+
+        /* Clean standardized icons - NO square boxes */
+        .nav-icon-box {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: auto !important;
+            height: auto !important;
+            background: transparent !important;
+            border: none !important;
+            margin-right: 10px !important;
+            color: inherit !important;
         }
 
         /* --- LIGHT THEME (DAY MODE) OVERRIDES --- */
@@ -460,10 +657,10 @@
             color: #475569 !important;
         }
         .light-theme .nav-item:hover {
-            color: #ea580c !important;
+            color: #1e293b !important;
         }
         .light-theme .nav-item.active-nav-item {
-            color: #ea580c !important;
+            font-weight: 700 !important;
         }
         
         .light-theme .border-t.border-slate-800\/80 {
@@ -473,7 +670,7 @@
             color: #0f172a !important;
         }
         .light-theme .border-t.border-slate-800\/80 button {
-            color: #ea580c !important;
+            color: #4f46e5 !important;
         }
         
         .light-theme #realtime-clock {
@@ -562,50 +759,266 @@
             color: #334155 !important;
         }
 
-        /* Premium CSS Tree View Connectors */
+        /* --- PREVENT CONFLICTS AND SET PLUS JAKARTA SANS ON SIDEBAR --- */
+        .sidebar-bg,
+        .sidebar-bg button,
+        .sidebar-bg a,
+        .sidebar-bg span,
+        .sidebar-bg p,
+        .sidebar-bg div {
+            font-family: 'Plus Jakarta Sans', sans-serif !important;
+        }
+        .sidebar-bg i, 
+        .sidebar-bg .fa, 
+        .sidebar-bg .fa-solid, 
+        .sidebar-bg .fa-regular, 
+        .sidebar-bg .fa-brands {
+            font-family: 'Font Awesome 6 Free', 'Font Awesome 6 Brands', sans-serif !important;
+        }
+
+        /* --- PREMIUM MODERN ERP SIDEBAR BACKGROUNDS & ACTIVE INDICATORS --- */
+        .sidebar-bg {
+            background-color: #0c101c !important; /* Extremely elegant rich dark blue-slate */
+            background-image: 
+                linear-gradient(135deg, rgba(255, 255, 255, 0.007) 25%, transparent 25%), 
+                linear-gradient(225deg, rgba(255, 255, 255, 0.007) 25%, transparent 25%), 
+                linear-gradient(45deg, rgba(255, 255, 255, 0.007) 25%, transparent 25%), 
+                linear-gradient(315deg, rgba(255, 255, 255, 0.007) 25%, #0c101c 25%) !important;
+            background-position: 20px 0, 20px 0, 0 0, 0 0 !important;
+            background-size: 40px 40px !important;
+            background-repeat: repeat !important;
+            border-right: 1px solid rgba(255, 255, 255, 0.03) !important;
+            box-shadow: 4px 0 24px rgba(0, 0, 0, 0.15) !important;
+            padding: 0 !important;
+        }
+        .light-theme .sidebar-bg {
+            background-color: #f6f8fb !important; /* Clean day mode light blue-grey */
+            background-image: 
+                linear-gradient(135deg, rgba(15, 23, 42, 0.006) 25%, transparent 25%), 
+                linear-gradient(225deg, rgba(15, 23, 42, 0.006) 25%, transparent 25%), 
+                linear-gradient(45deg, rgba(15, 23, 42, 0.006) 25%, transparent 25%), 
+                linear-gradient(315deg, rgba(15, 23, 42, 0.006) 25%, #f6f8fb 25%) !important;
+            background-position: 20px 0, 20px 0, 0 0, 0 0 !important;
+            background-size: 40px 40px !important;
+            background-repeat: repeat !important;
+            border-right: 1px solid rgba(0, 0, 0, 0.05) !important;
+            box-shadow: 2px 0 12px rgba(15, 23, 42, 0.02) !important;
+        }
+
+
+
+        /* Main Navigation Scrollbar Styling */
+        #main-nav::-webkit-scrollbar {
+            width: 4px;
+        }
+        #main-nav::-webkit-scrollbar-track {
+            background: transparent;
+        }
+        #main-nav::-webkit-scrollbar-thumb {
+            background: rgba(255, 255, 255, 0.08);
+            border-radius: 999px;
+        }
+        #main-nav::-webkit-scrollbar-thumb:hover {
+            background: rgba(255, 255, 255, 0.15);
+        }
+        .light-theme #main-nav::-webkit-scrollbar-thumb {
+            background: rgba(0, 0, 0, 0.08);
+        }
+        .light-theme #main-nav::-webkit-scrollbar-thumb:hover {
+            background: rgba(0, 0, 0, 0.15);
+        }
+
+        /* --- CATEGORIES & HEADERS HIERARCHY --- */
+        .sidebar-category-card {
+            background: transparent !important;
+            border: none !important;
+            box-shadow: none !important;
+            padding: 0 !important;
+            margin-top: 24px !important;
+            margin-bottom: 8px !important;
+        }
+        .category-header-btn {
+            background: transparent !important;
+            border: none !important;
+            padding: 6px 8px !important;
+            font-size: 11px !important;
+            font-weight: 800 !important;
+            letter-spacing: 0.1em !important;
+            color: #4b5563 !important; /* Elegant slate gray */
+            text-transform: uppercase !important;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            width: 100%;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.03) !important;
+            margin-bottom: 12px !important;
+        }
+        .light-theme .category-header-btn {
+            color: #9ca3af !important;
+            border-bottom: 1px solid rgba(0, 0, 0, 0.04) !important;
+        }
+        .sub-group-header {
+            font-size: 11px !important;
+            font-weight: 700 !important;
+            color: #64748b !important;
+            letter-spacing: 0.03em;
+            text-transform: uppercase;
+            padding: 6px 12px !important;
+            margin-top: 14px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            width: 100%;
+            background: transparent !important;
+        }
+        .light-theme .sub-group-header {
+            color: #64748b !important;
+        }
+
+        /* --- MAIN NAVIGATION ROWS --- */
+        .nav-item {
+            font-size: 13px !important;
+            font-weight: 500 !important;
+            padding: 8px 12px !important;
+            margin: 3px 0;
+            border-radius: 8px !important;
+            transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1) !important;
+            border-left: none !important;
+            display: flex;
+            align-items: center;
+        }
+
+        /* --- TREE SUB-MENU INDENTATION (Notion/Linear style) --- */
         .tree-container {
-            position: relative;
-            margin-left: 22px;
+            margin-left: 18px;
             padding-left: 0;
+            display: flex;
+            flex-direction: column;
+            gap: 2px;
+            margin-top: 4px;
+            margin-bottom: 8px;
         }
         .tree-sub-item {
-            position: relative;
-            margin-left: 4px;
-            padding-left: 14px !important;
-            transition: all 0.25s ease !important;
+            font-size: 12px !important;
+            font-weight: 500 !important;
+            padding: 6px 12px !important;
+            border-radius: 6px !important;
+            color: #64748b !important;
+            border-left: none !important;
+            background: transparent !important;
         }
-        .tree-sub-item::before {
-            content: '';
-            position: absolute;
-            left: -12px;
-            top: -8px;
-            bottom: 50%;
-            width: 1.5px;
-            background: rgba(148, 163, 184, 0.15); /* Sleek slate vertical line */
-            transition: background 0.25s ease, opacity 0.25s ease;
+        .light-theme .tree-sub-item {
+            color: #475569 !important;
         }
-        .tree-sub-item::after {
-            content: '';
-            position: absolute;
-            left: -12px;
-            top: 50%;
-            width: 16px;
-            height: 1.5px;
-            background: rgba(148, 163, 184, 0.15); /* Sleek slate horizontal branch */
-            transition: background 0.25s ease, opacity 0.25s ease;
+        .tree-sub-item:hover {
+            color: #f8fafc !important;
         }
-        /* Extend vertical line down for all but the last item */
-        .tree-sub-item:not(:last-child)::before {
-            bottom: -8px;
+        .light-theme .tree-sub-item:hover {
+            color: #0f172a !important;
         }
-        /* Active or Hover item highlights its branch lines */
-        .tree-sub-item:hover::before, .tree-sub-item.active-nav-item::before {
-            background: currentColor;
-            opacity: 0.35;
+        .tree-sub-item.active-nav-item {
+            font-weight: 600 !important;
         }
-        .tree-sub-item:hover::after, .tree-sub-item.active-nav-item::after {
-            background: currentColor;
-            opacity: 0.35;
+
+        /* Prevent layout shift on hover/active */
+        .nav-item {
+            border: 1.2px solid transparent !important;
+            border-radius: 12px !important;
+        }
+
+        /* --- SOPHISTICATED METALLIC/PASTEL NAVIGATION ICONS (NOT LOUD NEON) --- */
+        .sidebar-bg .text-amber-500, .sidebar-bg .text-amber-600 { color: #d4af37 !important; } /* Matte gold */
+        .sidebar-bg .text-emerald-500 { color: #608c76 !important; } /* Sage / Pine green */
+        .sidebar-bg .text-sky-500 { color: #5d81a0 !important; } /* Muted slate blue */
+        .sidebar-bg .text-cyan-500 { color: #5897a0 !important; } /* Muted cyan */
+        .sidebar-bg .text-rose-500 { color: #bf6d7a !important; } /* Dusty rose */
+        .sidebar-bg .text-teal-500 { color: #4b8a85 !important; } /* Soft pine teal */
+        .sidebar-bg .text-violet-500 { color: #87749b !important; } /* Muted amethyst */
+        .sidebar-bg .text-indigo-500 { color: #6c78b0 !important; } /* Slate indigo */
+        .sidebar-bg .text-orange-400, .sidebar-bg .text-orange-500 { color: #cc745c !important; } /* Terracotta copper */
+        .sidebar-bg .text-blue-400 { color: #5c7cb8 !important; } /* Soft steel blue */
+
+        .light-theme .sidebar-bg .text-amber-500, .light-theme .sidebar-bg .text-amber-600 { color: #ad821a !important; }
+        .light-theme .sidebar-bg .text-emerald-500 { color: #416b54 !important; }
+        .light-theme .sidebar-bg .text-sky-500 { color: #436685 !important; }
+        .light-theme .sidebar-bg .text-cyan-500 { color: #3b6d75 !important; }
+        .light-theme .sidebar-bg .text-rose-500 { color: #9c4b58 !important; }
+        .light-theme .sidebar-bg .text-teal-500 { color: #366c67 !important; }
+        .light-theme .sidebar-bg .text-violet-500 { color: #625078 !important; }
+        .light-theme .sidebar-bg .text-indigo-500 { color: #4e598f !important; }
+        .light-theme .sidebar-bg .text-orange-400, .light-theme .sidebar-bg .text-orange-500 { color: #a6513a !important; }
+        .light-theme .sidebar-bg .text-blue-400 { color: #3b5a94 !important; }
+
+        /* --- 3D ELEGANT EMBOSSED TREE LINES ("RAJITAS") --- */
+        .sidebar-bg .border-l {
+            border-left: 1.5px solid rgba(255, 255, 255, 0.08) !important;
+            box-shadow: -1.2px 0 0 rgba(0, 0, 0, 0.45) !important; /* Engraved indentation shadow */
+            transition: border-color 0.3s ease;
+        }
+        .light-theme .sidebar-bg .border-l {
+            border-left: 1.5px solid rgba(0, 0, 0, 0.05) !important;
+            box-shadow: 1.2px 0 0 rgba(255, 255, 255, 0.95) !important; /* Embossed highlight reflection */
+        }
+
+        /* --- MAIN CONTENT AREA LIGHT/DARK THEME BACKGROUND FIX --- */
+        main {
+            background-color: rgba(9, 13, 24, 0.45) !important;
+        }
+        .light-theme main {
+            background-color: #f1f5f9 !important; /* Eliminates muddy gray background in Light Theme! */
+        }
+
+        /* --- ELEGANT CUSTOM CHEVRON FOR SELECT DROPDOWNS & FILTER INPUTS --- */
+        select.premium-filter-input {
+            appearance: none !important;
+            -webkit-appearance: none !important;
+            -moz-appearance: none !important;
+            background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3e%3cpath stroke='%2394a3b8' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.5' d='M6 8l4 4 4-4'/%3e%3c/svg%3e") !important;
+            background-position: right 12px center !important;
+            background-repeat: no-repeat !important;
+            background-size: 16px !important;
+            padding-right: 36px !important;
+            border-radius: 12px !important;
+        }
+        .light-theme select.premium-filter-input {
+            background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3e%3cpath stroke='%23475569' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.5' d='M6 8l4 4 4-4'/%3e%3c/svg%3e") !important;
+            background-color: #ffffff !important;
+            border: 1px solid rgba(15, 23, 42, 0.15) !important;
+            color: #0f172a !important;
+        }
+
+        /* --- GLASS CARD HIGH CONTRAST IN LIGHT MODE --- */
+        .light-theme .glass-card {
+            background: #ffffff !important;
+            border: 1px solid rgba(15, 23, 42, 0.08) !important;
+            box-shadow: 0 4px 20px -2px rgba(15, 23, 42, 0.06), 0 2px 6px -1px rgba(15, 23, 42, 0.04) !important;
+        }
+
+        /* --- HIGH ELEGANCE TABLES IN LIGHT THEME --- */
+        .light-theme table th {
+            color: #475569 !important;
+            background-color: #f8fafc !important;
+            border-bottom: 1.5px solid #e2e8f0 !important;
+        }
+        .light-theme table td {
+            color: #1e293b !important;
+            border-bottom: 1px solid #f1f5f9 !important;
+        }
+        .light-theme table tr:hover td {
+            background-color: #f8fafc !important;
+        }
+        /* --- SIDEBAR USER PROFILE TYPOGRAPHY (DARK/LIGHT THEMES) --- */
+        .sidebar-bg .user-name {
+            color: #f8fafc !important; /* Crystal clear white text in Dark Mode */
+        }
+        .light-theme .sidebar-bg .user-name {
+            color: #0f172a !important; /* Crisp slate dark text in Light Mode */
+        }
+        .sidebar-bg .user-role {
+            color: #94a3b8 !important; /* Cool slate text in Dark Mode */
+        }
+        .light-theme .sidebar-bg .user-role {
+            color: #64748b !important; /* Muted slate text in Light Mode */
         }
     </style>
 </head>
@@ -616,118 +1029,202 @@
 
     <!-- Sidebar (no-print) -->
     <div class="no-print hidden md:flex md:w-64 md:flex-col md:fixed md:inset-y-0 sidebar-bg z-20">
-        <div class="flex flex-col flex-grow pt-5 pb-4 overflow-y-auto">
+        <div class="flex flex-col h-full pt-5 pb-4">
             <!-- Logo area -->
-            <div class="flex items-center flex-shrink-0 px-6 space-x-3">
-                <div class="flex items-center justify-center w-10 h-10 rounded-lg bg-slate-900 border border-amber-500/30 shadow-[0_0_15px_rgba(245,158,11,0.15)]">
-                    <i class="fa-solid fa-gem text-amber-500 text-lg"></i>
+            <div class="flex items-center flex-shrink-0 px-6 py-3 space-x-3 border-b border-slate-900/10 dark:border-slate-800/10 mb-4">
+                <div class="flex items-center justify-center w-9 h-9 rounded-xl bg-slate-950/60 dark:bg-slate-900 border border-amber-500/30 dark:border-amber-500/20 shadow-[0_0_15px_rgba(245,158,11,0.15)] flex-shrink-0 relative overflow-hidden group">
+                    <div class="absolute inset-0 bg-gradient-to-tr from-transparent via-white/10 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-1000"></div>
+                    <i class="fa-solid fa-gem text-amber-500 text-sm drop-shadow-[0_0_8px_rgba(245,158,11,0.6)]"></i>
                 </div>
                 <div>
-                    <h1 class="text-lg font-bold tracking-wider text-slate-100 uppercase">Control <span class="text-amber-500/90 font-extrabold">Pagos</span></h1>
-                    <span class="text-[10px] text-slate-400 font-mono tracking-widest block -mt-1">MINERÍA</span>
+                    <div class="flex items-center space-x-1">
+                        <span class="text-xs font-black tracking-widest text-slate-800 dark:text-white uppercase">CONTROL</span>
+                        <span class="text-xs font-black tracking-widest text-amber-500 uppercase">PAGOS</span>
+                    </div>
+                    <span class="text-[8px] font-extrabold text-slate-400 dark:text-slate-500 font-mono tracking-[0.2em] block -mt-0.5">MINERÍA</span>
                 </div>
             </div>
-            
             <!-- Navigation -->
-            <nav class="mt-6 flex-1 px-4 space-y-1 relative" id="main-nav">
-                <!-- Sliding Liquid Glass Pill -->
-                <div id="nav-indicator-pill" class="absolute left-3 right-3 rounded-lg opacity-0 pointer-events-none transition-all duration-300 z-0"></div>
-
-                <a href="{{ route('dashboard') }}" data-theme-color="amber" class="nav-item flex items-center px-3 py-2.5 text-sm font-medium rounded-lg relative z-10 transition-colors duration-200 {{ request()->routeIs('dashboard') ? 'active-nav-item text-amber-500' : 'text-slate-450 hover:text-slate-200' }}">
-                    <i class="fa-solid fa-chart-line w-6 text-center mr-3 text-base"></i>
+            <nav class="flex-1 px-4 space-y-3 relative overflow-y-auto pr-1.5" 
+                 id="main-nav"
+                 x-data="{ 
+                     openPagos: localStorage.getItem('sidebar_open_pagos') !== 'false',
+                     openPersonal: localStorage.getItem('sidebar_open_personal') !== 'false',
+                     openMovimientos: localStorage.getItem('sidebar_open_movimientos') !== 'false',
+                     openAlmacen: localStorage.getItem('sidebar_open_almacen') !== 'false',
+                     openSistema: localStorage.getItem('sidebar_open_sistema') !== 'false',
+                     toggle(key) {
+                         this[key] = !this[key];
+                         localStorage.setItem('sidebar_' + key.replace('open', '').toLowerCase(), this[key]);
+                     }
+                 }"
+                 x-init="
+                     if ({{ request()->routeIs('bocaminas.*', 'trabajadores.*', 'fondos-caja.*', 'anticipos.*', 'pagos.*', 'reportes.*') ? 'true' : 'false' }}) { openPagos = true; }
+                     if ({{ request()->routeIs('bocaminas.*', 'trabajadores.*') ? 'true' : 'false' }}) { openPersonal = true; }
+                     if ({{ request()->routeIs('fondos-caja.*', 'anticipos.*', 'pagos.*', 'reportes.*') ? 'true' : 'false' }}) { openMovimientos = true; }
+                     if ({{ request()->routeIs('transacciones-minerales.*') ? 'true' : 'false' }}) { openAlmacen = true; }
+                     if ({{ request()->routeIs('backups.*') ? 'true' : 'false' }}) { openSistema = true; }
+                 ">
+                <!-- 1. Tablero Principal -->
+                <a href="{{ route('dashboard') }}" data-theme-color="amber" class="nav-item flex items-center px-3 py-2 text-xs font-bold rounded-lg relative z-10 transition-colors duration-200 {{ request()->routeIs('dashboard') ? 'active-nav-item' : 'text-slate-450 hover:text-slate-200' }}">
+                    <i class="fa-solid fa-chart-simple w-5 text-center mr-3 text-sm"></i>
                     Tablero Principal
-                </a>                                <!-- CATEGORY: PLANILLA DE PAGOS (Collapsible Header) -->
-                <div x-data="{ parentOpen: true }" class="space-y-1">
-                    
-                    <!-- Parent Toggle Button -->
-                    <button @click="parentOpen = !parentOpen" class="dropdown-toggle w-full flex items-center justify-between px-3 pt-4 pb-1.5 text-[10px] font-bold uppercase tracking-wider text-slate-455 hover:text-slate-200 font-mono no-print focus:outline-none">
-                        <span>Pagos y Anticipos al Personal</span>
-                        <i class="fa-solid fa-chevron-down text-[8px] transition-transform duration-200" :class="parentOpen ? '' : '-rotate-90'"></i>
+                </a>
+
+                <!-- 2. PAGOS Y ANTICIPOS (desplegable principal) -->
+                <div class="space-y-1.5">
+                    <button @click="toggle('openPagos')" 
+                            class="w-full flex items-center justify-between px-3 py-2 text-xs font-black uppercase tracking-widest text-slate-450 dark:text-slate-450 hover:text-slate-200 focus:outline-none transition-colors duration-150">
+                        <span class="flex items-center">
+                            <i class="fa-solid fa-sack-dollar w-5 text-center mr-3 text-sm text-amber-500"></i>
+                            PAGOS Y ANTICIPOS
+                        </span>
+                        <i class="fa-solid fa-chevron-down text-[8px] text-slate-500 transition-transform duration-200" :class="openPagos ? '' : '-rotate-90'"></i>
                     </button>
 
-                    <!-- Parent Contents -->
-                    <div x-show="parentOpen" class="space-y-3 pl-1.5 my-1">
+                    <div x-show="openPagos" class="pl-2 space-y-1.5 border-l border-slate-900/10 dark:border-slate-800/60 ml-5" x-collapse>
                         
-                        <!-- SUB-GROUP 1: Personal -->
-                        <div x-data="{ open: {{ request()->routeIs('bocaminas.*', 'trabajadores.*', 'contratos.*') ? 'true' : 'true' }} }" class="space-y-1">
-                            <button @click="open = !open" class="dropdown-toggle w-full flex items-center justify-between px-3 py-1.5 text-xs font-semibold text-slate-350 hover:text-slate-200 uppercase tracking-wider font-mono focus:outline-none">
-                                <span class="flex items-center text-slate-300">
-                                    <i class="fa-solid fa-users-gear text-slate-450 mr-2 text-[11px]"></i> Personal
+                        <!-- 2.1 PERSONAL (sub-desplegable) -->
+                        <div class="space-y-1">
+                            <button @click="toggle('openPersonal')" 
+                                    class="w-full flex items-center justify-between px-2 py-1.5 text-[11px] font-bold text-slate-350 dark:text-slate-400 hover:text-slate-200 focus:outline-none transition-colors duration-150">
+                                <span class="flex items-center">
+                                    <i class="fa-solid fa-users w-5 text-center mr-3 text-xs text-orange-400"></i>
+                                    PERSONAL
                                 </span>
-                                <i class="fa-solid fa-chevron-down text-[9px] text-slate-500 transition-transform duration-200" :class="open ? '' : '-rotate-90'"></i>
+                                <i class="fa-solid fa-chevron-down text-[8px] text-slate-500 transition-transform duration-200" :class="openPersonal ? '' : '-rotate-90'"></i>
                             </button>
-                            
-                            <div x-show="open" class="tree-container">
-                                <a href="{{ route('bocaminas.index') }}" data-theme-color="emerald" class="nav-item tree-sub-item flex items-center py-1.5 text-sm font-medium rounded-lg relative z-10 transition-colors duration-200 {{ request()->routeIs('bocaminas.*') ? 'active-nav-item text-emerald-500' : 'text-slate-450 hover:text-slate-200' }}">
+
+                            <div x-show="openPersonal" class="pl-2 space-y-1 border-l border-slate-900/5 dark:border-slate-800/30 ml-4" x-collapse>
+                                <a href="{{ route('bocaminas.index') }}" data-theme-color="emerald" class="nav-item flex items-center px-3 py-1.5 text-xs font-semibold rounded-lg relative z-10 transition-colors duration-200 {{ request()->routeIs('bocaminas.*') ? 'active-nav-item' : 'text-slate-450 hover:text-slate-200' }}">
+                                    <i class="fa-solid fa-mountain-sun w-5 text-center mr-3 text-xs text-emerald-500"></i>
                                     Bocaminas
                                 </a>
-                                <a href="{{ route('trabajadores.index') }}" data-theme-color="sky" class="nav-item tree-sub-item flex items-center py-1.5 text-sm font-medium rounded-lg relative z-10 transition-colors duration-200 {{ request()->routeIs('trabajadores.*') ? 'active-nav-item text-sky-500' : 'text-slate-450 hover:text-slate-200' }}">
-                                    Trabajadores
-                                </a>
-                                <a href="{{ route('contratos.index') }}" data-theme-color="indigo" class="nav-item tree-sub-item flex items-center py-1.5 text-sm font-medium rounded-lg relative z-10 transition-colors duration-200 {{ request()->routeIs('contratos.*') ? 'active-nav-item text-indigo-500' : 'text-slate-450 hover:text-slate-200' }}">
-                                    Tipos de Contrato
+                                <a href="{{ route('trabajadores.index') }}" data-theme-color="sky" class="nav-item flex items-center px-3 py-1.5 text-xs font-semibold rounded-lg relative z-10 transition-colors duration-200 {{ request()->routeIs('trabajadores.*') ? 'active-nav-item' : 'text-slate-450 hover:text-slate-200' }}">
+                                    <i class="fa-solid fa-user-gear w-5 text-center mr-3 text-xs text-sky-500"></i>
+                                    Personal y Contratos
                                 </a>
                             </div>
                         </div>
 
-                        <!-- SUB-GROUP 2: Movimientos -->
-                        <div x-data="{ open: {{ request()->routeIs('fondos-caja.*', 'anticipos.*', 'pagos.*') ? 'true' : 'true' }} }" class="space-y-1">
-                            <button @click="open = !open" class="dropdown-toggle w-full flex items-center justify-between px-3 py-1.5 text-xs font-semibold text-slate-350 hover:text-slate-200 uppercase tracking-wider font-mono focus:outline-none">
-                                <span class="flex items-center text-slate-300">
-                                    <i class="fa-solid fa-money-bill-transfer text-slate-450 mr-2 text-[11px]"></i> Movimientos
+                        <!-- 2.2 MOVIMIENTOS (sub-desplegable) -->
+                        <div class="space-y-1">
+                            <button @click="toggle('openMovimientos')" 
+                                    class="w-full flex items-center justify-between px-2 py-1.5 text-[11px] font-bold text-slate-350 dark:text-slate-400 hover:text-slate-200 focus:outline-none transition-colors duration-150">
+                                <span class="flex items-center">
+                                    <i class="fa-solid fa-money-bill-transfer w-5 text-center mr-3 text-xs text-blue-400"></i>
+                                    MOVIMIENTOS
                                 </span>
-                                <i class="fa-solid fa-chevron-down text-[9px] text-slate-500 transition-transform duration-200" :class="open ? '' : '-rotate-90'"></i>
+                                <i class="fa-solid fa-chevron-down text-[8px] text-slate-500 transition-transform duration-200" :class="openMovimientos ? '' : '-rotate-90'"></i>
                             </button>
-                            
-                            <div x-show="open" class="tree-container">
-                                <a href="{{ route('fondos-caja.index') }}" data-theme-color="cyan" class="nav-item tree-sub-item flex items-center py-1.5 text-sm font-medium rounded-lg relative z-10 transition-colors duration-200 {{ request()->routeIs('fondos-caja.*') ? 'active-nav-item text-cyan-500' : 'text-slate-450 hover:text-slate-200' }}">
+
+                            <div x-show="openMovimientos" class="pl-2 space-y-1 border-l border-slate-900/5 dark:border-slate-800/30 ml-4" x-collapse>
+                                <a href="{{ route('fondos-caja.index') }}" data-theme-color="cyan" class="nav-item flex items-center px-3 py-1.5 text-xs font-semibold rounded-lg relative z-10 transition-colors duration-200 {{ request()->routeIs('fondos-caja.*') ? 'active-nav-item' : 'text-slate-450 hover:text-slate-200' }}">
+                                    <i class="fa-solid fa-cash-register w-5 text-center mr-3 text-xs text-cyan-500"></i>
                                     Caja del Personal
                                 </a>
-                                <a href="{{ route('anticipos.index') }}" data-theme-color="rose" class="nav-item tree-sub-item flex items-center py-1.5 text-sm font-medium rounded-lg relative z-10 transition-colors duration-200 {{ request()->routeIs('anticipos.*') ? 'active-nav-item text-rose-500' : 'text-slate-450 hover:text-slate-200' }}">
+                                <a href="{{ route('anticipos.index') }}" data-theme-color="rose" class="nav-item flex items-center px-3 py-1.5 text-xs font-semibold rounded-lg relative z-10 transition-colors duration-200 {{ request()->routeIs('anticipos.*') ? 'active-nav-item' : 'text-slate-450 hover:text-slate-200' }}">
+                                    <i class="fa-solid fa-hand-holding-dollar w-5 text-center mr-3 text-xs text-rose-500"></i>
                                     Anticipos
                                 </a>
-                                <a href="{{ route('pagos.index') }}" data-theme-color="teal" class="nav-item tree-sub-item flex items-center py-1.5 text-sm font-medium rounded-lg relative z-10 transition-colors duration-200 {{ request()->routeIs('pagos.*') ? 'active-nav-item text-teal-500' : 'text-slate-450 hover:text-slate-200' }}">
+                                <a href="{{ route('pagos.index') }}" data-theme-color="teal" class="nav-item flex items-center px-3 py-1.5 text-xs font-semibold rounded-lg relative z-10 transition-colors duration-200 {{ request()->routeIs('pagos.*') ? 'active-nav-item' : 'text-slate-450 hover:text-slate-200' }}">
+                                    <i class="fa-solid fa-credit-card w-5 text-center mr-3 text-xs text-teal-500"></i>
                                     Pagos
+                                </a>
+                                <a href="{{ route('reportes.index') }}" data-theme-color="violet" class="nav-item flex items-center px-3 py-1.5 text-xs font-semibold rounded-lg relative z-10 transition-colors duration-200 {{ request()->routeIs('reportes.*') ? 'active-nav-item' : 'text-slate-450 hover:text-slate-200' }}">
+                                    <i class="fa-solid fa-chart-simple w-5 text-center mr-3 text-xs text-violet-500"></i>
+                                    Reportes
                                 </a>
                             </div>
                         </div>
 
-                        <!-- SUB-GROUP 3: Reportes -->
-                        <div class="space-y-1">
-                            <a href="{{ route('reportes.index') }}" data-theme-color="violet" class="nav-item flex items-center px-3 py-2 text-sm font-medium rounded-lg relative z-10 transition-colors duration-200 {{ request()->routeIs('reportes.*') ? 'active-nav-item text-violet-500' : 'text-slate-450 hover:text-slate-200' }}">
-                                <i class="fa-solid fa-chart-simple w-6 text-center mr-3 text-base"></i>
-                                Reportes
-                            </a>
-                        </div>
                     </div>
                 </div>
 
-                <!-- CATEGORY: MINERALES -->
-                <div class="px-3 pt-5 pb-1.5 text-[10px] font-bold uppercase tracking-wider text-slate-500 font-mono no-print">Compra y Venta de Mineral</div>
+                <!-- 3. ALMACÉN Y VENTAS (desplegable principal) -->
+                <div class="space-y-1.5">
+                    <button @click="toggle('openAlmacen')" 
+                            class="w-full flex items-center justify-between px-3 py-2 text-xs font-black uppercase tracking-widest text-slate-450 dark:text-slate-450 hover:text-slate-200 focus:outline-none transition-colors duration-150">
+                        <span class="flex items-center">
+                            <i class="fa-solid fa-boxes-stacked w-5 text-center mr-3 text-sm text-amber-600 dark:text-amber-500"></i>
+                            ALMACÉN Y VENTAS
+                        </span>
+                        <i class="fa-solid fa-chevron-down text-[8px] text-slate-500 transition-transform duration-200" :class="openAlmacen ? '' : '-rotate-90'"></i>
+                    </button>
 
-                <a href="{{ route('transacciones-minerales.index') }}" data-theme-color="orange" class="nav-item flex items-center px-3 py-2.5 text-sm font-medium rounded-lg relative z-10 transition-colors duration-200 {{ request()->routeIs('transacciones-minerales.*') ? 'active-nav-item text-orange-500' : 'text-slate-450 hover:text-slate-200' }}">
-                    <i class="fa-solid fa-scale-balanced w-6 text-center mr-3 text-base"></i>
-                    Compra y Venta
-                </a>
+                    <div x-show="openAlmacen" class="pl-2 space-y-1.5 border-l border-slate-900/10 dark:border-slate-800/60 ml-5" x-collapse>
+                        <a href="{{ route('transacciones-minerales.index', ['tab' => 'compras']) }}" data-theme-color="amber" class="nav-item flex items-center px-3 py-1.5 text-xs font-semibold rounded-lg relative z-10 transition-colors duration-200 {{ (request()->routeIs('transacciones-minerales.*') && request('tab', 'compras') === 'compras') ? 'active-nav-item' : 'text-slate-450 hover:text-slate-200' }}">
+                            <i class="fa-solid fa-circle-arrow-down w-5 text-center mr-3 text-xs text-amber-500"></i>
+                            Compras
+                        </a>
+                        <a href="{{ route('transacciones-minerales.index', ['tab' => 'ventas']) }}" data-theme-color="emerald" class="nav-item flex items-center px-3 py-1.5 text-xs font-semibold rounded-lg relative z-10 transition-colors duration-200 {{ (request()->routeIs('transacciones-minerales.*') && request('tab') === 'ventas') ? 'active-nav-item' : 'text-slate-450 hover:text-slate-200' }}">
+                            <i class="fa-solid fa-circle-arrow-up w-5 text-center mr-3 text-xs text-emerald-500"></i>
+                            Ventas
+                        </a>
+                        <a href="{{ route('transacciones-minerales.index', ['tab' => 'stock']) }}" data-theme-color="cyan" class="nav-item flex items-center px-3 py-1.5 text-xs font-semibold rounded-lg relative z-10 transition-colors duration-200 {{ (request()->routeIs('transacciones-minerales.*') && request('tab') === 'stock') ? 'active-nav-item' : 'text-slate-450 hover:text-slate-200' }}">
+                            <i class="fa-solid fa-warehouse w-5 text-center mr-3 text-xs text-cyan-500"></i>
+                            Stock
+                        </a>
+                        <a href="{{ route('transacciones-minerales.index', ['tab' => 'reportes']) }}" data-theme-color="indigo" class="nav-item flex items-center px-3 py-1.5 text-xs font-semibold rounded-lg relative z-10 transition-colors duration-200 {{ (request()->routeIs('transacciones-minerales.*') && request('tab') === 'reportes') ? 'active-nav-item' : 'text-slate-450 hover:text-slate-200' }}">
+                            <i class="fa-solid fa-chart-line w-5 text-center mr-3 text-xs text-indigo-500"></i>
+                            Reportes
+                        </a>
+                    </div>
+                </div>
+
+                <!-- 4. SISTEMA (desplegable principal) -->
+                <div class="space-y-1.5">
+                    <button @click="toggle('openSistema')" 
+                            class="w-full flex items-center justify-between px-3 py-2 text-xs font-black uppercase tracking-widest text-slate-450 dark:text-slate-450 hover:text-slate-200 focus:outline-none transition-colors duration-150">
+                        <span class="flex items-center">
+                            <i class="fa-solid fa-sliders w-5 text-center mr-3 text-sm text-slate-500"></i>
+                            SISTEMA
+                        </span>
+                        <i class="fa-solid fa-chevron-down text-[8px] text-slate-500 transition-transform duration-200" :class="openSistema ? '' : '-rotate-90'"></i>
+                    </button>
+
+                    <div x-show="openSistema" class="pl-2 space-y-1.5 border-l border-slate-900/10 dark:border-slate-800/60 ml-5" x-collapse>
+                        <a href="{{ route('backups.index') }}" data-theme-color="orange" class="nav-item flex items-center px-3 py-1.5 text-xs font-semibold rounded-lg relative z-10 transition-colors duration-200 {{ request()->routeIs('backups.*') ? 'active-nav-item' : 'text-slate-450 hover:text-slate-200' }}">
+                            <i class="fa-solid fa-server w-5 text-center mr-3 text-xs text-orange-500"></i>
+                            Respaldos
+                        </a>
+                    </div>
+                </div>
             </nav>
             
-            <!-- User Section -->
-            <div class="flex-shrink-0 flex border-t border-slate-800/80 p-4">
-                <div class="flex items-center space-x-3">
-                    <div class="flex-shrink-0 w-9 h-9 rounded-full bg-slate-800 flex items-center justify-center border border-slate-700">
-                        <i class="fa-solid fa-user-tie text-amber-500 text-sm"></i>
-                    </div>
-                    <div class="flex-1 min-w-0">
-                        <p class="text-sm font-medium text-slate-200 truncate">
-                            {{ Auth::user()->name ?? 'Administrador' }}
-                        </p>
-                        <form action="{{ route('logout') }}" method="POST" class="inline">
-                            @csrf
-                            <button type="submit" class="text-xs text-amber-500 hover:text-amber-400 font-medium underline flex items-center mt-0.5">
-                                <i class="fa-solid fa-right-from-bracket mr-1.5"></i> Cerrar Sesión
-                            </button>
-                        </form>
-                    </div>
+            <!-- User Section / Footer Card -->
+            <div class="mt-auto pt-4 px-4 border-t border-slate-900/60 dark:border-slate-800/40">
+                <div class="p-3 rounded-2xl bg-slate-900/40 dark:bg-slate-900/60 border border-slate-800/60 shadow-inner flex flex-col space-y-3">
+                    <a href="{{ route('profile.edit') }}" class="flex items-center space-x-3 hover:bg-slate-800/50 p-2 rounded-xl transition duration-150 group" title="Ver mi Perfil">
+                        <div class="relative flex-shrink-0">
+                            @if(Auth::user() && Auth::user()->avatar)
+                                <div class="w-10 h-10 rounded-xl bg-slate-900 border border-amber-500/30 overflow-hidden shadow-[0_0_12px_rgba(245,158,11,0.15)] flex items-center justify-center">
+                                    <img src="{{ asset(Auth::user()->avatar) }}" class="w-full h-full object-cover">
+                                </div>
+                            @else
+                                <div class="w-10 h-10 rounded-xl bg-gradient-to-br from-amber-500/20 to-orange-600/10 border border-amber-500/30 flex items-center justify-center shadow-[0_0_12px_rgba(245,158,11,0.15)]">
+                                    <i class="fa-solid fa-user-tie text-amber-500 text-sm"></i>
+                                </div>
+                            @endif
+                            <span class="absolute -bottom-0.5 -right-0.5 block h-3 w-3 rounded-full bg-emerald-500 ring-2 ring-slate-950"></span>
+                        </div>
+                        <div class="flex-1 min-w-0 pl-2">
+                            <p class="user-name text-sm font-extrabold leading-tight truncate">
+                                {{ Auth::user()->name ?? 'Administrador' }}
+                            </p>
+                            <p class="user-role text-[9px] font-black uppercase tracking-wider mt-0.5">
+                                ADMINISTRADOR
+                            </p>
+                        </div>
+                    </a>
+                    
+                    <form action="{{ route('logout') }}" method="POST" class="w-full">
+                        @csrf
+                        <button type="submit" class="w-full flex items-center justify-center space-x-2 py-2.5 px-4 rounded-xl font-extrabold text-xs uppercase tracking-wider transition-all duration-200 bg-rose-500/10 hover:bg-rose-500/20 text-rose-400 hover:text-rose-300 border border-rose-500/25 hover:border-rose-500/50 shadow-[0_0_12px_rgba(244,63,94,0.1)] active:scale-95">
+                            <i class="fa-solid fa-arrow-right-from-bracket text-xs"></i>
+                            <span>Salir</span>
+                        </button>
+                    </form>
                 </div>
             </div>
         </div>
@@ -759,21 +1256,24 @@
             <div class="px-3 pt-3 pb-1 text-[10px] font-bold uppercase tracking-wider text-slate-500 font-mono">Pagos y Anticipos al Personal</div>
             <div class="pl-2 border-l border-slate-800 ml-2 space-y-1">
                 <div class="px-3 py-1 text-xs font-semibold text-slate-400 uppercase tracking-wider font-mono">👷 Personal</div>
-                <a href="{{ route('bocaminas.index') }}" class="block px-6 py-1.5 rounded-md text-sm font-medium {{ request()->routeIs('bocaminas.*') ? 'bg-emerald-500/10 text-emerald-400' : 'text-slate-450 hover:bg-slate-800' }}">├─ Bocaminas</a>
-                <a href="{{ route('trabajadores.index') }}" class="block px-6 py-1.5 rounded-md text-sm font-medium {{ request()->routeIs('trabajadores.*') ? 'bg-sky-500/10 text-sky-400' : 'text-slate-450 hover:bg-slate-800' }}">├─ Trabajadores</a>
-                <a href="{{ route('contratos.index') }}" class="block px-6 py-1.5 rounded-md text-sm font-medium {{ request()->routeIs('contratos.*') ? 'bg-indigo-500/10 text-indigo-400' : 'text-slate-450 hover:bg-slate-800' }}">└─ Tipos de Contrato</a>
+                <a href="{{ route('bocaminas.index') }}" class="block px-6 py-1.5 rounded-md text-sm font-medium {{ request()->routeIs('bocaminas.*') ? 'bg-emerald-500/10 text-emerald-400' : 'text-slate-450 hover:bg-slate-800' }}">Bocaminas</a>
+                <a href="{{ route('trabajadores.index') }}" class="block px-6 py-1.5 rounded-md text-sm font-medium {{ request()->routeIs('trabajadores.*') ? 'bg-sky-500/10 text-sky-400' : 'text-slate-450 hover:bg-slate-800' }}">Personal y Contratos</a>
                 
                 <div class="px-3 py-1 text-xs font-semibold text-slate-400 uppercase tracking-wider font-mono mt-2">💰 Movimientos</div>
-                <a href="{{ route('fondos-caja.index') }}" class="block px-6 py-1.5 rounded-md text-sm font-medium {{ request()->routeIs('fondos-caja.*') ? 'bg-cyan-500/10 text-cyan-400' : 'text-slate-450 hover:bg-slate-800' }}">├─ Caja del Personal</a>
-                <a href="{{ route('anticipos.index') }}" class="block px-6 py-1.5 rounded-md text-sm font-medium {{ request()->routeIs('anticipos.*') ? 'bg-rose-500/10 text-rose-450' : 'text-slate-450 hover:bg-slate-800' }}">├─ Anticipos</a>
-                <a href="{{ route('pagos.index') }}" class="block px-6 py-1.5 rounded-md text-sm font-medium {{ request()->routeIs('pagos.*') ? 'bg-teal-500/10 text-teal-400' : 'text-slate-450 hover:bg-slate-800' }}">└─ Pagos</a>
+                <a href="{{ route('fondos-caja.index') }}" class="block px-6 py-1.5 rounded-md text-sm font-medium {{ request()->routeIs('fondos-caja.*') ? 'bg-cyan-500/10 text-cyan-400' : 'text-slate-450 hover:bg-slate-800' }}">Caja del Personal</a>
+                <a href="{{ route('anticipos.index') }}" class="block px-6 py-1.5 rounded-md text-sm font-medium {{ request()->routeIs('anticipos.*') ? 'bg-rose-500/10 text-rose-455' : 'text-slate-450 hover:bg-slate-800' }}">Anticipos</a>
+                <a href="{{ route('pagos.index') }}" class="block px-6 py-1.5 rounded-md text-sm font-medium {{ request()->routeIs('pagos.*') ? 'bg-teal-500/10 text-teal-400' : 'text-slate-450 hover:bg-slate-800' }}">Pagos</a>
                 
                 <a href="{{ route('reportes.index') }}" class="block px-3 py-2 rounded-md text-sm font-medium mt-2 {{ request()->routeIs('reportes.*') ? 'bg-violet-500/10 text-violet-400' : 'text-slate-350 hover:bg-slate-800' }}">📊 Reportes</a>
             </div>
             
-            <div class="px-3 pt-3 pb-1 text-[10px] font-bold uppercase tracking-wider text-slate-500 font-mono">Compra y Venta de Mineral</div>
-            <a href="{{ route('transacciones-minerales.index') }}" class="block px-3 py-2 rounded-md text-base font-medium {{ request()->routeIs('transacciones-minerales.*') ? 'bg-orange-500/10 text-orange-500' : 'text-slate-300 hover:bg-slate-800' }}">Compra y Venta</a>
+            <div class="px-3 pt-3 pb-1 text-[10px] font-bold uppercase tracking-wider text-slate-500 font-mono">📦 Compra y Venta de Minerales</div>
+            <a href="{{ route('transacciones-minerales.index', ['tab' => 'compras']) }}" class="block px-6 py-1.5 rounded-md text-sm font-medium {{ (request()->routeIs('transacciones-minerales.*') && request('tab', 'compras') === 'compras') ? 'bg-amber-500/10 text-amber-500' : 'text-slate-350 hover:bg-slate-800' }}">Compras</a>
+            <a href="{{ route('transacciones-minerales.index', ['tab' => 'ventas']) }}" class="block px-6 py-1.5 rounded-md text-sm font-medium {{ (request()->routeIs('transacciones-minerales.*') && request('tab') === 'ventas') ? 'bg-emerald-500/10 text-emerald-400' : 'text-slate-350 hover:bg-slate-800' }}">Ventas</a>
+            <a href="{{ route('transacciones-minerales.index', ['tab' => 'reportes']) }}" class="block px-6 py-1.5 rounded-md text-sm font-medium {{ (request()->routeIs('transacciones-minerales.*') && request('tab') === 'reportes') ? 'bg-indigo-500/10 text-indigo-400' : 'text-slate-350 hover:bg-slate-800' }}">Reportes</a>
             
+            <div class="px-3 pt-3 pb-1 text-[10px] font-bold uppercase tracking-wider text-slate-500 font-mono">⚙️ Sistema</div>
+            <a href="{{ route('backups.index') }}" class="block px-6 py-1.5 rounded-md text-sm font-medium {{ request()->routeIs('backups.*') ? 'bg-orange-500/10 text-orange-400' : 'text-slate-350 hover:bg-slate-800' }}">Respaldos</a>
 
             <form action="{{ route('logout') }}" method="POST" class="block w-full">
                 @csrf
@@ -784,24 +1284,47 @@
 
     <!-- Main Content Area -->
     <div class="flex flex-col flex-1 w-full md:pl-64 overflow-hidden">
-        <!-- Top bar (only for desktop desktop, no-print) -->
-        <header class="no-print hidden md:flex items-center justify-end h-16 header-bg px-8 flex-shrink-0 relative z-20">
-            <div class="flex items-center space-x-4">
-                <button onclick="toggleTheme()" class="p-2 rounded-lg bg-slate-850 hover:bg-slate-800 border border-slate-700/50 text-amber-500 hover:text-amber-400 transition-colors duration-150 flex items-center justify-center no-print" title="Cambiar Modo (Día/Noche)">
-                    <i id="theme-toggle-icon" class="fa-solid fa-sun"></i>
-                </button>
-                <div class="h-4 w-px bg-slate-800"></div>
-                <span class="text-xs text-slate-400 flex items-center space-x-1">
-                    <span class="w-2 h-2 bg-emerald-500 rounded-full animate-ping mr-1"></span>
-                    Servidor Local Conectado
+        <!-- Top bar (only for desktop, no-print) -->
+        <header class="no-print hidden md:flex items-center justify-between h-16 header-bg px-8 flex-shrink-0 relative z-10 border-b border-slate-900/10 dark:border-slate-800/40">
+            <!-- Left Side: System Quick Status Badge -->
+            <div class="flex items-center space-x-2">
+                <span class="inline-flex items-center px-3 py-1 rounded-full text-[10px] font-mono font-bold uppercase tracking-wider bg-slate-900/40 dark:bg-slate-800/40 text-slate-400 border border-slate-800/50">
+                    <i class="fa-solid fa-microchip text-amber-500 mr-2 text-xs"></i> SCPM &middot; v2.5
                 </span>
-                <div class="h-4 w-px bg-slate-800"></div>
-                <span id="realtime-clock" class="text-sm text-slate-300 font-mono"></span>
+            </div>
+
+            <!-- Right Side: Theme Toggle, Connection Status & Real-time Clock -->
+            <div class="flex items-center space-x-3">
+                <!-- Theme Toggle Capsule Button -->
+                <button onclick="toggleTheme()" 
+                        class="w-9 h-9 rounded-xl bg-slate-900/60 dark:bg-slate-900/80 hover:bg-slate-800 border border-amber-500/25 hover:border-amber-500/50 text-amber-500 hover:text-amber-400 transition-all duration-200 flex items-center justify-center shadow-[0_0_12px_rgba(245,158,11,0.1)] active:scale-95 no-print" 
+                        title="Cambiar Modo (Día/Noche)">
+                    <i id="theme-toggle-icon" class="fa-solid fa-sun text-sm"></i>
+                </button>
+
+                <div class="h-4 w-px bg-slate-800/60 dark:bg-slate-800/80"></div>
+
+                <!-- Server Status Badge -->
+                <div class="inline-flex items-center px-3 py-1 rounded-xl bg-emerald-500/10 border border-emerald-500/25 text-emerald-400 text-xs font-semibold shadow-[0_0_10px_rgba(16,185,129,0.08)]">
+                    <span class="relative flex h-2 w-2 mr-2">
+                        <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
+                        <span class="relative inline-flex rounded-full h-2 w-2 bg-emerald-500"></span>
+                    </span>
+                    <span>Servidor Local Conectado</span>
+                </div>
+
+                <div class="h-4 w-px bg-slate-800/60 dark:bg-slate-800/80"></div>
+
+                <!-- Realtime Date & Clock Widget -->
+                <div class="inline-flex items-center px-3 py-1 rounded-xl bg-slate-900/40 dark:bg-slate-900/60 border border-slate-800/60 text-xs font-medium text-slate-300 space-x-2">
+                    <i class="fa-regular fa-calendar-days text-amber-500 text-xs"></i>
+                    <span id="realtime-clock" class="font-mono text-slate-200 flex items-center"></span>
+                </div>
             </div>
         </header>
 
         <!-- Main Body -->
-        <main class="flex-1 relative overflow-y-auto focus:outline-none p-4 md:p-8 pt-20 md:pt-8 bg-slate-950/40 z-10">
+        <main class="flex-1 relative overflow-y-auto focus:outline-none p-4 md:p-8 pt-20 md:pt-8 bg-slate-950/40 z-30">
             
             <!-- Floating Toast Notifications (no-print) -->
             <div id="toast-container" class="no-print fixed top-6 right-6 z-50 flex flex-col space-y-4 max-w-sm w-full">
@@ -863,11 +1386,12 @@
             const minutes = String(now.getMinutes()).padStart(2, '0');
             const seconds = String(now.getSeconds()).padStart(2, '0');
             
-            const formatted = `${dayName.charAt(0).toUpperCase() + dayName.slice(1)}, ${day} de ${monthName} de ${year} | ${hours}:${minutes}:${seconds}`;
+            const dateStr = `${dayName.charAt(0).toUpperCase() + dayName.slice(1)}, ${day} de ${monthName} de ${year}`;
+            const timeStr = `${hours}:${minutes}:${seconds}`;
             
             const clockEl = document.getElementById('realtime-clock');
             if (clockEl) {
-                clockEl.textContent = formatted;
+                clockEl.innerHTML = `<span>${dateStr}</span><span class="text-amber-500 font-mono font-bold ml-2 bg-amber-500/10 px-2 py-0.5 rounded-lg border border-amber-500/20 text-xs shadow-[0_0_10px_rgba(245,158,11,0.15)]">${timeStr}</span>`;
             }
         }
         setInterval(updateClock, 1000);
@@ -997,74 +1521,7 @@
                 card.style.animationDelay = `${index * 65}ms`;
             });
 
-            // 2. Liquid Glass Navbar indicator pill
-            const nav = document.getElementById('main-nav');
-            const pill = document.getElementById('nav-indicator-pill');
-            const items = document.querySelectorAll('.nav-item');
-            if (nav && pill && items.length > 0) {
-                let activeItem = nav.querySelector('.active-nav-item');
-                
-                function positionPill(el) {
-                    if (!el) {
-                        pill.style.opacity = '0';
-                        return;
-                    }
-                    
-                    const colorType = el.getAttribute('data-theme-color') || 'amber';
-                    const themes = {
-                        amber: { border: 'rgba(245, 158, 11, 0.4)', bg: 'rgba(245, 158, 11, 0.12)', shadow: 'rgba(245, 158, 11, 0.2)' },
-                        emerald: { border: 'rgba(16, 185, 129, 0.4)', bg: 'rgba(16, 185, 129, 0.12)', shadow: 'rgba(16, 185, 129, 0.2)' },
-                        sky: { border: 'rgba(14, 165, 233, 0.4)', bg: 'rgba(14, 165, 233, 0.12)', shadow: 'rgba(14, 165, 233, 0.2)' },
-                        indigo: { border: 'rgba(99, 102, 241, 0.4)', bg: 'rgba(99, 102, 241, 0.12)', shadow: 'rgba(99, 102, 241, 0.2)' },
-                        rose: { border: 'rgba(244, 63, 94, 0.4)', bg: 'rgba(244, 63, 94, 0.12)', shadow: 'rgba(244, 63, 94, 0.2)' },
-                        teal: { border: 'rgba(20, 184, 166, 0.4)', bg: 'rgba(20, 184, 166, 0.12)', shadow: 'rgba(20, 184, 166, 0.2)' },
-                        orange: { border: 'rgba(249, 115, 22, 0.4)', bg: 'rgba(249, 115, 22, 0.12)', shadow: 'rgba(249, 115, 22, 0.2)' },
-                        violet: { border: 'rgba(139, 92, 246, 0.4)', bg: 'rgba(139, 92, 246, 0.12)', shadow: 'rgba(139, 92, 246, 0.2)' },
-                        cyan: { border: 'rgba(6, 182, 212, 0.4)', bg: 'rgba(6, 182, 212, 0.12)', shadow: 'rgba(6, 182, 212, 0.2)' }
-                    };
-                    
-                    const theme = themes[colorType] || themes.amber;
-                    
-                    pill.style.opacity = '1';
-                    pill.style.top = `${el.offsetTop}px`;
-                    pill.style.height = `${el.offsetHeight}px`;
-                    pill.style.background = theme.bg;
-                    pill.style.border = `1.5px solid ${theme.border}`;
-                    pill.style.boxShadow = `0 4px 15px ${theme.shadow}`;
-                    pill.style.transition = 'all 0.35s cubic-bezier(0.25, 1, 0.5, 1)'; // Sleeker, more professional ease
-                }
-                
-                if (activeItem) {
-                    positionPill(activeItem);
-                    // Delayed check to handle dynamic fonts or image sizes loading
-                    setTimeout(() => positionPill(activeItem), 100);
-                    setTimeout(() => positionPill(activeItem), 400);
-                    window.addEventListener('load', () => positionPill(activeItem));
-                }
-                
-                items.forEach(item => {
-                    item.addEventListener('mouseenter', () => positionPill(item));
-                });
-                nav.addEventListener('mouseleave', () => {
-                    let currentActive = nav.querySelector('.active-nav-item');
-                    positionPill(currentActive);
-                });
-                
-                window.addEventListener('resize', () => {
-                    const active = nav.querySelector('.active-nav-item');
-                    if (active) positionPill(active);
-                });
 
-                // Toggles adjustment for glass pill position
-                document.addEventListener('click', (e) => {
-                    if (e.target.closest('.dropdown-toggle')) {
-                        setTimeout(() => {
-                            const active = nav.querySelector('.active-nav-item');
-                            if (active) positionPill(active);
-                        }, 220); // wait for collapse transitions
-                    }
-                });
-            }
 
             // 3. Global buttons interaction (including nav items for premium sparks hover)
             const buttons = document.querySelectorAll('button, .btn, [type="submit"], [type="button"], a.btn, a.inline-flex, .nav-item');

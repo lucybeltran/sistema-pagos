@@ -2,11 +2,8 @@
 <html lang="es" class="h-full bg-slate-950 text-slate-100">
 <head>
     <script>
-        // Inline script to prevent theme flash
-        const currentTheme = localStorage.getItem('theme') || 'dark';
-        if (currentTheme === 'light') {
-            document.documentElement.classList.add('light-theme');
-        }
+        // Force dark theme on register page
+        document.documentElement.classList.remove('light-theme');
     </script>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -515,21 +512,25 @@
                 <h1 class="text-4xl font-extrabold text-white mt-4 tracking-tight leading-tight">
                     Eficiencia y precisión en la liquidación de frentes de trabajo
                 </h1>
-                <p class="mt-4 text-base text-slate-305 leading-relaxed">
-                    Gestión integral de contratos, cálculo de avances de producción por bocamina, control seguro de anticipos semanales y facturación automatizada para contratistas.
+                <p class="mt-4 text-base text-slate-300 leading-relaxed">
+                    Gestión integral de contratos, avances de producción por bocamina, control de anticipos semanales, y módulo avanzado de compra-venta de mineral por lotes con control de stock.
                 </p>
-                <div class="flex items-center space-x-6 mt-8 border-t border-slate-800/80 pt-6">
-                    <div class="flex items-center space-x-2 text-xs text-slate-400">
-                        <i class="fa-solid fa-mountain text-amber-500"></i>
-                        <span>Bocaminas Múltiples</span>
+                <div class="grid grid-cols-2 gap-y-4 gap-x-6 mt-8 border-t border-slate-800/80 pt-6">
+                    <div class="flex items-center space-x-2.5 text-xs text-slate-400">
+                        <i class="fa-solid fa-mountain text-amber-500 text-sm"></i>
+                        <span>Bocaminas y Frentes</span>
                     </div>
-                    <div class="flex items-center space-x-2 text-xs text-slate-400">
-                        <i class="fa-solid fa-file-contract text-amber-500"></i>
-                        <span>Contratos Activos</span>
+                    <div class="flex items-center space-x-2.5 text-xs text-slate-400">
+                        <i class="fa-solid fa-user-tie text-amber-500 text-sm"></i>
+                        <span>Personal y Contratos</span>
                     </div>
-                    <div class="flex items-center space-x-2 text-xs text-slate-400">
-                        <i class="fa-solid fa-wallet text-amber-500"></i>
-                        <span>Liquidez Semanal</span>
+                    <div class="flex items-center space-x-2.5 text-xs text-slate-400">
+                        <i class="fa-solid fa-boxes-stacked text-amber-500 text-sm"></i>
+                        <span>Almacén y Lotes de Mineral</span>
+                    </div>
+                    <div class="flex items-center space-x-2.5 text-xs text-slate-400">
+                        <i class="fa-solid fa-wallet text-amber-500 text-sm"></i>
+                        <span>Caja, Anticipos y Pagos</span>
                     </div>
                 </div>
             </div>

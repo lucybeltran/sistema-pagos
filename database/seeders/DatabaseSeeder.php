@@ -5,8 +5,7 @@ namespace Database\Seeders;
 use App\Models\User;
 use App\Models\Bocamina;
 use App\Models\Trabajador;
-use App\Models\Contrato;
-use App\Models\Trabajo;
+use App\Models\TipoContrato;
 use App\Models\Anticipo;
 use App\Models\Pago;
 use Illuminate\Database\Seeder;
@@ -43,66 +42,65 @@ class DatabaseSeeder extends Seeder
             'descripcion' => 'Frente de exploración en la sección sur.',
         ]);
 
-        // 3. Trabajadores
+        // 3. Tipos de Contrato (Catalogue)
+        $cSaco   = TipoContrato::create(['nombre' => 'Por saco', 'estado' => 'activo']);
+        $cVolq   = TipoContrato::create(['nombre' => 'Por volqueta', 'estado' => 'activo']);
+        $cMetro  = TipoContrato::create(['nombre' => 'Por metro avanzado', 'estado' => 'activo']);
+        $cViaje  = TipoContrato::create(['nombre' => 'Por viaje', 'estado' => 'activo']);
+        $cMensual = TipoContrato::create(['nombre' => 'Mensual', 'estado' => 'activo']);
+        $cDiario  = TipoContrato::create(['nombre' => 'Diario', 'estado' => 'activo']);
+        $cOtro    = TipoContrato::create(['nombre' => 'Otro', 'estado' => 'activo']);
+
+        // 4. Trabajadores (Personal directly with labor data)
         $juan = Trabajador::create([
             'ci' => '5938201-LP',
             'nombre' => 'Juan Pérez Mamani',
             'telefono' => '71234567',
+            'rol' => 'contratista',
             'bocamina_id' => $sanjose->id,
+            'tipo_contrato_id' => $cMetro->id,
+            'tarifa_acordada' => 500.00,
             'estado' => 'activo',
+            'observaciones' => 'Personal antiguo'
         ]);
 
         $pedro = Trabajador::create([
             'ci' => '4829301-OR',
             'nombre' => 'Pedro Quispe Mamani',
             'telefono' => '72198765',
+            'rol' => 'chofer',
             'bocamina_id' => $rosario->id,
+            'tipo_contrato_id' => $cVolq->id,
+            'tarifa_acordada' => 150.00,
             'estado' => 'activo',
+            'observaciones' => 'Chofer titular'
         ]);
 
         $luis = Trabajador::create([
             'ci' => '6910293-PT',
             'nombre' => 'Luis Alberto Flores',
             'telefono' => '73204918',
+            'rol' => 'ayudante',
             'bocamina_id' => $sanjose->id,
+            'tipo_contrato_id' => $cSaco->id,
+            'tarifa_acordada' => 12.50,
             'estado' => 'activo',
+            'observaciones' => 'Ayudante de ensacado'
         ]);
 
         $mario = Trabajador::create([
             'ci' => '3928103-LP',
             'nombre' => 'Mario Choque Condori',
             'telefono' => '70129384',
+            'rol' => 'sereno',
             'bocamina_id' => $santamaria->id,
+            'tipo_contrato_id' => $cMensual->id,
+            'tarifa_acordada' => 3500.00,
             'estado' => 'inactivo',
-        ]);
-
-        // 4. Contratos
-        $contratoJuan = Contrato::create([
-            'codigo' => 'CON-SJOSE-01',
-            'trabajador_id' => $juan->id,
-            'bocamina_id' => $sanjose->id,
-            'descripcion' => 'Avance de 50 metros en veta de plata',
-            'tipo_pago' => 'metro',
-            'precio_unitario' => 500.00,
-            'monto_total' => 25000.00,
-            'fecha_inicio' => Carbon::today()->subDays(30)->toDateString(),
-            'estado' => 'activo',
-        ]);
-
-        $contratoPedro = Contrato::create([
-            'codigo' => 'CON-ROS-02',
-            'trabajador_id' => $pedro->id,
-            'bocamina_id' => $rosario->id,
-            'descripcion' => 'Carga de 100 volquetas de mineral bruto',
-            'tipo_pago' => 'volqueta',
-            'precio_unitario' => 150.00,
-            'monto_total' => 15000.00,
-            'fecha_inicio' => Carbon::today()->subDays(20)->toDateString(),
-            'estado' => 'activo',
+            'observaciones' => 'Ex-sereno'
         ]);
 
         // 5. Anticipos
-        // Juan has an unpaid advance
         $anticipoJuan = Anticipo::create([
             'trabajador_id' => $juan->id,
             'fecha' => Carbon::today()->subDays(10)->toDateString(),
@@ -111,7 +109,6 @@ class DatabaseSeeder extends Seeder
             'pagado' => false,
         ]);
 
-        // Pedro had an advance that was fully paid
         $anticipoPedro = Anticipo::create([
             'trabajador_id' => $pedro->id,
             'fecha' => Carbon::today()->subDays(15)->toDateString(),
@@ -120,76 +117,27 @@ class DatabaseSeeder extends Seeder
             'pagado' => true,
         ]);
 
-        // 6. Trabajos (Paid and Unpaid)
-        // Juan's unpaid job (Ready to pay in wizard)
-        Trabajo::create([
-            'trabajador_id' => $juan->id,
-            'contrato_id' => $contratoJuan->id,
-            'fecha' => Carbon::today()->subDays(2)->toDateString(),
-            'tipo' => 'metro',
-            'cantidad' => 10.00,
-            'precio_unitario' => 500.00,
-            'subtotal' => 5000.00,
-            'observacion' => 'Avance de la galería principal',
-            'pagado' => false,
-        ]);
-
-        // Juan's other unpaid job (No contract, custom type)
-        Trabajo::create([
-            'trabajador_id' => $juan->id,
-            'contrato_id' => null,
-            'fecha' => Carbon::today()->subDays(1)->toDateString(),
-            'tipo' => 'tonelada',
-            'cantidad' => 5.00,
-            'precio_unitario' => 200.00,
-            'subtotal' => 1000.00,
-            'observacion' => 'Extracción extra de desmonte',
-            'pagado' => false,
-        ]);
-
-        // Pedro's unpaid job (Ready to pay)
-        Trabajo::create([
-            'trabajador_id' => $pedro->id,
-            'contrato_id' => $contratoPedro->id,
-            'fecha' => Carbon::today()->subDays(3)->toDateString(),
-            'tipo' => 'volqueta',
-            'cantidad' => 15.00,
-            'precio_unitario' => 150.00,
-            'subtotal' => 2250.00,
-            'observacion' => 'Cargado de volquetas sección A',
-            'pagado' => false,
-        ]);
-
-        // Pedro's paid job
-        $trabajoPedroPagado = Trabajo::create([
-            'trabajador_id' => $pedro->id,
-            'contrato_id' => $contratoPedro->id,
-            'fecha' => Carbon::today()->subDays(12)->toDateString(),
-            'tipo' => 'volqueta',
-            'cantidad' => 20.00,
-            'precio_unitario' => 150.00,
-            'subtotal' => 3000.00,
-            'observacion' => 'Cargado de volquetas sección B',
-            'pagado' => true,
-        ]);
-
-        // 7. Pagos (Historical Pago for Pedro)
+        // 6. Pagos
         $pagoPedro = Pago::create([
             'trabajador_id' => $pedro->id,
             'fecha' => Carbon::today()->subDays(10)->toDateString(),
+            'tarifa_pago' => 150.00,
+            'cantidad_trabajada' => 20.00,
+            'tipo_contrato_nombre' => 'Por volqueta',
             'subtotal' => 3000.00,
             'bonos' => 200.00,
             'descuentos' => 50.00,
             'anticipos_descontados' => 500.00,
             'neto' => 2650.00,
+            'monto_pagado' => 2650.00,
+            'saldo_pendiente' => 0.00,
+            'saldo_liquidado' => true,
+            'tipo_cambio' => 6.96,
             'observacion' => 'Liquidación quincena anterior',
+            'metodo_pago' => 'efectivo',
         ]);
 
-        // Link Pedro's paid job to his payment
-        $trabajoPedroPagado->pago_id = $pagoPedro->id;
-        $trabajoPedroPagado->save();
-
-        // Connect the advance deduction to the payment
+        // Link advance deduction to the payment
         $pagoPedro->anticipos()->attach($anticipoPedro->id, [
             'monto_descontado' => 500.00,
             'created_at' => Carbon::today()->subDays(10),

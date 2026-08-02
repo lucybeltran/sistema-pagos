@@ -9,6 +9,9 @@ class Pago extends Model
     protected $fillable = [
         'trabajador_id',
         'fecha',
+        'tarifa_pago',
+        'cantidad_trabajada',
+        'tipo_contrato_nombre',
         'subtotal',
         'bonos',
         'descuentos',
@@ -33,16 +36,36 @@ class Pago extends Model
         return $this->belongsTo(Trabajador::class);
     }
 
-    public function trabajos()
-    {
-        return $this->hasMany(Trabajo::class);
-    }
-
     public function anticipos()
     {
         return $this->belongsToMany(Anticipo::class, 'pago_anticipo')
                     ->withPivot('monto_descontado')
                     ->withTimestamps();
+    }
+
+    public function getTipoAttribute()
+    {
+        return $this->tipo_contrato_nombre;
+    }
+
+    public function getCantidadAttribute()
+    {
+        return $this->cantidad_trabajada;
+    }
+
+    public function getPrecioUnitarioAttribute()
+    {
+        return $this->tarifa_pago;
+    }
+
+    public function getPagadoAttribute()
+    {
+        return true;
+    }
+
+    public function getContratoAttribute()
+    {
+        return null;
     }
 
     public function getMontoLetrasAttribute()

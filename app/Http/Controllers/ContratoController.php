@@ -5,30 +5,25 @@ namespace App\Http\Controllers;
 use App\Models\Contrato;
 use App\Models\Trabajador;
 use App\Models\Bocamina;
+use App\Models\TipoContrato;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 
 class ContratoController extends Controller
 {
     public function index(Request $request)
     {
-        $query = Contrato::with(['trabajador', 'bocamina']);
+        $query = Contrato::with(['trabajador', 'bocamina', 'tipoContrato']);
 
         if ($request->filled('buscar')) {
             $buscar = $request->buscar;
-            $query->where('codigo', 'like', "%{$buscar}%")
-                  ->orWhere('descripcion', 'like', "%{$buscar}%");
-        }
-
-        if ($request->filled('trabajador_id')) {
-            $query->where('trabajador_id', $request->trabajador_id);
+            $query->whereHas('trabajador', function($q) use ($buscar) {
+                $q->where('nombre', 'like', "%{$buscar}%");
+            });
         }
 
         if ($request->filled('bocamina_id')) {
             $query->where('bocamina_id', $request->bocamina_id);
-        }
-
-        if ($request->filled('tipo_pago')) {
-            $query->where('tipo_pago', $request->tipo_pago);
         }
 
         if ($request->filled('estado')) {
@@ -36,80 +31,65 @@ class ContratoController extends Controller
         }
 
         $contratos = $query->get();
-        $trabajadores = Trabajador::where('estado', 'activo')->get();
+        $trabajadores = Trabajador::where('estado', 'activo')->orderBy('nombre')->get();
         $bocaminas = Bocamina::all();
-        
-        $presets = ['metro', 'volqueta', 'tonelada', 'saco', 'monto_fijo'];
-        $dbTypes = Contrato::distinct()->pluck('tipo_pago')->toArray();
-        $tiposPago = array_values(array_unique(array_merge($presets, $dbTypes)));
+        $tiposContrato = TipoContrato::where('estado', 'activo')->orderBy('nombre')->get();
 
-        return view('contratos.index', compact('contratos', 'trabajadores', 'bocaminas', 'tiposPago'));
+        return view('contratos.index', compact('contratos', 'trabajadores', 'bocaminas', 'tiposContrato'));
     }
 
     public function store(Request $request)
     {
-        $request->validate([
-            'codigo' => 'nullable|string|max:255|unique:contratos,codigo',
+        $data = $request->validate([
             'trabajador_id' => 'required|exists:trabajadores,id',
             'bocamina_id' => 'required|exists:bocaminas,id',
-            'descripcion' => 'required|string',
-            'tipo_pago' => 'required|string|max:50',
-            'precio_unitario' => 'nullable|numeric|min:0',
-            'avance_estimado_semanal' => 'nullable|numeric|min:0',
-            'monto_total' => 'required|numeric|min:0',
-            'fecha_inicio' => 'required|date',
-            'fecha_fin' => 'nullable|date|after_or_equal:fecha_inicio',
-            'estado' => 'required|in:activo,finalizado,cancelado',
+            'tipo_contrato_id' => 'required|exists:tipos_contrato,id',
+            'tarifa_acordada' => 'nullable|numeric|min:0',
+            'estado' => 'required|in:activo,inactivo',
+            'observaciones' => 'nullable|string|max:1000',
         ]);
 
-        $data = $request->all();
-        if (empty($data['codigo'])) {
-            $data['codigo'] = 'CON-' . strtoupper(uniqid());
-        }
+        DB::transaction(function() use ($data) {
+            // If the new assignment is active, deactivate any previous active contract for the same worker
+            if ($data['estado'] === 'activo') {
+                Contrato::where('trabajador_id', $data['trabajador_id'])
+                        ->where('estado', 'activo')
+                        ->update(['estado' => 'inactivo']);
+            }
+            Contrato::create($data);
+        });
 
-        Contrato::create($data);
-
-        return redirect()->route('contratos.index')->with('success', 'Contrato registrado exitosamente.');
-    }
-
-    public function show(Contrato $contrato)
-    {
-        $contrato->load(['trabajador', 'bocamina', 'trabajos' => function($q) {
-            $q->orderBy('fecha', 'desc');
-        }]);
-        return view('contratos.show', compact('contrato'));
+        return redirect()->route('contratos.index')->with('success', 'Contrato laboral asignado exitosamente.');
     }
 
     public function update(Request $request, Contrato $contrato)
     {
-        $request->validate([
-            'codigo' => 'required|string|max:255|unique:contratos,codigo,' . $contrato->id,
+        $data = $request->validate([
             'trabajador_id' => 'required|exists:trabajadores,id',
             'bocamina_id' => 'required|exists:bocaminas,id',
-            'descripcion' => 'required|string',
-            'tipo_pago' => 'required|string|max:50',
-            'precio_unitario' => 'nullable|numeric|min:0',
-            'avance_estimado_semanal' => 'nullable|numeric|min:0',
-            'monto_total' => 'required|numeric|min:0',
-            'fecha_inicio' => 'required|date',
-            'fecha_fin' => 'nullable|date|after_or_equal:fecha_inicio',
-            'estado' => 'required|in:activo,finalizado,cancelado',
+            'tipo_contrato_id' => 'required|exists:tipos_contrato,id',
+            'tarifa_acordada' => 'nullable|numeric|min:0',
+            'estado' => 'required|in:activo,inactivo',
+            'observaciones' => 'nullable|string|max:1000',
         ]);
 
-        $contrato->update($request->all());
+        DB::transaction(function() use ($contrato, $data) {
+            // If updating to active, deactivate all other active contracts for this worker
+            if ($data['estado'] === 'activo') {
+                Contrato::where('trabajador_id', $data['trabajador_id'])
+                        ->where('id', '!=', $contrato->id)
+                        ->where('estado', 'activo')
+                        ->update(['estado' => 'inactivo']);
+            }
+            $contrato->update($data);
+        });
 
-        return redirect()->route('contratos.index')->with('success', 'Contrato actualizado exitosamente.');
+        return redirect()->route('contratos.index')->with('success', 'Contrato laboral actualizado exitosamente.');
     }
 
     public function destroy(Contrato $contrato)
     {
-        // Block delete if they have logged works
-        if ($contrato->trabajos()->exists()) {
-            return back()->withErrors(['error' => 'No se puede eliminar el contrato porque ya tiene trabajos registrados asociados.']);
-        }
-
         $contrato->delete();
-
-        return redirect()->route('contratos.index')->with('success', 'Contrato eliminado exitosamente.');
+        return redirect()->route('contratos.index')->with('success', 'Contrato laboral eliminado exitosamente.');
     }
 }

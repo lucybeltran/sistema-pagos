@@ -3,146 +3,256 @@
 @section('title', 'Caja Chica y Recargas')
 
 @section('content')
+@php $positivo = $saldo_caja >= 0; @endphp
+
 <div class="space-y-6">
 
-    <!-- Header -->
-    <div class="flex flex-col md:flex-row md:items-center md:justify-between space-y-4 md:space-y-0">
-        <div>
-            <h1 class="text-3xl font-bold tracking-tight text-slate-100">Caja Chica / Recargas</h1>
-            <p class="text-sm text-slate-400 mt-1">Registra los ingresos de efectivo retirados del banco y haz un seguimiento del saldo disponible para planillas.</p>
-        </div>
-        <div class="flex flex-wrap gap-3 self-start">
-            <a href="{{ route('pagos.index') }}" class="inline-flex items-center justify-center px-4 py-2.5 rounded-lg bg-slate-800 border border-slate-700 hover:bg-slate-750 text-sm font-bold text-slate-200 transition duration-150">
-                <i class="fa-solid fa-receipt mr-2 text-amber-500"></i> Historial de Pagos
-            </a>
-            <a href="{{ route('pagos.create') }}" class="inline-flex items-center justify-center px-4 py-2.5 rounded-lg bg-gradient-to-r from-amber-500 to-orange-600 hover:from-amber-600 hover:to-orange-700 text-sm font-bold text-slate-950 transition duration-150 shadow-lg shadow-orange-500/10">
-                <i class="fa-solid fa-receipt mr-2"></i> Procesar Nuevo Pago
-            </a>
+    {{-- ══ HEADER ══ --}}
+    <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-5">
+        <div class="flex items-center gap-4">
+            <div class="w-12 h-12 rounded-2xl bg-gradient-to-br from-cyan-500 to-blue-600 flex items-center justify-center shadow-lg shadow-cyan-500/30 flex-shrink-0">
+                <i class="fa-solid fa-vault text-white text-lg"></i>
+            </div>
+            <div>
+                <h1 class="text-2xl font-black tracking-tight text-slate-100">
+                    Caja Chica <span class="text-cyan-400 font-extrabold">/</span> Recargas
+                </h1>
+                <p class="text-xs text-slate-400 mt-0.5">Registra ingresos del banco · Monitorea el saldo disponible para planillas</p>
+            </div>
         </div>
     </div>
 
-    <!-- Ledger Summary Cards -->
-    <div class="grid grid-cols-1 gap-5 sm:grid-cols-3">
-        <!-- Total Loaded (Banco) -->
-        <div class="glass-card rounded-xl p-6 relative overflow-hidden group border-cyan-500/10 hover:border-cyan-500/25 transition duration-300">
-            <div class="absolute top-0 right-0 p-3 opacity-10 text-6xl text-cyan-500 group-hover:opacity-20 transition duration-300">
-                <i class="fa-solid fa-building-columns"></i>
+    {{-- ══ SUMMARY CARDS ══ --}}
+    <div class="grid grid-cols-1 sm:grid-cols-3 gap-5">
+
+        {{-- Total Recargado --}}
+        <div class="glass-card rounded-2xl p-5 border-l-4 border-l-cyan-500/80 shadow-md hover:shadow-cyan-500/5 hover:-translate-y-0.5 transition-all duration-300">
+            <div class="flex items-center justify-between mb-3">
+                <span class="text-[10px] font-bold uppercase tracking-widest text-slate-450">Total Recargado (Banco)</span>
+                <div class="w-8 h-8 rounded-lg bg-cyan-500/10 text-cyan-500 flex items-center justify-center">
+                    <i class="fa-solid fa-building-columns text-sm"></i>
+                </div>
             </div>
-            <p class="text-sm font-medium text-slate-400 uppercase tracking-wider">Total Recargado (Banco)</p>
-            <p class="mt-2 text-3xl font-bold text-slate-100">Bs. {{ number_format($total_recargado, 2) }}</p>
-            <div class="mt-2 text-xs text-slate-500 font-mono">Fondos ingresados a caja chica</div>
+            <p class="text-2xl font-black text-slate-100">Bs. {{ number_format($total_recargado, 2) }}</p>
+            <p class="text-[10px] text-slate-500 mt-2 font-mono">Fondos ingresados a caja chica</p>
         </div>
 
-        <!-- Total Spent (Personal) -->
-        <div class="glass-card rounded-xl p-6 relative overflow-hidden group border-rose-500/10 hover:border-rose-500/25 transition duration-300">
-            <div class="absolute top-0 right-0 p-3 opacity-10 text-6xl text-rose-500 group-hover:opacity-20 transition duration-300">
-                <i class="fa-solid fa-hand-holding-dollar"></i>
+        {{-- Total Gastado --}}
+        <div class="glass-card rounded-2xl p-5 border-l-4 border-l-rose-500/80 shadow-md hover:shadow-rose-500/5 hover:-translate-y-0.5 transition-all duration-300">
+            <div class="flex items-center justify-between mb-3">
+                <span class="text-[10px] font-bold uppercase tracking-widest text-slate-450">Gastado (Pagos y Anticipos)</span>
+                <div class="w-8 h-8 rounded-lg bg-rose-500/10 text-rose-500 flex items-center justify-center">
+                    <i class="fa-solid fa-hand-holding-dollar text-sm"></i>
+                </div>
             </div>
-            <p class="text-sm font-medium text-slate-400 uppercase tracking-wider">Gastado (Pagos y Anticipos)</p>
-            <p class="mt-2 text-3xl font-bold text-rose-450">Bs. {{ number_format($total_gastado, 2) }}</p>
-            <div class="mt-2 text-xs text-slate-500 font-mono">Egresado por planillas y adelantos</div>
+            <p class="text-2xl font-black text-slate-100">Bs. {{ number_format($total_gastado, 2) }}</p>
+            <p class="text-[10px] text-slate-500 mt-2 font-mono">Egresado por planillas y adelantos</p>
         </div>
 
-        <!-- Remaining Cash -->
-        <div class="glass-card rounded-xl p-6 relative overflow-hidden group border-emerald-500/10 hover:border-emerald-500/25 transition duration-300">
-            <div class="absolute top-0 right-0 p-3 opacity-10 text-6xl text-emerald-500 group-hover:opacity-20 transition duration-300">
-                <i class="fa-solid fa-vault"></i>
+        {{-- Saldo --}}
+        @php
+            $accentColor = $positivo ? 'emerald' : 'amber';
+            $accentBorder = $positivo ? 'border-l-emerald-500/80' : 'border-l-amber-500/80';
+            $accentBg = $positivo ? 'bg-emerald-500/10 text-emerald-500' : 'bg-amber-500/10 text-amber-500';
+            $accentText = $positivo ? 'text-emerald-500' : 'text-amber-500';
+        @endphp
+        <div class="glass-card rounded-2xl p-5 border-l-4 {{ $accentBorder }} shadow-md hover:shadow-{{ $accentColor }}-500/5 hover:-translate-y-0.5 transition-all duration-300">
+            <div class="flex items-center justify-between mb-3">
+                <span class="text-[10px] font-bold uppercase tracking-widest text-slate-450">Saldo Sobrante en Caja</span>
+                <div class="w-8 h-8 rounded-lg {{ $accentBg }} flex items-center justify-center">
+                    <i class="fa-solid fa-vault text-sm"></i>
+                </div>
             </div>
-            <p class="text-sm font-medium text-slate-400 uppercase tracking-wider">Saldo Sobrante en Caja</p>
-            <p class="mt-2 text-3xl font-bold {{ $saldo_caja >= 0 ? 'text-emerald-400' : 'text-rose-450' }}">
-                Bs. {{ number_format($saldo_caja, 2) }}
+            <p class="text-2xl font-black text-slate-100">Bs. {{ number_format(abs($saldo_caja), 2) }}</p>
+            <p class="text-[10px] text-slate-500 mt-2 font-mono {{ $accentText }}">
+                {{ $positivo ? '● Efectivo disponible' : '▲ Caja en déficit' }}
             </p>
-            <div class="mt-2 text-xs text-slate-500 font-mono">Efectivo físico disponible</div>
         </div>
     </div>
 
-    <!-- Main Content Split Layout -->
-    <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
-        
-        <!-- COL 1: Recharge Form -->
-        <div class="glass-card rounded-xl p-6 h-fit space-y-4">
-            <h3 class="text-md font-bold text-slate-200 border-b border-slate-800 pb-3 flex items-center">
-                <i class="fa-solid fa-money-bill-trend-up mr-2 text-cyan-500"></i> Registrar Recarga de Caja
-            </h3>
-            
-            <form action="{{ route('fondos-pagos.store') }}" method="POST" class="space-y-4">
-                @csrf
+    {{-- ══ PROGRESS BAR ══ --}}
+    @php
+        $pct = $total_recargado > 0 ? min(100, round(($total_gastado / $total_recargado) * 100)) : 0;
+        $barColor = $pct >= 90 ? 'from-rose-500 to-red-600' : ($pct >= 70 ? 'from-amber-500 to-orange-500' : 'from-emerald-500 to-teal-500');
+        $txtColor = $pct >= 90 ? 'text-rose-400' : ($pct >= 70 ? 'text-amber-400' : 'text-emerald-400');
+    @endphp
+    <div class="glass-card rounded-2xl px-6 py-4">
+        <div class="flex items-center justify-between mb-2.5">
+            <div class="flex items-center gap-2">
+                <i class="fa-solid fa-gauge-high text-cyan-400 text-xs"></i>
+                <span class="text-xs font-bold uppercase tracking-wider text-slate-400">Uso del Fondo de Caja</span>
+            </div>
+            <span class="text-sm font-black {{ $txtColor }}">{{ $pct }}% <span class="text-slate-500 font-normal text-xs">utilizado</span></span>
+        </div>
+        <div class="h-2 w-full bg-slate-800/80 rounded-full overflow-hidden">
+            <div class="h-full bg-gradient-to-r {{ $barColor }} rounded-full transition-all duration-700" style="width: {{ $pct }}%"></div>
+        </div>
+        <div class="flex justify-between mt-2 text-[10px] font-mono text-slate-600">
+            <span>Bs. 0.00</span>
+            <span>Bs. {{ number_format($total_recargado, 2) }}</span>
+        </div>
+    </div>
+
+    {{-- ══ FORM + TABLE ══ --}}
+    <div class="grid grid-cols-1 lg:grid-cols-3 gap-6 items-start">
+
+        {{-- ── Formulario ── --}}
+        <div class="glass-card rounded-2xl overflow-hidden">
+            {{-- Form Header --}}
+            <div class="bg-gradient-to-r from-cyan-500/10 to-blue-500/10 border-b border-slate-800/60 px-5 py-4 flex items-center gap-3">
+                <div class="w-8 h-8 rounded-xl bg-gradient-to-br from-cyan-500 to-blue-600 flex items-center justify-center shadow-md shadow-cyan-500/25 flex-shrink-0">
+                    <i class="fa-solid fa-money-bill-trend-up text-white text-xs"></i>
+                </div>
                 <div>
-                    <label for="fecha" class="block text-xs font-semibold uppercase tracking-wider text-slate-400">Fecha de Retiro</label>
+                    <h3 class="text-sm font-bold text-slate-200">Registrar Recarga de Caja</h3>
+                    <p class="text-[10px] text-slate-500">Nuevo ingreso del banco</p>
+                </div>
+            </div>
+
+            <form action="{{ route('fondos-pagos.store') }}" method="POST" class="p-5 space-y-4">
+                @csrf
+
+                {{-- Fecha --}}
+                <div>
+                    <label for="fecha" class="block text-[10px] font-bold uppercase tracking-widest text-slate-400 mb-1.5">
+                        <i class="fa-regular fa-calendar mr-1"></i> Fecha de Retiro
+                    </label>
                     <input id="fecha" name="fecha" type="date" required value="{{ now()->toDateString() }}"
-                           class="mt-1 block w-full px-3 py-2 bg-slate-900 border border-slate-700 rounded-lg text-slate-100 focus:outline-none focus:ring-1 focus:ring-cyan-500 focus:border-cyan-500 text-sm font-mono">
+                           class="block w-full px-3 py-2.5 bg-slate-800 border border-slate-700 rounded-xl text-slate-200 focus:outline-none focus:ring-1 focus:ring-cyan-500 focus:border-cyan-500 text-sm font-mono transition-colors">
                 </div>
 
+                {{-- Monto --}}
                 <div>
-                    <label for="monto" class="block text-xs font-semibold uppercase tracking-wider text-slate-400 font-bold text-cyan-400">Monto Recarga (Bs.)</label>
-                    <div class="relative mt-1">
+                    <label for="monto" class="block text-[10px] font-bold uppercase tracking-widest text-cyan-400 mb-1.5">
+                        <i class="fa-solid fa-coins mr-1"></i> Monto Recarga (Bs.)
+                    </label>
+                    <div class="relative">
                         <input id="monto" name="monto" type="number" step="0.01" required min="0.01"
-                               placeholder="Ej. 1000.00"
-                               class="block w-full px-3 py-2.5 bg-slate-900 border border-cyan-500/30 rounded-lg text-slate-100 focus:outline-none focus:border-cyan-500 focus:ring-1 focus:ring-cyan-500 text-sm font-mono pr-8 font-bold">
-                        <span class="absolute right-3 top-3 text-xs text-cyan-500 font-bold font-mono">Bs.</span>
+                               placeholder="0.00"
+                               class="block w-full pl-3 pr-12 py-3 bg-slate-800 border border-cyan-500/40 rounded-xl text-slate-100 focus:outline-none focus:border-cyan-500 focus:ring-2 focus:ring-cyan-500/20 text-sm font-mono font-bold transition-all">
+                        <span class="absolute right-3 top-1/2 -translate-y-1/2 text-xs font-black text-cyan-400 pointer-events-none font-mono">Bs.</span>
                     </div>
                 </div>
 
+                {{-- Observación --}}
                 <div>
-                    <label for="observacion" class="block text-xs font-semibold uppercase tracking-wider text-slate-400">Observación / Origen</label>
+                    <label for="observacion" class="block text-[10px] font-bold uppercase tracking-widest text-slate-400 mb-1.5">
+                        <i class="fa-solid fa-note-sticky mr-1"></i> Observación / Origen
+                    </label>
                     <input id="observacion" name="observacion" type="text"
                            placeholder="Ej. Retiro Banco Unión - Fondeo semanal"
-                           class="mt-1 block w-full px-3 py-2 bg-slate-900 border border-slate-700 rounded-lg text-slate-100 focus:outline-none focus:ring-1 focus:ring-cyan-500 focus:border-cyan-500 text-sm">
+                           class="block w-full px-3 py-2.5 bg-slate-800 border border-slate-700 rounded-xl text-slate-200 focus:outline-none focus:ring-1 focus:ring-cyan-500 focus:border-cyan-500 text-sm transition-colors">
                 </div>
 
-                <button type="submit" class="w-full flex items-center justify-center px-4 py-2.5 rounded-lg bg-gradient-to-r from-cyan-500 to-blue-600 hover:from-cyan-600 hover:to-blue-700 text-sm font-bold text-white transition duration-150 shadow-lg shadow-cyan-500/10">
-                    <i class="fa-solid fa-cloud-arrow-up mr-2"></i> Confirmar Recarga
+                {{-- Botón --}}
+                <button type="submit"
+                    class="w-full flex items-center justify-center gap-2 py-3 rounded-xl bg-gradient-to-r from-cyan-500 to-blue-600 hover:from-cyan-400 hover:to-blue-500 text-white font-black text-sm shadow-lg shadow-cyan-500/25 hover:shadow-cyan-500/40 transition-all duration-200 hover:scale-[1.02] active:scale-95">
+                    <i class="fa-solid fa-cloud-arrow-up"></i>
+                    Confirmar Recarga
                 </button>
+
+                {{-- Tip --}}
+                <div class="flex gap-2 bg-cyan-500/5 border border-cyan-500/15 rounded-xl px-3 py-2.5 text-[10px] text-slate-500 leading-relaxed">
+                    <i class="fa-solid fa-circle-info text-cyan-500 mt-0.5 flex-shrink-0"></i>
+                    <span>Cada recarga sube el saldo disponible. Registra cada retiro del banco por separado.</span>
+                </div>
             </form>
         </div>
 
-        <!-- COL 2: Reload History List -->
-        <div class="glass-card rounded-xl p-6 lg:col-span-2 space-y-4">
-            <h3 class="text-md font-bold text-slate-200 border-b border-slate-800 pb-3 flex items-center">
-                <i class="fa-solid fa-list-check mr-2 text-cyan-500"></i> Historial de Movimientos de Recarga
-            </h3>
-            
-            <div class="overflow-x-auto">
-                <table class="min-w-full divide-y divide-slate-800">
-                    <thead>
-                        <tr class="text-left text-xs font-semibold text-slate-400 uppercase tracking-wider bg-slate-900/40">
-                            <th class="px-4 py-3 font-semibold">ID</th>
-                            <th class="px-4 py-3 font-semibold">Fecha</th>
-                            <th class="px-4 py-3 font-semibold">Monto</th>
-                            <th class="px-4 py-3 font-semibold">Origen / Glosa</th>
-                            <th class="px-4 py-3 font-semibold no-print">Acciones</th>
-                        </tr>
-                    </thead>
-                    <tbody class="divide-y divide-slate-800/40 text-sm text-slate-300">
-                        @forelse($fondos as $fondo)
-                            <tr class="hover:bg-slate-900/10 transition duration-150">
-                                <td class="px-4 py-3 font-mono text-xs">{{ $fondo->id }}</td>
-                                <td class="px-4 py-3 font-mono text-xs">{{ $fondo->fecha->format('d/m/Y') }}</td>
-                                <td class="px-4 py-3 font-mono font-bold text-cyan-400">Bs. {{ number_format($fondo->monto, 2) }}</td>
-                                <td class="px-4 py-3 text-slate-350">{{ $fondo->observacion ?: 'Fondeo de Caja' }}</td>
-                                <td class="px-4 py-3 no-print">
-                                    <form action="{{ route('fondos-pagos.destroy', $fondo->id) }}" method="POST" class="inline" onsubmit="return confirm('¿Estás seguro de eliminar este registro de recarga?')">
-                                        @csrf
-                                        @method('DELETE')
-                                        <button type="submit" class="p-1 rounded bg-slate-800 hover:bg-red-950 text-slate-300 hover:text-red-400 border border-slate-700/60 hover:border-red-500/30 transition duration-150" title="Eliminar">
-                                            <i class="fa-solid fa-trash text-xs"></i>
-                                        </button>
-                                    </form>
-                                </td>
-                            </tr>
-                        @empty
-                            <tr>
-                                <td colspan="5" class="px-4 py-8 text-center text-slate-500">
-                                    <i class="fa-solid fa-building-columns text-3xl mb-2 block text-slate-600"></i>
-                                    No se registran recargas de fondos desde el banco.
-                                </td>
-                            </tr>
-                        @endforelse
-                    </tbody>
-                </table>
+        {{-- ── Tabla Historial ── --}}
+        <div class="glass-card rounded-2xl overflow-hidden lg:col-span-2">
+            {{-- Table Header --}}
+            <div class="flex items-center justify-between px-6 py-4 border-b border-slate-800/60 bg-gradient-to-r from-slate-800/20 to-transparent">
+                <div class="flex items-center gap-3">
+                    <i class="fa-solid fa-clock-rotate-left text-cyan-400 text-sm"></i>
+                    <div>
+                        <h3 class="text-sm font-bold text-slate-200">Historial de Movimientos</h3>
+                        <p class="text-[10px] text-slate-500">Recargas desde el banco</p>
+                    </div>
+                </div>
+                <span class="text-[10px] font-bold text-slate-400 bg-slate-800/60 border border-slate-700/40 px-3 py-1 rounded-full">
+                    {{ count($fondos) }} {{ count($fondos) === 1 ? 'registro' : 'registros' }}
+                </span>
             </div>
-        </div>
 
+            @if(count($fondos) === 0)
+                <div class="flex flex-col items-center justify-center py-14 text-slate-500 gap-3">
+                    <div class="w-14 h-14 rounded-2xl bg-slate-800/50 flex items-center justify-center">
+                        <i class="fa-solid fa-building-columns text-2xl text-slate-600"></i>
+                    </div>
+                    <div class="text-center">
+                        <p class="text-sm font-semibold text-slate-400">Sin recargas registradas</p>
+                        <p class="text-xs text-slate-600 mt-0.5">Usa el formulario para registrar tu primer fondeo</p>
+                    </div>
+                </div>
+            @else
+                <div class="overflow-x-auto">
+                    <table class="w-full text-sm">
+                        <thead>
+                            <tr class="border-b border-slate-800/40">
+                                <th class="px-5 py-3 text-left text-[10px] font-bold uppercase tracking-widest text-slate-500">#</th>
+                                <th class="px-5 py-3 text-left text-[10px] font-bold uppercase tracking-widest text-slate-500">Fecha</th>
+                                <th class="px-5 py-3 text-left text-[10px] font-bold uppercase tracking-widest text-slate-500">Monto Ingresado</th>
+                                <th class="px-5 py-3 text-left text-[10px] font-bold uppercase tracking-widest text-slate-500">Origen / Glosa</th>
+                                <th class="px-5 py-3 text-center text-[10px] font-bold uppercase tracking-widest text-slate-500 no-print">Acción</th>
+                            </tr>
+                        </thead>
+                        <tbody class="divide-y divide-slate-800/20">
+                            @foreach($fondos as $i => $fondo)
+                            <tr class="hover:bg-slate-800/10 transition-colors duration-150 group">
+                                {{-- # --}}
+                                <td class="px-5 py-4 text-xs font-mono text-slate-500 font-bold">
+                                    {{ str_pad($i + 1, 2, '0', STR_PAD_LEFT) }}
+                                </td>
+                                {{-- Fecha --}}
+                                <td class="px-5 py-4">
+                                    <div class="flex items-center gap-2">
+                                        <i class="fa-regular fa-calendar text-slate-500 text-[11px]"></i>
+                                        <span class="font-mono text-xs text-slate-350">{{ $fondo->fecha->format('d/m/Y') }}</span>
+                                    </div>
+                                </td>
+                                {{-- Monto --}}
+                                <td class="px-5 py-4">
+                                    <span class="font-bold text-slate-100 font-mono text-sm">
+                                        <span class="text-cyan-500 font-normal mr-1">↑</span>Bs. {{ number_format($fondo->monto, 2) }}
+                                    </span>
+                                </td>
+                                {{-- Glosa --}}
+                                <td class="px-5 py-4 text-slate-400 text-xs">
+                                    {{ $fondo->observacion ?: 'Fondeo de Caja' }}
+                                </td>
+                                {{-- Acción --}}
+                                <td class="px-5 py-4 text-center no-print">
+                                    <div class="relative group/del inline-block">
+                                        <form action="{{ route('fondos-pagos.destroy', $fondo->id) }}" method="POST"
+                                              class="inline" onsubmit="return confirm('¿Estás seguro?')">
+                                            @csrf
+                                            @method('DELETE')
+                                            <button type="submit"
+                                                class="w-8 h-8 rounded-xl flex items-center justify-center bg-gradient-to-br from-rose-500 to-red-600 hover:from-rose-400 hover:to-red-500 text-white shadow-md shadow-rose-500/25 hover:shadow-rose-500/50 hover:scale-110 active:scale-95 transition-all duration-200">
+                                                <i class="fa-solid fa-trash text-xs"></i>
+                                            </button>
+                                        </form>
+                                        <span class="absolute -bottom-7 left-1/2 -translate-x-1/2 px-2 py-0.5 rounded-lg bg-slate-900 text-[10px] font-bold text-rose-400 whitespace-nowrap opacity-0 group-hover/del:opacity-100 transition-all duration-150 pointer-events-none border border-rose-500/30 shadow-xl z-50">Eliminar</span>
+                                    </div>
+                                </td>
+                            </tr>
+                            @endforeach
+                        </tbody>
+                        <tfoot>
+                            <tr class="border-t border-b border-slate-700/30">
+                                <td colspan="2" class="px-5 py-4 text-[10px] font-bold uppercase tracking-widest text-slate-500">
+                                    Total Acumulado
+                                </td>
+                                <td class="px-5 py-4 font-black text-slate-100 font-mono text-sm" colspan="3">
+                                    Bs. {{ number_format($total_recargado, 2) }}
+                                </td>
+                            </tr>
+                        </tfoot>
+                    </table>
+                </div>
+            @endif
+        </div>
     </div>
 
 </div>

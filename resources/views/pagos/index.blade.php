@@ -15,7 +15,7 @@
             <a href="{{ route('fondos-caja.index') }}" class="inline-flex items-center justify-center px-4 py-2.5 rounded-lg bg-slate-800 border border-slate-700 hover:bg-slate-750 text-sm font-bold text-slate-200 transition duration-150">
                 <i class="fa-solid fa-money-bill-trend-up mr-2 text-cyan-500"></i> Gestionar Fondos / Recargas
             </a>
-            <a href="{{ route('pagos.create') }}" class="inline-flex items-center justify-center px-4 py-2.5 rounded-lg bg-gradient-to-r from-amber-500 to-orange-600 hover:from-amber-600 hover:to-orange-700 text-sm font-bold text-slate-950 transition duration-150 shadow-lg shadow-orange-500/10">
+            <a href="{{ route('pagos.create') }}" class="inline-flex items-center justify-center px-4 py-2.5 rounded-lg bg-gradient-to-r from-teal-500 to-emerald-600 hover:from-teal-600 hover:to-emerald-700 text-sm font-bold text-slate-950 transition duration-150 shadow-lg shadow-teal-500/10">
                 <i class="fa-solid fa-receipt mr-2"></i> Procesar Nuevo Pago
             </a>
         </div>
@@ -60,7 +60,7 @@
     <div class="glass-card rounded-xl overflow-hidden">
         <div class="px-6 py-4 bg-slate-900/40 border-b border-slate-800 flex items-center justify-between">
             <h3 class="text-lg font-bold text-slate-100 flex items-center">
-                <i class="fa-solid fa-receipt mr-2 text-amber-500"></i> Historial de Liquidaciones de Pago
+                <i class="fa-solid fa-receipt mr-2 text-teal-500"></i> Historial de Liquidaciones de Pago
             </h3>
         </div>
         <div class="overflow-x-auto">
@@ -85,7 +85,7 @@
                             <td class="px-6 py-4 font-mono text-xs">{{ $pago->id }}</td>
                             <td class="px-6 py-4 font-mono text-xs">{{ $pago->fecha->format('d/m/Y') }}</td>
                             <td class="px-6 py-4 font-medium text-slate-100">{{ $pago->trabajador->nombre }}</td>
-                            <td class="px-6 py-4 text-xs font-medium">{{ $pago->trabajador->bocamina->nombre }}</td>
+                            <td class="px-6 py-4 text-xs font-medium">{{ $pago->trabajador->bocamina ? $pago->trabajador->bocamina->nombre : 'Sin Bocamina' }}</td>
                             <td class="px-6 py-4 font-mono text-xs">Bs. {{ number_format($pago->subtotal, 2) }}</td>
                             <td class="px-6 py-4 font-mono text-xs text-emerald-400">+Bs. {{ number_format($pago->bonos, 2) }}</td>
                             <td class="px-6 py-4 font-mono text-xs text-red-400">-Bs. {{ number_format($pago->descuentos, 2) }}</td>
@@ -114,7 +114,7 @@
                                 </div>
                             </td>
                             <td class="px-6 py-4 no-print">
-                                <a href="{{ route('pagos.show', $pago->id) }}" class="inline-flex items-center px-3 py-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-200 hover:text-amber-500 text-xs font-medium transition duration-150">
+                                <a href="{{ route('pagos.show', $pago->id) }}" class="inline-flex items-center px-3 py-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-200 hover:text-teal-400 text-xs font-medium transition duration-150">
                                     <i class="fa-solid fa-print mr-1.5"></i> Imprimir Recibo
                                 </a>
                             </td>

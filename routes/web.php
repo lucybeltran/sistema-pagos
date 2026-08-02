@@ -35,8 +35,7 @@ Route::middleware('auth')->group(function () {
     // Trabajadores
     Route::resource('trabajadores', TrabajadorController::class)->only(['index', 'store', 'update', 'destroy'])->parameters(['trabajadores' => 'trabajador']);
 
-    // Contratos
-    Route::resource('contratos', ContratoController::class);
+
 
     // Registro de Trabajos
     // Route::resource('trabajos', TrabajoController::class)->only(['index', 'store', 'update', 'destroy']);
@@ -60,4 +59,17 @@ Route::middleware('auth')->group(function () {
 
     // Reportes
     Route::get('/reportes', [ReporteController::class, 'index'])->name('reportes.index');
+    Route::get('/reportes-comercializacion', [ReporteController::class, 'comercializacion'])->name('reportes-comercializacion.index');
+
+    // Copias de Seguridad (Backups)
+    Route::get('/backups', [App\Http\Controllers\BackupController::class, 'index'])->name('backups.index');
+    Route::post('/backups', [App\Http\Controllers\BackupController::class, 'store'])->name('backups.store');
+    Route::get('/backups/descargar/{filename}', [App\Http\Controllers\BackupController::class, 'download'])->name('backups.download');
+    Route::post('/backups/restaurar', [App\Http\Controllers\BackupController::class, 'restore'])->name('backups.restore');
+    Route::post('/backups/configurar', [App\Http\Controllers\BackupController::class, 'saveSettings'])->name('backups.configurar');
+    Route::delete('/backups/eliminar/{filename}', [App\Http\Controllers\BackupController::class, 'destroy'])->name('backups.destroy');
+
+    // Perfil de Usuario
+    Route::get('/perfil', [App\Http\Controllers\ProfileController::class, 'edit'])->name('profile.edit');
+    Route::post('/perfil', [App\Http\Controllers\ProfileController::class, 'update'])->name('profile.update');
 });

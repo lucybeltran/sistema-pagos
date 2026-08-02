@@ -8,21 +8,32 @@ class Trabajador extends Model
 {
     protected $table = 'trabajadores';
 
-    protected $fillable = ['ci', 'nombre', 'telefono', 'bocamina_id', 'rol', 'estado'];
+    protected $fillable = [
+        'codigo',
+        'ci', 
+        'nombre', 
+        'telefono', 
+        'rol', 
+        'estado', 
+        'observaciones',
+        'bocamina_id',
+        'tipo_contrato_id',
+        'fecha_contrato',
+        'tarifa_acordada'
+    ];
+
+    protected $casts = [
+        'fecha_contrato' => 'date',
+    ];
 
     public function bocamina()
     {
         return $this->belongsTo(Bocamina::class);
     }
 
-    public function contratos()
+    public function tipoContrato()
     {
-        return $this->hasMany(Contrato::class);
-    }
-
-    public function trabajos()
-    {
-        return $this->hasMany(Trabajo::class);
+        return $this->belongsTo(TipoContrato::class, 'tipo_contrato_id');
     }
 
     public function anticipos()

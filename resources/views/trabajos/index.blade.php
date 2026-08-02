@@ -80,11 +80,12 @@
 
     <!-- Filters Section -->
     <div class="glass-card rounded-xl p-6 no-print">
-        <form action="{{ route('trabajos.index') }}" method="GET" class="grid grid-cols-1 gap-4 sm:grid-cols-4 items-end">
+        <form action="{{ route('trabajos.index') }}" method="GET" onsubmit="event.preventDefault(); submitFilterRealTime(this);" class="grid grid-cols-1 gap-4 sm:grid-cols-4 items-end">
             <div>
                 <label for="trabajador_id_filter" class="block text-xs font-semibold uppercase tracking-wider text-slate-400">Trabajador / Contratista</label>
                 <select name="trabajador_id" id="trabajador_id_filter" 
-                        class="mt-1 block w-full px-3 py-2 bg-slate-900 border border-slate-700/80 rounded-lg text-slate-100 focus:outline-none focus:ring-1 focus:ring-amber-500 focus:border-amber-500 text-sm">
+                        onchange="submitFilterRealTime(this.form)"
+                        class="mt-1 block w-full px-3 py-2 bg-slate-900 border border-slate-700/80 rounded-lg text-slate-100 focus:outline-none focus:ring-1 focus:ring-sky-500 focus:border-sky-500 text-sm">
                     <option value="">Todos los Trabajadores / Contratistas</option>
                     @foreach($trabajadores as $trabajador)
                         <option value="{{ $trabajador->id }}" {{ request('trabajador_id') == $trabajador->id ? 'selected' : '' }}>{{ $trabajador->nombre }}</option>
@@ -95,19 +96,22 @@
             <div>
                 <label for="fecha_desde" class="block text-xs font-semibold uppercase tracking-wider text-slate-400">Fecha Desde</label>
                 <input type="date" name="fecha_desde" id="fecha_desde" value="{{ request('fecha_desde') }}" 
-                       class="mt-1 block w-full px-3 py-2 bg-slate-900 border border-slate-700/80 rounded-lg text-slate-100 focus:outline-none focus:ring-1 focus:ring-amber-500 focus:border-amber-500 text-sm font-mono">
+                       onchange="submitFilterRealTime(this.form)"
+                       class="mt-1 block w-full px-3 py-2 bg-slate-900 border border-slate-700/80 rounded-lg text-slate-100 focus:outline-none focus:ring-1 focus:ring-sky-500 focus:border-sky-500 text-sm font-mono">
             </div>
 
             <div>
                 <label for="fecha_hasta" class="block text-xs font-semibold uppercase tracking-wider text-slate-400">Fecha Hasta</label>
                 <input type="date" name="fecha_hasta" id="fecha_hasta" value="{{ request('fecha_hasta') }}" 
-                       class="mt-1 block w-full px-3 py-2 bg-slate-900 border border-slate-700/80 rounded-lg text-slate-100 focus:outline-none focus:ring-1 focus:ring-amber-500 focus:border-amber-500 text-sm font-mono">
+                       onchange="submitFilterRealTime(this.form)"
+                       class="mt-1 block w-full px-3 py-2 bg-slate-900 border border-slate-700/80 rounded-lg text-slate-100 focus:outline-none focus:ring-1 focus:ring-sky-500 focus:border-sky-500 text-sm font-mono">
             </div>
 
             <div>
                 <label for="pagado_filter" class="block text-xs font-semibold uppercase tracking-wider text-slate-400">Estado Pago</label>
                 <select name="pagado" id="pagado_filter" 
-                        class="mt-1 block w-full px-3 py-2 bg-slate-900 border border-slate-700/80 rounded-lg text-slate-100 focus:outline-none focus:ring-1 focus:ring-amber-500 focus:border-amber-500 text-sm">
+                        onchange="submitFilterRealTime(this.form)"
+                        class="mt-1 block w-full px-3 py-2 bg-slate-900 border border-slate-700/80 rounded-lg text-slate-100 focus:outline-none focus:ring-1 focus:ring-sky-500 focus:border-sky-500 text-sm">
                     <option value="">Todos</option>
                     <option value="si" {{ request('pagado') === 'si' ? 'selected' : '' }}>Pagado</option>
                     <option value="no" {{ request('pagado') === 'no' ? 'selected' : '' }}>Pendiente</option>
@@ -115,18 +119,15 @@
             </div>
 
             <div class="col-span-full sm:col-span-1 flex space-x-2">
-                <button type="submit" class="flex-1 inline-flex items-center justify-center px-4 py-2 bg-slate-800 border border-slate-700 hover:bg-slate-700 text-sm font-medium text-slate-200 rounded-lg transition duration-150">
-                    <i class="fa-solid fa-magnifying-glass mr-2"></i> Filtrar
+                <button type="button" onclick="document.getElementById('trabajador_id_filter').value = ''; document.getElementById('fecha_desde').value = ''; document.getElementById('fecha_hasta').value = ''; document.getElementById('pagado_filter').value = ''; submitFilterRealTime(this.form);" class="btn-vibrant-warm flex-1 inline-flex items-center justify-center px-4 py-2 text-sm font-bold rounded-lg shadow-lg" title="Limpiar Filtros">
+                    <i class="fa-solid fa-rotate-left mr-2"></i> Limpiar
                 </button>
-                <a href="{{ route('trabajos.index') }}" class="inline-flex items-center justify-center px-3 py-2 bg-slate-900 border border-slate-800 hover:bg-slate-800 text-sm font-medium text-slate-400 rounded-lg transition duration-150" title="Limpiar Filtros">
-                    <i class="fa-solid fa-rotate-left"></i>
-                </a>
             </div>
         </form>
     </div>
 
     <!-- Table Section -->
-    <div class="glass-card rounded-xl overflow-hidden">
+    <div id="table-container" class="glass-card rounded-xl overflow-hidden">
         <div class="overflow-x-auto">
             <table class="min-w-full divide-y divide-slate-800">
                 <thead>
@@ -149,23 +150,23 @@
                             <td class="px-6 py-4 text-xs font-medium">{{ $trabajo->trabajador->bocamina->nombre }}</td>
                             <td class="px-6 py-4">
                                 @if($trabajo->contrato)
-                                    <span class="text-xs text-amber-500 font-mono block">{{ $trabajo->contrato->codigo }}</span>
+                                    <span class="text-xs text-sky-500 font-mono block">{{ $trabajo->contrato->codigo }}</span>
                                 @endif
                                 <span class="capitalize text-slate-300">{{ $trabajo->tipo }}</span>
                             </td>
                             <td class="px-6 py-4 font-mono text-xs">
                                 {{ number_format($trabajo->cantidad, 2) }} × Bs. {{ number_format($trabajo->precio_unitario, 2) }}
                             </td>
-                            <td class="px-6 py-4 font-mono font-medium text-amber-500">Bs. {{ number_format($trabajo->subtotal, 2) }}</td>
+                            <td class="px-6 py-4 font-mono font-medium text-sky-500">Bs. {{ number_format($trabajo->subtotal, 2) }}</td>
                             <td class="px-6 py-4">
-                                <span class="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-semibold {{ $trabajo->pagado ? 'bg-emerald-500/10 text-emerald-400 border border-emerald-500/25' : 'bg-amber-500/10 text-amber-400 border border-amber-500/25' }}">
+                                <span class="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-semibold {{ $trabajo->pagado ? 'bg-emerald-500/10 text-emerald-400 border border-emerald-500/25' : 'bg-sky-500/10 text-amber-400 border border-sky-500/25' }}">
                                     {{ $trabajo->pagado ? 'Pagado' : 'Pendiente' }}
                                 </span>
                             </td>
                             <td class="px-6 py-4 no-print">
                                 @if(!$trabajo->pagado)
                                     <div class="flex space-x-2">
-                                        <button @click="openEdit({{ $trabajo }})" class="p-1.5 rounded bg-slate-800 hover:bg-slate-700 text-slate-300 hover:text-amber-500 transition duration-150" title="Editar">
+                                        <button @click="openEdit({{ $trabajo }})" class="p-1.5 rounded bg-slate-800 hover:bg-slate-700 text-slate-300 hover:text-sky-500 transition duration-150" title="Editar">
                                             <i class="fa-solid fa-pen-to-square text-xs"></i>
                                         </button>
                                         <form action="{{ route('trabajos.destroy', $trabajo->id) }}" method="POST" class="inline" onsubmit="return confirm('¿Estás seguro de eliminar este trabajo?')">
@@ -217,7 +218,7 @@
                         <label for="modal_trabajador" class="block text-sm font-medium text-slate-300">Trabajador / Contratista</label>
                         <select id="modal_trabajador" name="trabajador_id" required x-model="trabajador_id" @change="contrato_id = ''"
                                 :disabled="editMode"
-                                class="mt-1 block w-full px-3 py-2 bg-slate-900 border border-slate-700 rounded-lg text-slate-100 focus:outline-none focus:ring-1 focus:ring-amber-500 focus:border-amber-500 text-sm">
+                                class="mt-1 block w-full px-3 py-2 bg-slate-900 border border-slate-700 rounded-lg text-slate-100 focus:outline-none focus:ring-1 focus:ring-sky-500 focus:border-sky-500 text-sm">
                             <option value="">Seleccione trabajador / contratista...</option>
                             @foreach($trabajadores as $trabajador)
                                 <option value="{{ $trabajador->id }}">{{ $trabajador->nombre }} (CI: {{ $trabajador->ci }})</option>
@@ -232,7 +233,7 @@
                     <div x-show="filteredContratos.length > 0">
                         <label for="modal_contrato" class="block text-sm font-medium text-slate-300">Asociar a Contrato de Avance</label>
                         <select id="modal_contrato" name="contrato_id" x-model="contrato_id" @change="onContractChange()"
-                                class="mt-1 block w-full px-3 py-2 bg-slate-900 border border-slate-700 rounded-lg text-slate-100 focus:outline-none focus:ring-1 focus:ring-amber-500 focus:border-amber-500 text-sm">
+                                class="mt-1 block w-full px-3 py-2 bg-slate-900 border border-slate-700 rounded-lg text-slate-100 focus:outline-none focus:ring-1 focus:ring-sky-500 focus:border-sky-500 text-sm">
                             <option value="">No asociar (trabajo por fuera de contrato)</option>
                             <template x-for="c in filteredContratos" :key="c.id">
                                 <option :value="c.id" x-text="c.codigo + ' - ' + c.descripcion.substring(0,25) + '...'"></option>
@@ -243,20 +244,20 @@
                     <div>
                         <label for="modal_fecha" class="block text-sm font-medium text-slate-300">Fecha</label>
                         <input id="modal_fecha" name="fecha" type="date" required x-model="fecha"
-                               class="mt-1 block w-full px-3 py-2 bg-slate-900 border border-slate-700 rounded-lg text-slate-100 focus:outline-none focus:ring-1 focus:ring-amber-500 focus:border-amber-500 text-sm font-mono">
+                               class="mt-1 block w-full px-3 py-2 bg-slate-900 border border-slate-700 rounded-lg text-slate-100 focus:outline-none focus:ring-1 focus:ring-sky-500 focus:border-sky-500 text-sm font-mono">
                     </div>
 
                     <div class="grid grid-cols-2 gap-4">
                         <div>
                             <label for="modal_tipo" class="block text-sm font-medium text-slate-300">Tipo / Unidad</label>
                             <input id="modal_tipo" name="tipo" type="text" required x-model="tipo"
-                                   class="mt-1 block w-full px-3 py-2 bg-slate-900 border border-slate-700 rounded-lg text-slate-100 focus:outline-none focus:ring-1 focus:ring-amber-500 focus:border-amber-500 text-sm"
+                                   class="mt-1 block w-full px-3 py-2 bg-slate-900 border border-slate-700 rounded-lg text-slate-100 focus:outline-none focus:ring-1 focus:ring-sky-500 focus:border-sky-500 text-sm"
                                    placeholder="Ej. metro, volqueta">
                         </div>
                         <div>
                             <label for="modal_cantidad" class="block text-sm font-medium text-slate-300">Cantidad</label>
                             <input id="modal_cantidad" name="cantidad" type="number" step="0.01" required x-model="cantidad"
-                                   class="mt-1 block w-full px-3 py-2 bg-slate-900 border border-slate-700 rounded-lg text-slate-100 focus:outline-none focus:ring-1 focus:ring-amber-500 focus:border-amber-500 text-sm font-mono"
+                                   class="mt-1 block w-full px-3 py-2 bg-slate-900 border border-slate-700 rounded-lg text-slate-100 focus:outline-none focus:ring-1 focus:ring-sky-500 focus:border-sky-500 text-sm font-mono"
                                    placeholder="Ej. 15.00">
                         </div>
                     </div>
@@ -264,21 +265,21 @@
                     <div>
                         <label for="modal_precio_unitario" class="block text-sm font-medium text-slate-300">Precio Unitario (Bs.)</label>
                         <input id="modal_precio_unitario" name="precio_unitario" type="number" step="0.01" required x-model="precio_unitario"
-                               class="mt-1 block w-full px-3 py-2 bg-slate-900 border border-slate-700 rounded-lg text-slate-100 focus:outline-none focus:ring-1 focus:ring-amber-500 focus:border-amber-500 text-sm font-mono"
+                               class="mt-1 block w-full px-3 py-2 bg-slate-900 border border-slate-700 rounded-lg text-slate-100 focus:outline-none focus:ring-1 focus:ring-sky-500 focus:border-sky-500 text-sm font-mono"
                                placeholder="Ej. 500.00">
                     </div>
 
                     <div>
                         <label for="modal_observacion" class="block text-sm font-medium text-slate-300">Observación</label>
                         <input id="modal_observacion" name="observacion" type="text" x-model="observacion"
-                               class="mt-1 block w-full px-3 py-2 bg-slate-900 border border-slate-700 rounded-lg text-slate-100 focus:outline-none focus:ring-1 focus:ring-amber-500 focus:border-amber-500 text-sm"
+                               class="mt-1 block w-full px-3 py-2 bg-slate-900 border border-slate-700 rounded-lg text-slate-100 focus:outline-none focus:ring-1 focus:ring-sky-500 focus:border-sky-500 text-sm"
                                placeholder="Ej. Sector galería 3">
                     </div>
                     
                     <!-- Live Subtotal Calculation -->
                     <div class="p-3 bg-slate-900/60 border border-slate-800 rounded-lg flex justify-between items-center text-sm">
                         <span class="text-slate-400 font-medium">Subtotal Estimado:</span>
-                        <span class="text-amber-500 font-bold font-mono text-base" x-text="isNaN(cantidad * precio_unitario) ? 'Bs. 0.00' : 'Bs. ' + (cantidad * precio_unitario).toFixed(2)"></span>
+                        <span class="text-sky-500 font-bold font-mono text-base" x-text="isNaN(cantidad * precio_unitario) ? 'Bs. 0.00' : 'Bs. ' + (cantidad * precio_unitario).toFixed(2)"></span>
                     </div>
                 </div>
 

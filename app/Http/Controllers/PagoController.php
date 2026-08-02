@@ -4,36 +4,47 @@ namespace App\Http\Controllers;
 
 use App\Models\Pago;
 use App\Models\Trabajador;
-use App\Models\Trabajo;
 use App\Models\Anticipo;
+use App\Models\Contrato;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 
 class PagoController extends Controller
 {
-    public function index()
+    public function index(Request $request)
     {
-        $pagos = Pago::with('trabajador.bocamina')->orderBy('fecha', 'desc')->get();
-        $fondos = \App\Models\FondoPago::orderBy('fecha', 'desc')->orderBy('id', 'desc')->get();
-        
+        $query = Pago::with(['trabajador']);
+
+        if ($request->filled('buscar')) {
+            $buscar = $request->buscar;
+            $query->whereHas('trabajador', function($q) use ($buscar) {
+                $q->where('nombre', 'like', "%{$buscar}%");
+            });
+        }
+
+        if ($request->filled('fecha_desde')) {
+            $query->whereDate('fecha', '>=', $request->fecha_desde);
+        }
+
+        if ($request->filled('fecha_hasta')) {
+            $query->whereDate('fecha', '<=', $request->fecha_hasta);
+        }
+
+        $pagos = $query->orderBy('fecha', 'desc')->get();
+
+        // Calculate totals for summary cards
         $total_recargado = \App\Models\FondoPago::sum('monto');
         $total_gastado_pagos = Pago::sum('monto_pagado');
-        $total_gastado_anticipos = Anticipo::sum('monto');
+        $total_gastado_anticipos = \App\Models\Anticipo::sum('monto');
         $total_gastado = $total_gastado_pagos + $total_gastado_anticipos;
         $saldo_caja = $total_recargado - $total_gastado;
 
-        return view('pagos.index', compact(
-            'pagos',
-            'fondos',
-            'total_recargado',
-            'total_gastado',
-            'saldo_caja'
-        ));
+        return view('pagos.index', compact('pagos', 'total_recargado', 'total_gastado', 'saldo_caja'));
     }
 
     public function fondosIndex()
     {
-        $fondos = \App\Models\FondoPago::orderBy('fecha', 'desc')->orderBy('id', 'desc')->get();
+        $fondos = \App\Models\FondoPago::orderBy('fecha', 'desc')->get();
         
         $total_recargado = \App\Models\FondoPago::sum('monto');
         $total_gastado_pagos = Pago::sum('monto_pagado');
@@ -72,9 +83,12 @@ class PagoController extends Controller
 
     public function create()
     {
-        $trabajadores = Trabajador::with('bocamina')->where('estado', 'activo')->get();
+        $trabajadores = Trabajador::with(['bocamina', 'tipoContrato'])
+                                  ->where('estado', 'activo')
+                                  ->orderBy('nombre')
+                                  ->get();
         $bocaminas = \App\Models\Bocamina::all();
-
+        
         $total_recargado = \App\Models\FondoPago::sum('monto');
         $total_gastado_pagos = Pago::sum('monto_pagado');
         $total_gastado_anticipos = Anticipo::sum('monto');
@@ -85,14 +99,8 @@ class PagoController extends Controller
 
     public function getTrabajadorData($id)
     {
-        $trabajador = Trabajador::with('bocamina')->findOrFail($id);
+        $trabajador = Trabajador::with(['bocamina', 'tipoContrato'])->findOrFail($id);
         
-        // Unpaid works
-        $trabajos = Trabajo::where('trabajador_id', $id)
-                            ->where('pagado', false)
-                            ->orderBy('fecha', 'asc')
-                            ->get();
-
         // Pending advances
         $anticipos = Anticipo::where('trabajador_id', $id)
                               ->where('saldo', '>', 0)
@@ -107,12 +115,14 @@ class PagoController extends Controller
 
         return response()->json([
             'trabajador' => $trabajador,
-            'trabajos' => $trabajos,
+            'bocamina_nombre' => $trabajador->bocamina ? $trabajador->bocamina->nombre : 'Sin Bocamina Asignada',
+            'cargo' => $trabajador->rol ?: 'ayudante',
+            'tipo_contrato_nombre' => $trabajador->tipoContrato ? $trabajador->tipoContrato->nombre : 'Sin Tipo de Contrato',
+            'tarifa_acordada' => $trabajador->tarifa_acordada ? (float)$trabajador->tarifa_acordada : 0.00,
             'anticipos' => $anticipos,
-            'subtotal' => $trabajos->sum('subtotal'),
-            'total_anticipos_pendientes' => $anticipos->sum('saldo'),
+            'total_anticipos_pendientes' => (float)$anticipos->sum('saldo'),
             'saldos_pendientes' => $saldosPendientes,
-            'total_saldos_pendientes' => $saldosPendientes->sum('saldo_pendiente'),
+            'total_saldos_pendientes' => (float)$saldosPendientes->sum('saldo_pendiente'),
         ]);
     }
 
@@ -121,7 +131,9 @@ class PagoController extends Controller
         $request->validate([
             'trabajador_id' => 'required|exists:trabajadores,id',
             'fecha' => 'required|date',
-            'subtotal' => 'required|numeric|min:0',
+            'tarifa_pago' => 'required|numeric|min:0',
+            'cantidad_trabajada' => 'required|numeric|min:0',
+            'tipo_contrato_nombre' => 'required|string|max:255',
             'bonos' => 'required|numeric|min:0',
             'descuentos' => 'required|numeric|min:0',
             'monto_pagado' => 'nullable|numeric|min:0',
@@ -134,7 +146,12 @@ class PagoController extends Controller
         ]);
 
         $trabajadorId = $request->trabajador_id;
-        $subtotal = (float) $request->subtotal;
+        $tarifaPago = (float) $request->tarifa_pago;
+        $cantidadTrabajada = (float) $request->cantidad_trabajada;
+        
+        // Calculate subtotal = tarifa * cantidad
+        $subtotal = $tarifaPago * $cantidadTrabajada;
+        
         $bonos = (float) $request->bonos;
         $descuentos = (float) $request->descuentos;
         $montoPagado = $request->has('monto_pagado') && $request->monto_pagado !== null ? (float) $request->monto_pagado : null;
@@ -145,13 +162,8 @@ class PagoController extends Controller
         }
 
         // Perform the entire payment process inside a transaction
-        $pago = DB::transaction(function() use ($trabajadorId, $subtotal, $bonos, $descuentos, $montoPagado, $tipoCambio, $request) {
+        $pago = DB::transaction(function() use ($trabajadorId, $subtotal, $tarifaPago, $cantidadTrabajada, $bonos, $descuentos, $montoPagado, $tipoCambio, $request) {
             
-            // Get unpaid works
-            $trabajos = Trabajo::where('trabajador_id', $trabajadorId)
-                                ->where('pagado', false)
-                                ->get();
-
             // Load outstanding pending balances from previous payments
             $prevSaldos = Pago::where('trabajador_id', $trabajadorId)
                               ->where('saldo_pendiente', '>', 0)
@@ -238,6 +250,9 @@ class PagoController extends Controller
             $pago = Pago::create([
                 'trabajador_id' => $trabajadorId,
                 'fecha' => $request->fecha,
+                'tarifa_pago' => $tarifaPago,
+                'cantidad_trabajada' => $cantidadTrabajada,
+                'tipo_contrato_nombre' => $request->tipo_contrato_nombre,
                 'subtotal' => $subtotal,
                 'bonos' => $bonos,
                 'descuentos' => $descuentos,
@@ -260,13 +275,6 @@ class PagoController extends Controller
                     ->update(['saldo_liquidado' => true]);
             }
 
-            // Mark works as paid and link to Pago
-            foreach ($trabajos as $trabajo) {
-                $trabajo->pagado = true;
-                $trabajo->pago_id = $pago->id;
-                $trabajo->save();
-            }
-
             // Link advances to Pago in pivot table
             if (!empty($deduccionesDetalle)) {
                 $pago->anticipos()->attach($deduccionesDetalle);
@@ -281,8 +289,7 @@ class PagoController extends Controller
     public function show(Pago $pago)
     {
         $pago->load([
-            'trabajador.bocamina',
-            'trabajos',
+            'trabajador.tipoContrato',
             'anticipos' => function($q) {
                 $q->withPivot('monto_descontado');
             }

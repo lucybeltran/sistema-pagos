@@ -15,11 +15,12 @@
 
     <!-- Filters Section -->
     <div class="glass-card rounded-xl p-6 no-print">
-        <form action="{{ route('anticipos.index') }}" method="GET" class="grid grid-cols-1 gap-4 sm:grid-cols-4 items-end">
+        <form action="{{ route('anticipos.index') }}" method="GET" onsubmit="event.preventDefault(); submitFilterRealTime(this);" class="grid grid-cols-1 gap-4 sm:grid-cols-4 items-end">
             <div>
                 <label for="bocamina_id_filter" class="block text-xs font-semibold uppercase tracking-wider text-slate-400">Bocamina</label>
                 <select name="bocamina_id" id="bocamina_id_filter" 
-                        class="mt-1 block w-full px-3 py-2 bg-slate-900 border border-slate-700/80 rounded-lg text-slate-100 focus:outline-none focus:ring-1 focus:ring-amber-500 focus:border-amber-500 text-sm">
+                        onchange="submitFilterRealTime(this.form)"
+                        class="mt-1 block w-full px-3 py-2 bg-slate-900 border border-slate-700/80 rounded-lg text-slate-100 focus:outline-none focus:ring-1 focus:ring-rose-500 focus:border-rose-500 text-sm">
                     <option value="">Todas las Bocaminas</option>
                     @foreach($bocaminas as $bocamina)
                         <option value="{{ $bocamina->id }}" {{ request('bocamina_id') == $bocamina->id ? 'selected' : '' }}>{{ $bocamina->nombre }}</option>
@@ -30,7 +31,8 @@
             <div>
                 <label for="trabajador_id_filter" class="block text-xs font-semibold uppercase tracking-wider text-slate-400">Trabajador / Contratista</label>
                 <select name="trabajador_id" id="trabajador_id_filter" 
-                        class="mt-1 block w-full px-3 py-2 bg-slate-900 border border-slate-700/80 rounded-lg text-slate-100 focus:outline-none focus:ring-1 focus:ring-amber-500 focus:border-amber-500 text-sm">
+                        onchange="submitFilterRealTime(this.form)"
+                        class="mt-1 block w-full px-3 py-2 bg-slate-900 border border-slate-700/80 rounded-lg text-slate-100 focus:outline-none focus:ring-1 focus:ring-rose-500 focus:border-rose-500 text-sm">
                     <option value="">Todos los Trabajadores / Contratistas</option>
                     @foreach($trabajadores as $trabajador)
                         <option value="{{ $trabajador->id }}" {{ request('trabajador_id') == $trabajador->id ? 'selected' : '' }}>{{ $trabajador->nombre }}</option>
@@ -41,7 +43,8 @@
             <div>
                 <label for="estado_filter" class="block text-xs font-semibold uppercase tracking-wider text-slate-400">Estado de Saldo</label>
                 <select name="estado" id="estado_filter" 
-                        class="mt-1 block w-full px-3 py-2 bg-slate-900 border border-slate-700/80 rounded-lg text-slate-100 focus:outline-none focus:ring-1 focus:ring-amber-500 focus:border-amber-500 text-sm">
+                        onchange="submitFilterRealTime(this.form)"
+                        class="mt-1 block w-full px-3 py-2 bg-slate-900 border border-slate-700/80 rounded-lg text-slate-100 focus:outline-none focus:ring-1 focus:ring-rose-500 focus:border-rose-500 text-sm">
                     <option value="">Todos los Anticipos</option>
                     <option value="pendiente" {{ request('estado') === 'pendiente' ? 'selected' : '' }}>Con Saldo Pendiente</option>
                     <option value="pagado" {{ request('estado') === 'pagado' ? 'selected' : '' }}>Totalmente Descontados</option>
@@ -49,18 +52,15 @@
             </div>
 
             <div class="flex space-x-2">
-                <button type="submit" class="flex-1 inline-flex items-center justify-center px-4 py-2 bg-slate-800 border border-slate-700 hover:bg-slate-700 text-sm font-medium text-slate-200 rounded-lg transition duration-150">
-                    <i class="fa-solid fa-magnifying-glass mr-2"></i> Filtrar
+                <button type="button" onclick="document.getElementById('bocamina_id_filter').value = ''; document.getElementById('trabajador_id_filter').value = ''; document.getElementById('estado_filter').value = ''; submitFilterRealTime(this.form);" class="btn-vibrant-warm flex-1 inline-flex items-center justify-center px-4 py-2 text-sm font-bold rounded-lg shadow-lg" title="Limpiar Filtros">
+                    <i class="fa-solid fa-rotate-left mr-2"></i> Limpiar
                 </button>
-                <a href="{{ route('anticipos.index') }}" class="inline-flex items-center justify-center px-3 py-2 bg-slate-900 border border-slate-800 hover:bg-slate-800 text-sm font-medium text-slate-400 rounded-lg transition duration-150" title="Limpiar Filtros">
-                    <i class="fa-solid fa-rotate-left"></i>
-                </a>
             </div>
         </form>
     </div>
 
     <!-- Table Section -->
-    <div class="glass-card rounded-xl overflow-hidden">
+    <div id="table-container" class="glass-card rounded-xl overflow-hidden">
         <div class="overflow-x-auto">
             <table class="min-w-full divide-y divide-slate-800">
                 <thead>
@@ -81,9 +81,9 @@
                             <td class="px-6 py-4 font-mono text-xs">{{ $anticipo->id }}</td>
                             <td class="px-6 py-4 font-mono text-xs">{{ $anticipo->fecha->format('d/m/Y') }}</td>
                             <td class="px-6 py-4 font-medium text-slate-100">{{ $anticipo->trabajador->nombre }}</td>
-                            <td class="px-6 py-4 text-xs">{{ $anticipo->trabajador->bocamina->nombre }}</td>
+                            <td class="px-6 py-4 text-xs">{{ $anticipo->trabajador->bocamina ? $anticipo->trabajador->bocamina->nombre : 'Sin Bocamina' }}</td>
                             <td class="px-6 py-4 font-mono font-medium text-slate-200">Bs. {{ number_format($anticipo->monto, 2) }}</td>
-                            <td class="px-6 py-4 font-mono font-bold text-amber-500">Bs. {{ number_format($anticipo->saldo, 2) }}</td>
+                            <td class="px-6 py-4 font-mono font-bold text-rose-500">Bs. {{ number_format($anticipo->saldo, 2) }}</td>
                             <td class="px-6 py-4">
                                 <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-semibold {{ $anticipo->saldo == 0 ? 'bg-slate-800 text-slate-400 border border-slate-700' : 'bg-red-500/10 text-red-400 border border-red-500/25' }}">
                                     {{ $anticipo->saldo == 0 ? 'Descontado' : 'Pendiente' }}

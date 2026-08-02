@@ -3,56 +3,178 @@
 @section('title', 'Vale de Anticipo #' . str_pad($anticipo->id, 5, '0', STR_PAD_LEFT))
 
 @section('content')
+<!-- Custom Styles for Premium Receipt and Print layout -->
+<style>
+    /* Premium Gym-Catharsis High-Contrast styling for printable receipt container */
+    .receipt-card-wrapper {
+        background: #ffffff !important;
+        color: #0f172a !important;
+        border-radius: 20px !important;
+        border: 2px solid #0f172a !important;
+        box-shadow: 0 10px 30px rgba(15, 23, 42, 0.08) !important;
+        position: relative !important;
+        overflow: hidden !important;
+    }
+
+    .receipt-card-wrapper::before {
+        content: '' !important;
+        position: absolute !important;
+        top: 0 !important;
+        left: 0 !important;
+        right: 0 !important;
+        height: 6px !important;
+        background: linear-gradient(90deg, #10b981, #0ea5e9, #6366f1) !important;
+        z-index: 10 !important;
+    }
+
+    /* Print styles to guarantee exact copy on standard A4 paper */
+    @media print {
+        body {
+            background: #ffffff !important;
+            color: #000000 !important;
+        }
+        .no-print {
+            display: none !important;
+        }
+        .receipt-card-wrapper {
+            border: none !important;
+            box-shadow: none !important;
+            border-radius: 0 !important;
+            padding: 0 !important;
+            margin: 0 !important;
+            background: #ffffff !important;
+        }
+        .receipt-card-wrapper::before {
+            display: none !important;
+        }
+        .print-container {
+            border: 2px solid #000000 !important;
+            border-radius: 8px !important;
+            padding: 1.5rem !important;
+        }
+    }
+
+    /* 3D button styling */
+    .btn-3d-receipt {
+        border-radius: 12px !important;
+        font-weight: 800 !important;
+        text-transform: uppercase !important;
+        letter-spacing: 0.05em !important;
+        transition: all 0.15s ease !important;
+        cursor: pointer !important;
+    }
+
+    .btn-3d-receipt-pdf {
+        background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%) !important;
+        color: #ffffff !important;
+        border: 1px solid #b91c1c !important;
+        border-bottom: 4.5px solid #991b1b !important;
+        box-shadow: 0 4px 10px rgba(239, 68, 68, 0.25) !important;
+    }
+
+    .btn-3d-receipt-pdf:hover {
+        background: linear-gradient(135deg, #f87171 0%, #ef4444 100%) !important;
+        transform: translateY(-1px);
+    }
+
+    .btn-3d-receipt-pdf:active {
+        transform: translateY(2px) !important;
+        border-bottom-width: 1px !important;
+    }
+
+    .btn-3d-receipt-excel {
+        background: linear-gradient(135deg, #10b981 0%, #059669 100%) !important;
+        color: #ffffff !important;
+        border: 1px solid #047857 !important;
+        border-bottom: 4.5px solid #065f46 !important;
+        box-shadow: 0 4px 10px rgba(16, 185, 129, 0.25) !important;
+    }
+
+    .btn-3d-receipt-excel:hover {
+        background: linear-gradient(135deg, #34d399 0%, #10b981 100%) !important;
+        transform: translateY(-1px);
+    }
+
+    .btn-3d-receipt-excel:active {
+        transform: translateY(2px) !important;
+        border-bottom-width: 1px !important;
+    }
+
+    .btn-3d-receipt-print {
+        background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%) !important;
+        color: #0f172a !important;
+        border: 1px solid #b45309 !important;
+        border-bottom: 4.5px solid #78350f !important;
+        box-shadow: 0 4px 10px rgba(245, 158, 11, 0.25) !important;
+    }
+
+    .btn-3d-receipt-print:hover {
+        background: linear-gradient(135deg, #fbbf24 0%, #f59e0b 100%) !important;
+        transform: translateY(-1px);
+    }
+
+    .btn-3d-receipt-print:active {
+        transform: translateY(2px) !important;
+        border-bottom-width: 1px !important;
+    }
+</style>
+
 <div class="space-y-6">
     <!-- Top Action Bar (no-print) -->
-    <div class="flex items-center justify-between no-print">
+    <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 no-print">
         <div>
-            <a href="{{ route('anticipos.index') }}" class="text-xs text-slate-400 hover:text-amber-500 flex items-center font-medium transition duration-150">
+            <a href="{{ route('anticipos.index') }}" class="text-xs text-slate-400 hover:text-indigo-400 flex items-center font-medium transition duration-150">
                 <i class="fa-solid fa-arrow-left mr-1.5"></i> Volver a Anticipos
             </a>
             <h1 class="text-3xl font-bold tracking-tight text-slate-100 mt-1">Comprobante de Anticipo</h1>
         </div>
-        <div class="flex space-x-3">
-            <button onclick="window.print()" class="inline-flex items-center justify-center px-4 py-2.5 rounded-lg bg-gradient-to-r from-amber-500 to-orange-600 hover:from-amber-600 hover:to-orange-700 text-sm font-bold text-slate-950 transition duration-150 shadow-lg shadow-orange-500/10">
-                <i class="fa-solid fa-print mr-2"></i> Imprimir Vale
+        <div class="flex flex-wrap gap-3">
+            <button onclick="downloadPDF()" class="btn-3d-receipt btn-3d-receipt-pdf inline-flex items-center justify-center px-4 py-2.5 text-xs">
+                <i class="fa-solid fa-file-pdf mr-2 text-sm"></i> Descargar PDF
+            </button>
+            <button onclick="downloadExcel()" class="btn-3d-receipt btn-3d-receipt-excel inline-flex items-center justify-center px-4 py-2.5 text-xs">
+                <i class="fa-solid fa-file-excel mr-2 text-sm"></i> Exportar Excel
+            </button>
+            <button onclick="window.print()" class="btn-3d-receipt btn-3d-receipt-print inline-flex items-center justify-center px-5 py-2.5 text-xs">
+                <i class="fa-solid fa-print mr-2 text-sm"></i> Imprimir Vale
             </button>
         </div>
     </div>
 
     <!-- Printable Area (White Paper Style Container) -->
-    <div class="mx-auto max-w-4xl bg-white text-slate-900 border border-slate-300 shadow-xl rounded-xl p-8 md:p-12 print-container font-sans text-sm relative">
+    <div id="receipt-card" class="mx-auto max-w-4xl receipt-card-wrapper p-8 md:p-10 font-sans text-sm relative">
         
-        <!-- Outer Emerald/Green border resembling Excel / voucher border -->
-        <div class="border-2 border-emerald-800 p-6 md:p-8 rounded-lg bg-white">
+        <!-- Inner Border for Professional Aesthetic -->
+        <div class="print-container border-2 border-slate-900 p-6 md:p-8 rounded-xl bg-white">
             
             <!-- Header Grid: Logo, Title/Date, Amounts -->
-            <div class="grid grid-cols-1 md:grid-cols-12 gap-6 items-center border-b-2 border-emerald-850 pb-6 mb-6">
+            <div class="grid grid-cols-1 md:grid-cols-12 gap-6 items-center border-b-2 border-slate-900 pb-6 mb-6">
                 <!-- Column 1: Logo & Company Hexagonal SVG -->
                 <div class="md:col-span-4 flex items-center space-x-3">
-                    <svg class="w-24 h-16 flex-shrink-0" viewBox="0 0 120 80" xmlns="http://www.w3.org/2000/svg">
-                        <!-- Grey Hexagon (LOGO) -->
-                        <polygon points="30,5 60,5 75,30 60,55 30,55 15,30" fill="none" stroke="#64748b" stroke-width="2" />
-                        <text x="45" y="34" font-family="sans-serif" font-size="10" font-weight="bold" fill="#64748b" text-anchor="middle">LOGO</text>
+                    <svg class="w-20 h-14 flex-shrink-0" viewBox="0 0 120 80" xmlns="http://www.w3.org/2000/svg">
+                        <!-- Dark background hexagon -->
+                        <polygon points="30,5 60,5 75,30 60,55 30,55 15,30" fill="#0f172a" stroke="#0f172a" stroke-width="2" />
+                        <text x="45" y="34" font-family="'Outfit', sans-serif" font-size="11" font-weight="900" fill="#ffffff" text-anchor="middle">MINA</text>
                         
-                        <!-- Blue Hexagon (TORMAN) -->
-                        <polygon points="65,25 95,25 110,50 95,75 65,75 50,50" fill="#2563eb" stroke="#1d4ed8" stroke-width="2" />
-                        <text x="80" y="54" font-family="sans-serif" font-size="9" font-weight="bold" fill="#ffffff" text-anchor="middle">TORMAN</text>
+                        <!-- Accent color hexagon (TORMAN) -->
+                        <polygon points="65,25 95,25 110,50 95,75 65,75 50,50" fill="#10b981" stroke="#047857" stroke-width="2" />
+                        <text x="80" y="54" font-family="'Outfit', sans-serif" font-size="10" font-weight="900" fill="#ffffff" text-anchor="middle">TORMAN</text>
                     </svg>
                     <div>
-                        <h2 class="text-xl font-black uppercase tracking-widest text-slate-850 leading-none">TORMAN</h2>
+                        <h2 class="text-lg font-black uppercase tracking-widest text-slate-900 leading-none">TORMAN</h2>
                         <span class="text-[9px] text-slate-500 font-mono tracking-wider uppercase block mt-1">Control de Operaciones</span>
                     </div>
                 </div>
 
                 <!-- Column 2: Centered Large Title in Emerald & Date/Time -->
                 <div class="md:col-span-5 text-center">
-                    <h1 class="text-3xl font-extrabold tracking-wider text-emerald-800 uppercase">Vale de Anticipo</h1>
-                    <div class="mt-2 text-slate-600 font-mono text-xs flex flex-col items-center justify-center space-y-1">
+                    <h1 class="text-2xl font-black tracking-widest text-slate-900 uppercase">Vale de Anticipo</h1>
+                    <div class="mt-2 text-slate-700 font-mono text-xs flex flex-col items-center justify-center space-y-1">
                         <div>
                             <span class="font-bold">Nº Correlativo:</span>
-                            <span class="text-sm font-bold text-red-650 ml-1 underline decoration-red-500 decoration-2">{{ str_pad($anticipo->id, 5, '0', STR_PAD_LEFT) }}</span>
+                            <span class="text-sm font-extrabold text-red-650 ml-1 underline decoration-red-500 decoration-2">{{ str_pad($anticipo->id, 5, '0', STR_PAD_LEFT) }}</span>
                         </div>
-                        <div class="text-[10px] text-slate-500 mt-1 space-x-1">
+                        <div class="text-[9.5px] text-slate-500 mt-0.5 space-x-1">
                             <span>Fecha: <strong class="text-slate-800">{{ $anticipo->fecha->format('d/m/Y') }}</strong></span>
                             <span>|</span>
                             <span>Hora: <strong class="text-slate-800">{{ $anticipo->created_at->format('H:i:s') }}</strong></span>
@@ -60,11 +182,11 @@
                     </div>
                 </div>
 
-                <!-- Column 3: Amount Table (Bs. / USD / TC) as secondary reference block -->
+                <!-- Column 3: Amount Table -->
                 <div class="md:col-span-3 flex justify-center md:justify-end">
-                    <table class="text-xs border-2 border-emerald-800 rounded overflow-hidden w-full max-w-[180px] shadow-sm bg-slate-50">
+                    <table class="text-xs border-2 border-slate-900 rounded overflow-hidden w-full max-w-[170px] shadow-sm">
                         <tr class="bg-white">
-                            <td class="bg-emerald-50 font-bold border-r border-emerald-800 px-3 py-2.5 text-emerald-900 text-sm">Bs.</td>
+                            <td class="bg-slate-100 font-extrabold border-r border-slate-900 px-3 py-2.5 text-slate-900 text-sm">Bs.</td>
                             <td class="px-3 py-2.5 font-mono font-black text-slate-900 text-right text-base">{{ number_format($anticipo->monto, 2, ',', '.') }}</td>
                         </tr>
                     </table>
@@ -72,59 +194,59 @@
             </div>
 
             <!-- Metadata Banner (Bocamina & Contractor details) -->
-            <div class="flex flex-col sm:flex-row justify-between items-center bg-slate-50 border border-slate-200 rounded-lg px-4 py-3 mb-6 text-xs text-slate-650 font-mono">
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 bg-slate-50 border border-slate-900 rounded-xl px-5 py-3 mb-6 text-xs text-slate-800 font-mono">
                 <div>
-                    <span class="font-bold text-slate-500">BOCAMINA:</span>
-                    <span class="font-extrabold text-slate-800 uppercase ml-1">{{ $anticipo->trabajador->bocamina->nombre ?? 'N/A' }}</span>
+                    <span class="font-bold text-slate-500"><i class="fa-solid fa-mountain mr-1 text-slate-600"></i> BOCAMINA:</span>
+                    <span class="font-extrabold text-slate-900 uppercase ml-1">{{ $anticipo->trabajador->bocamina->nombre ?? 'N/A' }}</span>
                 </div>
-                <div class="mt-1 sm:mt-0">
-                    <span class="font-bold text-slate-500">CONTRATISTA / BENEFICIARIO:</span>
-                    <span class="font-extrabold text-slate-850 uppercase ml-1">{{ $anticipo->trabajador->nombre }} (C.I. {{ $anticipo->trabajador->ci }})</span>
+                <div class="sm:text-right">
+                    <span class="font-bold text-slate-500"><i class="fa-solid fa-user-check mr-1 text-slate-600"></i> BENEFICIARIO:</span>
+                    <span class="font-extrabold text-slate-900 uppercase ml-1">{{ $anticipo->trabajador->nombre }} (C.I. {{ $anticipo->trabajador->ci }})</span>
                 </div>
             </div>
 
             <!-- Spacious Form Rows with Bottom Borders -->
-            <div class="space-y-6 mb-8">
+            <div class="space-y-5 mb-8">
                 <!-- Recibí de -->
                 <div class="flex flex-col sm:flex-row sm:items-end space-y-1 sm:space-y-0 sm:space-x-3">
-                    <span class="text-sm font-bold text-emerald-800 uppercase tracking-wider w-28 flex-shrink-0 pb-1">Recibí de:</span>
-                    <div class="flex-grow border-b-2 border-slate-200 pb-1 text-slate-850 font-bold text-sm uppercase px-2 font-mono">
+                    <span class="text-xs font-black text-slate-800 uppercase tracking-widest w-28 flex-shrink-0 pb-1">Recibí de:</span>
+                    <div class="flex-grow border-b-2 border-slate-200 pb-1 text-slate-900 font-extrabold text-sm uppercase px-2 font-mono">
                         TORMAN - ADMINISTRACIÓN
                     </div>
                 </div>
 
                 <!-- La suma de -->
                 <div class="flex flex-col sm:flex-row sm:items-end space-y-1 sm:space-y-0 sm:space-x-3">
-                    <span class="text-sm font-bold text-emerald-800 uppercase tracking-wider w-28 flex-shrink-0 pb-1">La cantidad de:</span>
-                    <div class="flex-grow border-b-2 border-slate-200 pb-1 text-slate-800 font-extrabold text-xs uppercase px-2 font-mono leading-relaxed">
+                    <span class="text-xs font-black text-slate-800 uppercase tracking-widest w-28 flex-shrink-0 pb-1">La cantidad de:</span>
+                    <div class="flex-grow border-b-2 border-slate-200 pb-1 text-slate-900 font-extrabold text-xs uppercase px-2 font-mono leading-relaxed">
                         {{ $anticipo->monto_letras }} BOLIVIANOS
                     </div>
                 </div>
 
                 <!-- Por concepto de -->
                 <div class="flex flex-col sm:flex-row sm:items-end space-y-1 sm:space-y-0 sm:space-x-3">
-                    <span class="text-sm font-bold text-emerald-800 uppercase tracking-wider w-28 flex-shrink-0 pb-1">Por concepto de:</span>
-                    <div class="flex-grow border-b-2 border-slate-200 pb-1 text-slate-850 text-xs font-semibold uppercase px-2 leading-relaxed">
+                    <span class="text-xs font-black text-slate-800 uppercase tracking-widest w-28 flex-shrink-0 pb-1">Concepto:</span>
+                    <div class="flex-grow border-b-2 border-slate-200 pb-1 text-slate-800 text-xs font-semibold uppercase px-2 leading-relaxed font-mono">
                         ANTICIPO DE DINERO A CUENTA DE PLANILLA SEMANAL DE TRABAJO
                     </div>
                 </div>
             </div>
 
             <!-- Form of Payment Checkboxes (Estilo Excel/Vale de Pago) -->
-            <div class="flex flex-col sm:flex-row sm:items-center justify-between border-t border-b border-slate-200 py-4 mb-8 space-y-4 sm:space-y-0">
-                <div class="flex items-center space-x-6">
-                    <span class="text-xs font-bold text-emerald-800 uppercase tracking-wider">Forma de Pago:</span>
+            <div class="flex flex-col sm:flex-row sm:items-center justify-between border-t border-b border-slate-900 py-4 mb-8 space-y-4 sm:space-y-0">
+                <div class="flex flex-wrap items-center gap-6">
+                    <span class="text-xs font-black text-slate-800 uppercase tracking-widest">Forma de Pago:</span>
                     <div class="flex items-center space-x-2">
-                        <span class="w-5.5 h-5.5 inline-flex items-center justify-center border border-slate-400 rounded bg-emerald-50 text-emerald-800 font-black text-sm font-mono">✓</span>
-                        <span class="text-xs text-slate-850 font-bold">Efectivo</span>
+                        <span class="w-5 h-5 inline-flex items-center justify-center border border-slate-900 rounded bg-white font-mono text-xs font-bold">✓</span>
+                        <span class="text-xs text-slate-900 font-bold">Efectivo</span>
                     </div>
                     <div class="flex items-center space-x-2 opacity-35">
-                        <span class="w-5 h-5 inline-flex border border-slate-400 rounded bg-white"></span>
-                        <span class="text-xs text-slate-600 font-medium">Cheque</span>
+                        <span class="w-5 h-5 inline-flex border border-slate-900 rounded bg-white"></span>
+                        <span class="text-xs text-slate-655 font-medium">Cheque</span>
                     </div>
                     <div class="flex items-center space-x-2 opacity-35">
-                        <span class="w-5 h-5 inline-flex border border-slate-400 rounded bg-white"></span>
-                        <span class="text-xs text-slate-600 font-medium">Transferencia</span>
+                        <span class="w-5 h-5 inline-flex border border-slate-900 rounded bg-white"></span>
+                        <span class="text-xs text-slate-655 font-medium">Transferencia</span>
                     </div>
                 </div>
                 <div class="text-[10px] text-slate-500 font-mono">
@@ -132,32 +254,32 @@
                 </div>
             </div>
 
-            <!-- Signature block (Recibí Conforme vs Entregado por) -->
-            <div class="grid grid-cols-2 gap-12 mt-16 pt-8 border-t border-dashed border-emerald-800/30 text-center text-xs">
+            <!-- Signature block -->
+            <div class="grid grid-cols-2 gap-12 mt-16 pt-8 border-t border-dashed border-slate-350 text-center text-xs">
                 <div class="flex flex-col items-center">
-                    <div class="w-48 border-b border-slate-350 mb-1.5"></div>
-                    <span class="font-bold text-slate-850 uppercase text-[10px]">{{ $anticipo->trabajador->nombre }}</span>
-                    <span class="text-[9px] text-slate-500 uppercase tracking-widest mt-0.5 font-mono">Recibí Conforme (Beneficiario)</span>
-                    <span class="text-[9px] text-slate-600 font-mono mt-1">C.I.: {{ $anticipo->trabajador->ci }}</span>
+                    <div class="w-48 border-b border-slate-400 mb-1.5"></div>
+                    <span class="font-bold text-slate-900 uppercase text-[10px]">{{ $anticipo->trabajador->nombre }}</span>
+                    <span class="text-[9px] text-slate-500 uppercase tracking-widest mt-0.5 font-mono font-bold">Recibí Conforme (Beneficiario)</span>
+                    <span class="text-[9px] text-slate-600 font-mono mt-0.5">C.I.: {{ $anticipo->trabajador->ci }}</span>
                     @if($anticipo->trabajador->telefono)
                         <span class="text-[8px] text-slate-400 font-mono mt-0.5">Telf: {{ $anticipo->trabajador->telefono }}</span>
                     @endif
                 </div>
                 <div class="flex flex-col items-center">
-                    <div class="w-48 border-b border-slate-350 mb-1.5"></div>
-                    <span class="font-bold text-slate-850 uppercase text-[10px]">{{ Auth::user()->name ?? 'Administración TORMAN' }}</span>
-                    <span class="text-[9px] text-slate-500 uppercase tracking-widest mt-0.5 font-mono">Entregado por (Administración)</span>
+                    <div class="w-48 border-b border-slate-400 mb-1.5"></div>
+                    <span class="font-bold text-slate-900 uppercase text-[10px]">{{ Auth::user()->name ?? 'Administración TORMAN' }}</span>
+                    <span class="text-[9px] text-slate-500 uppercase tracking-widest mt-0.5 font-mono font-bold">Entregado por (Administración)</span>
                 </div>
             </div>
 
-            <!-- Branding Footer contacts (bottom-left) -->
-            <div class="mt-12 flex justify-between items-center text-[9px] text-slate-400 border-t border-slate-100 pt-3 font-mono">
+            <!-- Branding Footer contacts -->
+            <div class="mt-12 flex justify-between items-center text-[9px] text-slate-400 border-t border-slate-200 pt-3 font-mono">
                 <div class="flex space-x-6">
-                    <span class="flex items-center"><i class="fa-brands fa-facebook mr-1.5 text-emerald-700"></i> TORMAN</span>
-                    <span class="flex items-center"><i class="fa-solid fa-phone mr-1.5 text-emerald-700"></i> 74.225.855</span>
+                    <span class="flex items-center"><i class="fa-brands fa-facebook mr-1.5 text-slate-650"></i> TORMAN</span>
+                    <span class="flex items-center"><i class="fa-solid fa-phone mr-1.5 text-slate-650"></i> 74.225.855</span>
                 </div>
                 <div>
-                    <span class="text-[8px] text-slate-400">SCPM - Sistema de Control de Pagos Mineros</span>
+                    <span class="text-[8px] text-slate-450">SCPM - Sistema de Control de Pagos Mineros</span>
                 </div>
             </div>
 
@@ -166,3 +288,59 @@
     </div>
 </div>
 @endsection
+
+@push('scripts')
+<!-- Load html2pdf and SheetJS (XLSX) from secure CDNs -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
+
+<script>
+    function downloadPDF() {
+        const element = document.getElementById('receipt-card');
+        const opt = {
+            margin:       0.3,
+            filename:     'Vale_Anticipo_Nro_' + '{{ str_pad($anticipo->id, 5, "0", STR_PAD_LEFT) }}' + '.pdf',
+            image:        { type: 'jpeg', quality: 0.98 },
+            html2canvas:  { scale: 2.2, useCORS: true, letterRendering: true },
+            jsPDF:        { unit: 'in', format: 'letter', orientation: 'portrait' }
+        };
+        
+        html2pdf().set(opt).from(element).save();
+    }
+
+    function downloadExcel() {
+        const wb = XLSX.utils.book_new();
+        
+        const data = [
+            ["VALE DE ANTICIPO - TORMAN"],
+            ["Nro. Correlativo", '{{ str_pad($anticipo->id, 5, "0", STR_PAD_LEFT) }}'],
+            ["Fecha", '{{ $anticipo->fecha->format("d/m/Y") }}'],
+            ["Hora", '{{ $anticipo->created_at->format("H:i:s") }}'],
+            [],
+            ["DATOS DEL BENEFICIARIO"],
+            ["Bocamina", '{{ $anticipo->trabajador->bocamina->nombre ?? "N/A" }}'],
+            ["Trabajador (Contratista)", '{{ $anticipo->trabajador->nombre }}'],
+            ["Cédula de Identidad", '{{ $anticipo->trabajador->ci }}'],
+            [],
+            ["LIQUIDACIÓN"],
+            ["Concepto", "Anticipo de dinero a cuenta de planilla semanal de trabajo"],
+            ["Monto Entregado (Bs.)", '{{ $anticipo->monto }}'],
+            [],
+            ["Detalles de Transacción"],
+            ["Forma de Pago", "Efectivo"],
+            ["Entregado Por", '{{ Auth::user()->name ?? "Administración" }}']
+        ];
+
+        const ws = XLSX.utils.aoa_to_sheet(data);
+        
+        ws['!cols'] = [
+            { wch: 32 },
+            { wch: 45 }
+        ];
+
+        XLSX.utils.book_append_sheet(wb, ws, "Comprobante de Anticipo");
+
+        XLSX.writeFile(wb, 'Vale_Anticipo_Nro_' + '{{ str_pad($anticipo->id, 5, "0", STR_PAD_LEFT) }}' + '.xlsx');
+    }
+</script>
+@endpush

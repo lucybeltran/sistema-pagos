@@ -3,16 +3,18 @@
 namespace App\Http\Controllers;
 
 use App\Models\TransaccionMineral;
+use App\Models\LoteAnalisis;
 use App\Models\Bocamina;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 
 class TransaccionMineralController extends Controller
 {
     public function index(Request $request)
     {
-        $query = TransaccionMineral::with('bocamina');
+        $query = TransaccionMineral::with(['bocamina', 'lote', 'analisis']);
 
-        // Apply filters
+        // Base filters for search
         if ($request->filled('tipo')) {
             $query->where('tipo', $request->tipo);
         }
@@ -25,12 +27,61 @@ class TransaccionMineralController extends Controller
             $query->where('bocamina_id', $request->bocamina_id);
         }
 
-        if ($request->filled('fecha_desde')) {
-            $query->whereDate('fecha', '>=', $request->fecha_desde);
+        // Date range preset filter: hoy, semanal, mensual, personalizado
+        if ($request->filled('rango_fecha')) {
+            $rango = $request->rango_fecha;
+            if ($rango === 'hoy') {
+                $query->whereDate('fecha', now()->toDateString());
+            } elseif ($rango === 'semanal') {
+                $query->whereBetween('fecha', [now()->startOfWeek()->toDateString(), now()->endOfWeek()->toDateString()]);
+            } elseif ($rango === 'mensual') {
+                $query->whereMonth('fecha', now()->month)->whereYear('fecha', now()->year);
+            } elseif ($rango === 'personalizado') {
+                if ($request->filled('fecha_desde')) {
+                    $query->whereDate('fecha', '>=', $request->fecha_desde);
+                }
+                if ($request->filled('fecha_hasta')) {
+                    $query->whereDate('fecha', '<=', $request->fecha_hasta);
+                }
+            }
+        } else {
+            if ($request->filled('fecha_desde')) {
+                $query->whereDate('fecha', '>=', $request->fecha_desde);
+            }
+            if ($request->filled('fecha_hasta')) {
+                $query->whereDate('fecha', '<=', $request->fecha_hasta);
+            }
         }
 
-        if ($request->filled('fecha_hasta')) {
-            $query->whereDate('fecha', '<=', $request->fecha_hasta);
+        // Provider/Client search
+        if ($request->filled('cliente_proveedor')) {
+            $query->where('cliente_proveedor', 'like', '%' . $request->cliente_proveedor . '%');
+        }
+
+        // Mineral filter (If filtering by mineral, show lotes/sales with that mineral)
+        if ($request->filled('mineral')) {
+            $query->where(function($q) use ($request) {
+                // If it is a purchase (lote) containing the mineral
+                $q->whereHas('analisis', function ($sq) use ($request) {
+                    $sq->where('mineral', 'like', '%' . $request->mineral . '%');
+                })
+                // Or if it is a sale, and its parent lote contains the mineral
+                ->orWhereHas('lote.analisis', function ($sq) use ($request) {
+                    $sq->where('mineral', 'like', '%' . $request->mineral . '%');
+                });
+            });
+        }
+
+        // Ley filter
+        if ($request->filled('ley')) {
+            $query->where(function($q) use ($request) {
+                $q->whereHas('analisis', function ($sq) use ($request) {
+                    $sq->where('ley', '>=', $request->ley);
+                })
+                ->orWhereHas('lote.analisis', function ($sq) use ($request) {
+                    $sq->where('ley', '>=', $request->ley);
+                });
+            });
         }
 
         $transacciones = $query->orderBy('fecha', 'desc')->orderBy('id', 'desc')->get();
@@ -42,73 +93,332 @@ class TransaccionMineralController extends Controller
 
         $bocaminas = Bocamina::orderBy('nombre')->get();
 
+        // Load all active purchases (Lotes) with remaining stock for sales drop-down
+        $lotesDisponibles = TransaccionMineral::with('analisis')
+            ->where('tipo', 'compra')
+            ->where(function($q) {
+                $q->where('peso_disponible', '>', 0)
+                  ->orWhere('cantidad_disponible', '>', 0);
+            })
+            ->orderBy('fecha', 'desc')
+            ->get();
+
+        // Calculate Stock Metrics for the Stock Tab
+        $lotesDisponiblesCount = TransaccionMineral::where('tipo', 'compra')
+            ->where('peso_disponible', '>', 0)
+            ->count();
+
+        $pesoDisponibleSum = TransaccionMineral::where('tipo', 'compra')
+            ->sum('peso_disponible');
+
+        $valorTotalStock = TransaccionMineral::where('tipo', 'compra')
+            ->where('peso_disponible', '>', 0)
+            ->select(DB::raw('SUM(peso_disponible * precio_unidad) as total_valor'))
+            ->first()
+            ->total_valor ?? 0;
+
+        $comprasDelMes = TransaccionMineral::where('tipo', 'compra')
+            ->whereMonth('fecha', now()->month)
+            ->whereYear('fecha', now()->year)
+            ->count();
+
+        $ventasDelMes = TransaccionMineral::where('tipo', 'venta')
+            ->whereMonth('fecha', now()->month)
+            ->whereYear('fecha', now()->year)
+            ->count();
+
+        // Load all purchases (Lotes) for Stock list
+        $todosLosLotes = TransaccionMineral::with(['analisis', 'bocamina', 'ventas'])
+            ->where('tipo', 'compra')
+            ->orderBy('fecha', 'desc')
+            ->get();
+
         return view('transacciones.index', compact(
             'transacciones',
             'total_ingresos',
             'total_egresos',
             'balance',
-            'bocaminas'
+            'bocaminas',
+            'lotesDisponibles',
+            'lotesDisponiblesCount',
+            'pesoDisponibleSum',
+            'valorTotalStock',
+            'comprasDelMes',
+            'ventasDelMes',
+            'todosLosLotes'
         ));
     }
 
     public function store(Request $request)
     {
-        $request->validate([
+        $rules = [
             'fecha' => 'required|date',
             'tipo' => 'required|in:compra,venta',
-            'presentacion' => 'required|string',
             'cliente_proveedor' => 'required|string|max:255',
-            'peso_bruto' => 'nullable|numeric|min:0',
-            'humedad_porcentaje' => 'nullable|numeric|min:0|max:100',
-            'peso_neto_seco' => 'nullable|numeric|min:0',
-            'ley' => 'nullable|string|max:100',
-            'precio_unidad' => 'nullable|numeric|min:0',
-            'monto_total' => 'required|numeric|min:0',
             'bocamina_id' => 'nullable|exists:bocaminas,id',
             'observacion' => 'nullable|string',
-        ]);
+            'destino' => 'nullable|string|max:255',
+        ];
 
-        $data = $request->all();
-        if (empty($data['bocamina_id'])) {
-            $data['bocamina_id'] = null;
+        if ($request->tipo === 'compra') {
+            $rules['presentacion'] = 'required|string';
+            $rules['presentacion_otro'] = 'nullable|string|max:100';
+            $rules['cantidad'] = 'required|numeric|min:0';
+            $rules['peso_neto_seco'] = 'required|numeric|min:0';
+            $rules['precio_unidad'] = 'required|numeric|min:0';
+            $rules['monto_total'] = 'required|numeric|min:0';
+            
+            $rules['analisis'] = 'nullable|array';
+            $rules['analisis.*.mineral'] = 'required_with:analisis|string|max:100';
+            $rules['analisis.*.ley'] = 'required_with:analisis|numeric|min:0|max:100';
+        } else {
+            // It is a Venta (check if it's multi-lote array or fallback single-lote)
+            if ($request->has('lotes') && is_array($request->lotes) && count($request->lotes) > 0) {
+                $rules['lotes'] = 'required|array|min:1';
+                $rules['lotes.*.lote_id'] = 'required|exists:transacciones_minerales,id';
+                $rules['lotes.*.cantidad'] = 'required|numeric|min:0';
+                $rules['lotes.*.peso_neto_seco'] = 'required|numeric|min:0';
+                $rules['lotes.*.precio_unidad'] = 'required|numeric|min:0';
+                $rules['lotes.*.monto_total'] = 'required|numeric|min:0';
+            } else {
+                $rules['lote_id'] = 'required|exists:transacciones_minerales,id';
+                $rules['cantidad'] = 'required|numeric|min:0';
+                $rules['peso_neto_seco'] = 'required|numeric|min:0';
+                $rules['precio_unidad'] = 'required|numeric|min:0';
+                $rules['monto_total'] = 'required|numeric|min:0';
+            }
         }
 
-        TransaccionMineral::create($data);
+        $request->validate($rules);
 
-        return redirect()->route('transacciones-minerales.index')->with('success', 'Transacción registrada con éxito.');
+        return DB::transaction(function() use ($request) {
+            $data = $request->only([
+                'fecha', 'tipo', 'cliente_proveedor', 'bocamina_id',
+                'cantidad', 'peso_neto_seco', 'precio_unidad', 'monto_total',
+                'observacion', 'destino'
+            ]);
+
+            if (empty($data['bocamina_id'])) {
+                $data['bocamina_id'] = null;
+            }
+
+            if ($request->tipo === 'compra') {
+                $data['presentacion'] = $request->presentacion;
+                if ($request->presentacion === 'Otro') {
+                    $data['presentacion_otro'] = $request->presentacion_otro;
+                }
+                // For Purchases (Lots), stock matches initially registered quantity and weight
+                $data['cantidad_disponible'] = $request->cantidad;
+                $data['peso_disponible'] = $request->peso_neto_seco;
+
+                $transaccion = TransaccionMineral::create($data);
+
+                // Save analysis records
+                if ($request->has('analisis')) {
+                    foreach ($request->analisis as $an) {
+                        if (!empty($an['mineral']) && isset($an['ley'])) {
+                            $transaccion->analisis()->create([
+                                'mineral' => $an['mineral'],
+                                'ley' => $an['ley'],
+                            ]);
+                        }
+                    }
+                }
+            } else {
+                // If it is a multi-lote sale request:
+                if ($request->has('lotes') && is_array($request->lotes) && count($request->lotes) > 0) {
+                    foreach ($request->lotes as $item) {
+                        $lote = TransaccionMineral::findOrFail($item['lote_id']);
+
+                        if ($item['peso_neto_seco'] > $lote->peso_disponible) {
+                            return back()->withErrors(['error' => "El peso vendido supera el disponible en el lote LOT-" . str_pad($lote->id, 5, '0', STR_PAD_LEFT) . " ({$lote->peso_disponible} Kg disponibles)."])->withInput();
+                        }
+                        if ($item['cantidad'] > $lote->cantidad_disponible) {
+                            return back()->withErrors(['error' => "La cantidad vendida supera la disponible en el lote LOT-" . str_pad($lote->id, 5, '0', STR_PAD_LEFT) . " ({$lote->cantidad_disponible} disponibles)."])->withInput();
+                        }
+
+                        // Decrement stock
+                        $lote->decrement('peso_disponible', $item['peso_neto_seco']);
+                        $lote->decrement('cantidad_disponible', $item['cantidad']);
+
+                        TransaccionMineral::create([
+                            'fecha' => $request->fecha,
+                            'tipo' => 'venta',
+                            'cliente_proveedor' => $request->cliente_proveedor,
+                            'destino' => $request->destino,
+                            'lote_id' => $lote->id,
+                            'presentacion' => $lote->presentacion,
+                            'presentacion_otro' => $lote->presentacion_otro,
+                            'cantidad' => $item['cantidad'],
+                            'peso_neto_seco' => $item['peso_neto_seco'],
+                            'precio_unidad' => $item['precio_unidad'],
+                            'monto_total' => $item['monto_total'],
+                            'observacion' => $request->observacion,
+                        ]);
+                    }
+                } else {
+                    // For Single Sales, load the lot and validate stock
+                    $lote = TransaccionMineral::findOrFail($request->lote_id);
+
+                    if ($request->peso_neto_seco > $lote->peso_disponible) {
+                        return back()->withErrors(['peso_neto_seco' => "El peso vendido supera el disponible en el lote ({$lote->peso_disponible} Kg)"])->withInput();
+                    }
+                    if ($request->cantidad > $lote->cantidad_disponible) {
+                        return back()->withErrors(['cantidad' => "La cantidad vendida supera la disponible en el lote ({$lote->cantidad_disponible})"])->withInput();
+                    }
+
+                    // Decrement stock
+                    $lote->decrement('peso_disponible', $request->peso_neto_seco);
+                    $lote->decrement('cantidad_disponible', $request->cantidad);
+
+                    $data['lote_id'] = $lote->id;
+                    // A sale inherits the parent lote presentation
+                    $data['presentacion'] = $lote->presentacion;
+                    $data['presentacion_otro'] = $lote->presentacion_otro;
+
+                    TransaccionMineral::create($data);
+                }
+            }
+
+            return redirect()->route('transacciones-minerales.index')->with('success', 'Transacción registrada con éxito.');
+        });
+    }
+
+    public function show($id)
+    {
+        $transaccion = TransaccionMineral::with(['bocamina', 'lote', 'analisis', 'ventas'])->findOrFail($id);
+        return response()->json($transaccion);
     }
 
     public function update(Request $request, TransaccionMineral $transacciones_minerale)
     {
-        $request->validate([
+        $rules = [
             'fecha' => 'required|date',
             'tipo' => 'required|in:compra,venta',
-            'presentacion' => 'required|string',
             'cliente_proveedor' => 'required|string|max:255',
-            'peso_bruto' => 'nullable|numeric|min:0',
-            'humedad_porcentaje' => 'nullable|numeric|min:0|max:100',
-            'peso_neto_seco' => 'nullable|numeric|min:0',
-            'ley' => 'nullable|string|max:100',
-            'precio_unidad' => 'nullable|numeric|min:0',
-            'monto_total' => 'required|numeric|min:0',
             'bocamina_id' => 'nullable|exists:bocaminas,id',
             'observacion' => 'nullable|string',
-        ]);
+            'destino' => 'nullable|string|max:255',
+            'cantidad' => 'required|numeric|min:0',
+            'peso_neto_seco' => 'required|numeric|min:0',
+            'precio_unidad' => 'required|numeric|min:0',
+            'monto_total' => 'required|numeric|min:0',
+        ];
 
-        $data = $request->all();
-        if (empty($data['bocamina_id'])) {
-            $data['bocamina_id'] = null;
+        if ($request->tipo === 'compra') {
+            $rules['presentacion'] = 'required|string';
+            $rules['presentacion_otro'] = 'nullable|string|max:100';
+            
+            $rules['analisis'] = 'nullable|array';
+            $rules['analisis.*.mineral'] = 'required_with:analisis|string|max:100';
+            $rules['analisis.*.ley'] = 'required_with:analisis|numeric|min:0|max:100';
+        } else {
+            $rules['lote_id'] = 'required|exists:transacciones_minerales,id';
         }
 
-        $transacciones_minerale->update($data);
+        $request->validate($rules);
 
-        return redirect()->route('transacciones-minerales.index')->with('success', 'Transacción actualizada con éxito.');
+        return DB::transaction(function() use ($request, $transacciones_minerale) {
+            $data = $request->only([
+                'fecha', 'tipo', 'cliente_proveedor', 'bocamina_id',
+                'cantidad', 'peso_neto_seco', 'precio_unidad', 'monto_total',
+                'observacion', 'destino'
+            ]);
+
+            if (empty($data['bocamina_id'])) {
+                $data['bocamina_id'] = null;
+            }
+
+            if ($transacciones_minerale->tipo === 'venta') {
+                // Reset old sale impact on stock
+                $oldLote = $transacciones_minerale->lote;
+                if ($oldLote) {
+                    $oldLote->increment('peso_disponible', $transacciones_minerale->peso_neto_seco);
+                    $oldLote->increment('cantidad_disponible', $transacciones_minerale->cantidad);
+                }
+
+                // If lot has changed or values updated, load new lot and deduct stock
+                $newLote = TransaccionMineral::findOrFail($request->lote_id ?? $transacciones_minerale->lote_id);
+                if ($request->peso_neto_seco > $newLote->peso_disponible) {
+                    return back()->withErrors(['peso_neto_seco' => "El peso vendido supera el disponible en el lote ({$newLote->peso_disponible} Kg)"])->withInput();
+                }
+                if ($request->cantidad > $newLote->cantidad_disponible) {
+                    return back()->withErrors(['cantidad' => "La cantidad vendida supera la disponible en el lote ({$newLote->cantidad_disponible})"])->withInput();
+                }
+
+                $newLote->decrement('peso_disponible', $request->peso_neto_seco);
+                $newLote->decrement('cantidad_disponible', $request->cantidad);
+
+                $data['lote_id'] = $newLote->id;
+                $data['presentacion'] = $newLote->presentacion;
+                $data['presentacion_otro'] = $newLote->presentacion_otro;
+
+                $transacciones_minerale->update($data);
+            } else {
+                // Purchase (Lote) Update
+                $data['presentacion'] = $request->presentacion;
+                if ($request->presentacion === 'Otro') {
+                    $data['presentacion_otro'] = $request->presentacion_otro;
+                } else {
+                    $data['presentacion_otro'] = null;
+                }
+
+                // Calculate already sold weight/quantity
+                $totalSoldWeight = $transacciones_minerale->ventas()->sum('peso_neto_seco');
+                $totalSoldQty = $transacciones_minerale->ventas()->sum('cantidad');
+
+                if ($request->peso_neto_seco < $totalSoldWeight) {
+                    return back()->withErrors(['peso_neto_seco' => "El peso del lote no puede ser menor al peso ya vendido ({$totalSoldWeight} Kg)"])->withInput();
+                }
+                if ($request->cantidad < $totalSoldQty) {
+                    return back()->withErrors(['cantidad' => "La cantidad del lote no puede ser menor a la cantidad ya vendida ({$totalSoldQty})"])->withInput();
+                }
+
+                // Recalculate stock
+                $data['peso_disponible'] = $request->peso_neto_seco - $totalSoldWeight;
+                $data['cantidad_disponible'] = $request->cantidad - $totalSoldQty;
+
+                $transacciones_minerale->update($data);
+
+                // Update analysis (sync lab records)
+                $transacciones_minerale->analisis()->delete();
+                if ($request->has('analisis')) {
+                    foreach ($request->analisis as $an) {
+                        if (!empty($an['mineral']) && isset($an['ley'])) {
+                            $transacciones_minerale->analisis()->create([
+                                'mineral' => $an['mineral'],
+                                'ley' => $an['ley'],
+                            ]);
+                        }
+                    }
+                }
+            }
+
+            return redirect()->route('transacciones-minerales.index')->with('success', 'Transacción actualizada con éxito.');
+        });
     }
 
     public function destroy(TransaccionMineral $transacciones_minerale)
     {
-        $transacciones_minerale->delete();
+        return DB::transaction(function() use ($transacciones_minerale) {
+            if ($transacciones_minerale->tipo === 'compra') {
+                // Prevent deleting lot if it has associated sales
+                if ($transacciones_minerale->ventas()->exists()) {
+                    return back()->withErrors(['error' => 'No se puede eliminar este lote porque tiene ventas/salidas de stock registradas.']);
+                }
+                // Delete analysis before deleting lote (done automatically via cascade delete migration)
+                $transacciones_minerale->delete();
+            } else {
+                // Reset stock on lote before deleting sale
+                $lote = $transacciones_minerale->lote;
+                if ($lote) {
+                    $lote->increment('peso_disponible', $transacciones_minerale->peso_neto_seco);
+                    $lote->increment('cantidad_disponible', $transacciones_minerale->cantidad);
+                }
+                $transacciones_minerale->delete();
+            }
 
-        return redirect()->route('transacciones-minerales.index')->with('success', 'Transacción eliminada con éxito.');
+            return redirect()->route('transacciones-minerales.index')->with('success', 'Transacción eliminada con éxito.');
+        });
     }
 }

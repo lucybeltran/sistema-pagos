@@ -11,15 +11,17 @@ class AnticipoController extends Controller
 {
     public function index(Request $request)
     {
-        $query = Anticipo::with('trabajador.bocamina');
+        $query = Anticipo::with(['trabajador.contratos' => function($q) {
+            $q->where('estado', 'activo');
+        }, 'trabajador.contratos.bocamina']);
 
         if ($request->filled('trabajador_id')) {
             $query->where('trabajador_id', $request->trabajador_id);
         }
 
         if ($request->filled('bocamina_id')) {
-            $query->whereHas('trabajador', function($q) use ($request) {
-                $q->where('bocamina_id', $request->bocamina_id);
+            $query->whereHas('trabajador.contratos', function($q) use ($request) {
+                $q->where('bocamina_id', $request->bocamina_id)->where('estado', 'activo');
             });
         }
 
