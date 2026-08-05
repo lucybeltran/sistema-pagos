@@ -1,6 +1,6 @@
-# ⛏️ SCPM - Sistema de Control de Pagos Mineros
+# ⛏️ SCPM - Sistema de Control de Pagos Mineros ERP
 
-Sistema web desarrollado con **Laravel 11**, **TailwindCSS**, **Vite** y **Alpine.js** para la gestión y control de pagos a personal minero, bocaminas, contratos, saldos pendientes y anticipos.
+Sistema ERP Web integral desarrollado con **Laravel 11**, **TailwindCSS**, **Vite**, **Chart.js** y **Alpine.js** para la administración operacional, control de liquidaciones de personal minero, anticipos, bocaminas, caja de fondos y comercialización de minerales.
 
 ---
 
@@ -8,7 +8,7 @@ Sistema web desarrollado con **Laravel 11**, **TailwindCSS**, **Vite** y **Alpin
 
 Antes de comenzar, asegúrate de tener instalado en tu computadora:
 
-* **PHP** >= 8.2 (con extensiones `pdo_sqlite` o `pdo_mysql`, `mbstring`, `openssl`, `curl`)
+* **PHP** >= 8.2 (con extensiones `pdo_sqlite`, `mbstring`, `openssl`, `curl`)
 * **Composer** (gestor de dependencias de PHP)
 * **Node.js** >= 18.x y **NPM**
 * **Git**
@@ -54,7 +54,7 @@ php artisan key:generate
 
 ### 6. Configurar y Preparar la Base de Datos (SQLite)
 
-El proyecto utiliza **SQLite** por defecto.
+El proyecto utiliza **SQLite** por defecto con zona horaria oficial `America/La_Paz`.
 
 1. Crea el archivo de base de datos vacío si no existe:
    * **Windows (PowerShell):**
@@ -65,7 +65,7 @@ El proyecto utiliza **SQLite** por defecto.
      ```bash
      touch database/database.sqlite
      ```
-2. Ejecuta las migraciones y puebla la base de datos con los datos iniciales y el usuario administrador:
+2. Ejecutar las migraciones y poblar la base de datos con los datos iniciales y el usuario administrador:
    ```bash
    php artisan migrate:fresh --seed
    ```
@@ -98,25 +98,49 @@ Al ejecutar el seeder (`php artisan db:seed`), se creará automáticamente la cu
 
 ---
 
-## ✨ Características Principales
+## ✨ Módulos y Funcionalidades del Sistema
 
-* **Gestión de Bocaminas**: Registro y administración de áreas de trabajo y sectores mineros.
-* **Control de Trabajadores / Contratistas**: Registro con validaciones avanzadas de CI, nombres con mayúsculas iniciales y teléfono.
-* **Gestión de Contratos**: Definición de contratos por metros, volquetas, sacos o cajas con avance automático.
-* **Liquidación de Pagos & Saldos**:
-  * Pagos totales y pagos parciales (con saldos pendientes para la siguiente planilla).
-  * Generación automática de anticipos por sobrantes de efectivo entregados.
-  * Justificación / observación obligatoria en caso de registrar descuentos.
-* **Historial de Anticipos (Solo Lectura)**: Log histórico de adelantos con filtros por Bocamina y por Trabajador.
-* **Impresión de Recibos**: Emisión e impresión de recibos formales de pagos y anticipos.
-* **Dashboard y Reportes**: Reportes detallados por fecha, saldos pendientes e historial financiero.
+### 📊 1. Tablero Principal (Dashboard)
+- **Cajas de KPI**: Saldo Sobrante en Caja, Total Recargado, Gastos en Planillas y Gastos en Anticipos.
+- **Top Producción**: Ranking visual de trabajadores con mayor volumen contratado.
+- **Gráficos interactivos**: Evolución mensual de pagos y producción por bocamina.
+
+### 👷 2. Personal y Contratos (Trabajadores)
+- **Registro Inteligente**: Formulario con asignación de Código Correlativo, CI, Teléfono, Bocamina, Cargo y Tipo de Contrato (Metros, Volquetas, Sereno, Contratista).
+- **Acceso a Historial Directo**: Botón **Historial** en cada fila para acceder inmediatamente al reporte individual pre-filtrado del trabajador.
+- **Exportación Rápida**: Botón **Exportar a Reportes** para pasar directamente al módulo de reportes.
+
+### 💰 3. Liquidación de Pagos y Caja Chica
+- **Liquidación Automática**: Cálculo en tiempo real de Subtotal, Bonos (+), Descuentos (-) y Deducción de Anticipos (-).
+- **Control de Sobrantes de Efectivo**: Conversión automática a vales de anticipo cuando se entrega un monto mayor al neto liquidado.
+- **Edición de Pagos**: Opción de corregir un pago registrado erróneamente mediante la ruta `Editar Pago`. Todo pago modificado muestra el distintivo **`[EDITADO]`**.
+- **Caja Chica / Inyecciones**: Gestión de recargas a la caja chica con cuadre perfecto de fondos.
+
+### 💵 4. Historial de Anticipos
+- **Filtrado en Tiempo Real (AJAX)**: Filtros instantáneos por Bocamina, Trabajador y Estado de Saldo (`Pendiente` o `Descontado`) sin recargar la página.
+- **Generación e Impresión de Vales**: Vales imprimibles con numeración correlativa y montos en letras en formato oficial bancario (`SON: XX/100 BOLIVIANOS`).
+
+### 📊 5. Módulo de Reportes del Personal (4 Pestañas ERP)
+1. 📈 **Resumen General**: Tarjetas KPI (`Total Pagado`, `Total Anticipos`, `Saldo de Caja del Personal` y `Trabajadores Activos`) más gráficos interactivos de gastos por semana y gastos por bocamina.
+2. 👷 **Trabajadores**: Filtros combinados por Trabajador, Cargo, Contrato, Bocamina y Rango de Fechas.
+3. ⛏️ **Bocaminas**: Totales gastados por bocamina y resumen individual por trabajador.
+4. 💵 **Anticipos**: Reporte detallado de vales emitidos, montos anticipados, saldos pendientes y montos descontados.
+* **Exportación y Salida**: Botones globales para **Imprimir**, **Exportar a PDF** y **Exportar a Excel** en todas las pestañas.
+
+### 💎 6. Comercialización de Minerales (Módulo 2)
+- Control de transacciones de compra y venta de lotes minerales, peso neto seco, leyes y liquidaciones de venta.
 
 ---
 
 ## 🛠️ Tecnologías Utilizadas
 
 * **Backend**: Laravel 11.x (PHP 8.2+)
-* **Frontend**: Blade, Tailwind CSS 4.0, Alpine.js
+* **Frontend**: Blade, Tailwind CSS 4.0, Alpine.js, Chart.js
 * **Build Tool**: Vite 8.x
-* **Base de Datos**: SQLite (compatible con MySQL / PostgreSQL)
+* **Base de Datos**: SQLite (con zona horaria `America/La_Paz`)
 
+---
+
+## 📝 Licencia
+
+Este proyecto es software privado para control operativo de empresas mineras. Todos los derechos reservados.
