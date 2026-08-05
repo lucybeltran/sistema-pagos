@@ -595,9 +595,14 @@
             <h1 class="text-3xl font-bold tracking-tight text-slate-100">Personal y Contratos</h1>
             <p class="text-sm text-slate-400 mt-1">Registra y administra los datos personales, contratos, tarifas y bocaminas del personal minero.</p>
         </div>
-        <button @click="openCreate()" class="inline-flex items-center justify-center px-4 py-2.5 rounded-xl bg-gradient-to-r from-indigo-500 to-violet-650 hover:from-indigo-650 hover:to-violet-650 text-sm font-bold text-white transition duration-155 shadow-lg shadow-indigo-500/10 self-start">
-            <i class="fa-solid fa-user-plus mr-2"></i> Nuevo Personal
-        </button>
+        <div class="flex flex-wrap gap-2.5">
+            <a href="{{ route('reportes.index', ['tab' => 'trabajador']) }}" class="inline-flex items-center justify-center px-4 py-2.5 rounded-xl bg-slate-800 hover:bg-slate-700 border border-slate-700 text-sm font-bold text-slate-200 transition duration-155 shadow-lg">
+                <i class="fa-solid fa-file-export mr-2 text-amber-500"></i> Exportar a Reportes
+            </a>
+            <button @click="openCreate()" class="inline-flex items-center justify-center px-4 py-2.5 rounded-xl bg-gradient-to-r from-indigo-500 to-violet-650 hover:from-indigo-650 hover:to-violet-650 text-sm font-bold text-white transition duration-155 shadow-lg shadow-indigo-500/10">
+                <i class="fa-solid fa-user-plus mr-2"></i> Nuevo Personal
+            </button>
+        </div>
     </div>
 
     <!-- Filters Section -->
@@ -725,6 +730,14 @@
                             </td>
                             <td class="px-6 py-4 no-print text-center">
                                 <div class="flex items-center justify-center gap-2">
+                                    <div class="relative group/hist">
+                                        <a href="{{ route('reportes.index', ['tab' => 'trabajador', 'trabajador_id' => $trabajador->id]) }}" 
+                                           class="w-8 h-8 rounded-xl flex items-center justify-center bg-gradient-to-br from-emerald-500 to-teal-650 hover:from-emerald-400 hover:to-teal-550 text-white shadow-md shadow-emerald-500/25 hover:shadow-emerald-500/50 hover:scale-110 active:scale-95 transition-all duration-200"
+                                           title="Ver Historial en Reportes">
+                                            <i class="fa-solid fa-clock-rotate-left text-xs"></i>
+                                        </a>
+                                        <span class="absolute -bottom-7 left-1/2 -translate-x-1/2 px-2 py-0.5 rounded-lg bg-slate-900 text-[10px] font-bold text-emerald-400 whitespace-nowrap opacity-0 group-hover/hist:opacity-100 transition-all duration-150 pointer-events-none border border-emerald-500/30 shadow-xl z-50">Historial</span>
+                                    </div>
                                     <div class="relative group/btn">
                                         <button @click='openEdit(@json($trabajador))' 
                                             class="w-8 h-8 rounded-xl flex items-center justify-center bg-gradient-to-br from-indigo-500 to-violet-650 hover:from-indigo-400 hover:to-violet-550 text-white shadow-md shadow-indigo-500/25 hover:shadow-indigo-500/50 hover:scale-110 active:scale-95 transition-all duration-200">

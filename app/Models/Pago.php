@@ -23,12 +23,14 @@ class Pago extends Model
         'tipo_cambio',
         'observacion',
         'metodo_pago',
-        'entregado_por'
+        'entregado_por',
+        'es_editado'
     ];
 
     protected $casts = [
         'fecha' => 'date',
         'saldo_liquidado' => 'boolean',
+        'es_editado' => 'boolean',
     ];
 
     public function trabajador()

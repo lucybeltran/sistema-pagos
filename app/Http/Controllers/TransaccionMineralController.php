@@ -128,10 +128,85 @@ class TransaccionMineralController extends Controller
             ->count();
 
         // Load all purchases (Lotes) for Stock list
-        $todosLosLotes = TransaccionMineral::with(['analisis', 'bocamina', 'ventas'])
+        $todosLosLotes = TransaccionMineral::with(['analisis', 'bocamina', 'ventas.analisis'])
             ->where('tipo', 'compra')
             ->orderBy('fecha', 'desc')
             ->get();
+
+        // Caja del Módulo 2 Metrics & Unified Ledger (Independiente de la caja de personal)
+        $totalRecargadoCaja = \App\Models\CajaMineralRecarga::sum('monto');
+        $cajaRecargas = \App\Models\CajaMineralRecarga::orderBy('fecha', 'desc')->orderBy('id', 'desc')->get();
+        $totalComprasModulo = TransaccionMineral::where('tipo', 'compra')->sum('monto_total');
+        $totalVentasModulo = TransaccionMineral::where('tipo', 'venta')->sum('monto_total');
+        $saldoCajaModulo = ($totalRecargadoCaja + $totalVentasModulo) - $totalComprasModulo;
+
+        // Unified Financial Ledger Movimientos for Caja del Módulo 2
+        $movsList = collect();
+
+        foreach ($cajaRecargas as $rec) {
+            $movsList->push((object)[
+                'id' => 'rec_' . $rec->id,
+                'db_id' => $rec->id,
+                'fecha' => \Carbon\Carbon::parse($rec->fecha),
+                'tipo' => 'recarga',
+                'glosa' => $rec->observacion ?: 'Recarga de fondo operativo de caja',
+                'monto' => (float)$rec->monto,
+                'es_ingreso' => true,
+                'delete_route' => route('caja-minerales.destroy-recarga', $rec->id),
+                'created_at' => $rec->created_at,
+            ]);
+        }
+
+        $comprasAll = TransaccionMineral::where('tipo', 'compra')->get();
+        foreach ($comprasAll as $comp) {
+            $movsList->push((object)[
+                'id' => 'comp_' . $comp->id,
+                'db_id' => $comp->id,
+                'fecha' => \Carbon\Carbon::parse($comp->fecha),
+                'tipo' => 'compra',
+                'glosa' => 'Compra Lote LOT-' . str_pad($comp->id, 5, '0', STR_PAD_LEFT) . ' (' . $comp->cliente_proveedor . ')',
+                'monto' => (float)$comp->monto_total,
+                'es_ingreso' => false,
+                'delete_route' => null,
+                'created_at' => $comp->created_at,
+            ]);
+        }
+
+        $ventasAll = TransaccionMineral::where('tipo', 'venta')->get();
+        foreach ($ventasAll as $vent) {
+            $movsList->push((object)[
+                'id' => 'vent_' . $vent->id,
+                'db_id' => $vent->id,
+                'fecha' => \Carbon\Carbon::parse($vent->fecha),
+                'tipo' => 'venta',
+                'glosa' => 'Venta de Mineral a ' . $vent->cliente_proveedor,
+                'monto' => (float)$vent->monto_total,
+                'es_ingreso' => true,
+                'delete_route' => null,
+                'created_at' => $vent->created_at,
+            ]);
+        }
+
+        $movsSortedAsc = $movsList->sortBy(function($m) {
+            return $m->fecha->format('Y-m-d') . '_' . $m->created_at->format('H:i:s') . '_' . $m->id;
+        })->values();
+
+        $runningSaldo = 0;
+        foreach ($movsSortedAsc as $m) {
+            if ($m->es_ingreso) {
+                $runningSaldo += $m->monto;
+            } else {
+                $runningSaldo -= $m->monto;
+            }
+            $m->saldo_resultante = $runningSaldo;
+        }
+
+        $movimientosCaja = $movsSortedAsc->reverse()->values();
+
+        $totalFondosDisponibles = $totalRecargadoCaja + $totalVentasModulo;
+        $porcentajeUsoCaja = $totalFondosDisponibles > 0 
+            ? min(100, round(($totalComprasModulo / $totalFondosDisponibles) * 100)) 
+            : 0;
 
         return view('transacciones.index', compact(
             'transacciones',
@@ -145,7 +220,14 @@ class TransaccionMineralController extends Controller
             'valorTotalStock',
             'comprasDelMes',
             'ventasDelMes',
-            'todosLosLotes'
+            'todosLosLotes',
+            'totalRecargadoCaja',
+            'cajaRecargas',
+            'totalComprasModulo',
+            'totalVentasModulo',
+            'saldoCajaModulo',
+            'movimientosCaja',
+            'porcentajeUsoCaja'
         ));
     }
 
@@ -276,12 +358,49 @@ class TransaccionMineralController extends Controller
                     $data['presentacion'] = $lote->presentacion;
                     $data['presentacion_otro'] = $lote->presentacion_otro;
 
-                    TransaccionMineral::create($data);
+                    $venta = TransaccionMineral::create($data);
+
+                    // Save sale-specific lab analysis without modifying purchase lot's analysis
+                    if ($request->has('analisis') && is_array($request->analisis)) {
+                        foreach ($request->analisis as $an) {
+                            if (!empty($an['mineral']) && isset($an['ley'])) {
+                                $venta->analisis()->create([
+                                    'mineral' => $an['mineral'],
+                                    'ley' => $an['ley'],
+                                ]);
+                            }
+                        }
+                    }
                 }
             }
 
             return redirect()->route('transacciones-minerales.index')->with('success', 'Transacción registrada con éxito.');
         });
+    }
+
+    public function storeRecarga(Request $request)
+    {
+        $request->validate([
+            'fecha' => 'required|date',
+            'monto' => 'required|numeric|min:0.01',
+            'observacion' => 'nullable|string|max:255',
+        ]);
+
+        \App\Models\CajaMineralRecarga::create([
+            'fecha' => $request->fecha,
+            'monto' => $request->monto,
+            'observacion' => $request->observacion,
+        ]);
+
+        return redirect()->route('transacciones-minerales.index')->with('success', 'Recarga de caja del módulo registrada con éxito.');
+    }
+
+    public function destroyRecarga($id)
+    {
+        $recarga = \App\Models\CajaMineralRecarga::findOrFail($id);
+        $recarga->delete();
+
+        return redirect()->route('transacciones-minerales.index')->with('success', 'Registro de recarga de caja eliminado.');
     }
 
     public function show($id)

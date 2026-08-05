@@ -4,10 +4,10 @@ namespace App\Http\Controllers;
 
 use App\Models\Bocamina;
 use App\Models\Trabajador;
-use App\Models\Contrato;
-use App\Models\Trabajo;
+use App\Models\TipoContrato;
 use App\Models\Anticipo;
 use App\Models\Pago;
+use App\Models\FondoPago;
 use Illuminate\Http\Request;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\DB;
@@ -22,7 +22,7 @@ class ReporteController extends Controller
         $totalAnticiposPendientes = Anticipo::where('saldo', '>', 0)->sum('saldo');
         
         // Calculate available cash balance
-        $total_recargado = \App\Models\FondoPago::sum('monto');
+        $total_recargado = FondoPago::sum('monto');
         $total_gastado_pagos = Pago::sum('monto_pagado');
         $total_gastado_anticipos = Anticipo::sum('monto');
         $saldo_caja = $total_recargado - ($total_gastado_pagos + $total_gastado_anticipos);
@@ -98,15 +98,15 @@ class ReporteController extends Controller
 
     public function index(Request $request)
     {
-        $trabajadores = Trabajador::orderBy('nombre', 'asc')->get();
+        $tab = $request->input('tab', 'general');
+
+        $trabajadores = Trabajador::where('estado', 'activo')->orderBy('nombre', 'asc')->get();
+        $allTrabajadores = Trabajador::orderBy('nombre', 'asc')->get();
         $bocaminas = Bocamina::orderBy('nombre', 'asc')->get();
-        $tab = $request->input('tab', 'trabajador');
+        $tiposContrato = TipoContrato::orderBy('nombre', 'asc')->get();
+        $roles = Trabajador::whereNotNull('rol')->where('rol', '!=', '')->distinct()->pluck('rol');
 
-        // General Recent History data (displayed when no worker is selected)
-        $recentPagos = Pago::with(['trabajador.bocamina'])->orderBy('fecha', 'desc')->take(10)->get();
-        $recentAnticipos = Anticipo::with(['trabajador.bocamina'])->orderBy('fecha', 'desc')->take(10)->get();
-
-        // Common dates for tabs
+        // Common Date Filters
         $filtroFecha = $request->input('filtro_fecha', 'personalizado');
         $fechaDesde = $request->input('fecha_desde');
         $fechaHasta = $request->input('fecha_hasta');
@@ -128,312 +128,229 @@ class ReporteController extends Controller
             }
         }
 
-        // 1. Reporte por Trabajador
-        $reporteTrabajador = null;
-        if ($request->filled('trabajador_id')) {
-            $t = Trabajador::findOrFail($request->trabajador_id);
-            
-            $trabajosQuery = $t->pagos(); // We load pagos as the "trabajos" list to maintain backwards compatibility
-            $anticiposQuery = $t->anticipos();
-            $pagosQuery = $t->pagos();
-            
-            if ($fechaDesde) {
-                $trabajosQuery->where('fecha', '>=', $fechaDesde);
-                $anticiposQuery->where('fecha', '>=', $fechaDesde);
-            }
-            if ($fechaHasta) {
-                $trabajosQuery->where('fecha', '<=', $fechaHasta);
-                $anticiposQuery->where('fecha', '<=', $fechaHasta);
-            }
-            
-            $trabajos = $trabajosQuery->get();
-            $anticipos = $anticiposQuery->get();
-            $pagos = $pagosQuery->get();
-            
-            $subtotalTrabajos = $trabajos->sum('subtotal');
-            $trabajosPendientes = 0; // In simplified payout system there are no unpaid jobs logged beforehand
-            $anticiposPendientes = $anticipos->sum('saldo');
-            $pagosRecibidos = $pagos->sum('neto');
+        // ==========================================
+        // TAB 1: RESUMEN GENERAL
+        // ==========================================
+        $genTotalRecargado = FondoPago::sum('monto');
+        $genTotalPagado = Pago::sum('monto_pagado');
+        $genTotalAnticipos = Anticipo::sum('monto');
+        $genSaldoCaja = $genTotalRecargado - ($genTotalPagado + $genTotalAnticipos);
+        $genTrabajadoresActivos = Trabajador::where('estado', 'activo')->count();
 
-            $reporteTrabajador = [
-                'trabajador' => $t,
-                'trabajos' => $trabajos->sortByDesc('fecha'),
-                'anticipos' => $anticipos->sortByDesc('fecha'),
-                'pagos' => $pagos->sortByDesc('fecha'),
-                'subtotal_trabajos' => $subtotalTrabajos,
-                'trabajos_pendientes' => $trabajosPendientes,
-                'anticipos_pendientes' => $anticipos_pendientes = $anticiposPendientes,
-                'pagos_recibidos' => $pagosRecibidos,
-                'desde' => $fechaDesde,
-                'hasta' => $fechaHasta,
-            ];
+        // Chart Data 1: Gastos por Semana (Últimas 8 semanas)
+        $semanasChart = collect();
+        for ($i = 7; $i >= 0; $i--) {
+            $wStart = Carbon::today()->subWeeks($i)->startOfWeek()->toDateString();
+            $wEnd = Carbon::today()->subWeeks($i)->endOfWeek()->toDateString();
+            $label = 'Sem ' . Carbon::today()->subWeeks($i)->weekOfYear;
+            
+            $pSem = Pago::whereBetween('fecha', [$wStart, $wEnd])->sum('monto_pagado');
+            $aSem = Anticipo::whereBetween('fecha', [$wStart, $wEnd])->sum('monto');
+
+            $semanasChart->push([
+                'label' => $label,
+                'pagos' => (float)$pSem,
+                'anticipos' => (float)$aSem,
+                'total' => (float)($pSem + $aSem),
+            ]);
         }
 
-        // 2. Reporte por Bocamina (General list and Specific details)
-        $reporteBocamina = [];
-        foreach ($bocaminas as $bocamina) {
-            $trabajadoresIds = Trabajador::where('bocamina_id', $bocamina->id)->where('estado', 'activo')->pluck('id');
-            
-            $cantTrabajadores = count($trabajadoresIds);
-            
-            $pagosQuery = Pago::whereIn('trabajador_id', $trabajadoresIds);
-            $trabajosQuery = Pago::whereIn('trabajador_id', $trabajadoresIds);
-            
-            if ($fechaDesde) {
-                $pagosQuery->where('fecha', '>=', $fechaDesde);
-                $trabajosQuery->where('fecha', '>=', $fechaDesde);
-            }
-            if ($fechaHasta) {
-                $pagosQuery->where('fecha', '<=', $fechaHasta);
-                $trabajosQuery->where('fecha', '<=', $fechaHasta);
-            }
-            
-            $totalPagado = $pagosQuery->sum('neto');
-            $totalProduccion = $trabajosQuery->sum('subtotal');
-            
-            $metrosTotales = Pago::whereIn('trabajador_id', $trabajadoresIds)
-                                 ->where('tipo_contrato_nombre', 'like', '%metro%');
-                                    
-            $volquetasTotales = Pago::whereIn('trabajador_id', $trabajadoresIds)
-                                   ->where('tipo_contrato_nombre', 'like', '%volqueta%');
-
-            if ($fechaDesde) {
-                $metrosTotales->where('fecha', '>=', $fechaDesde);
-                $volquetasTotales->where('fecha', '>=', $fechaDesde);
-            }
-            if ($fechaHasta) {
-                $metrosTotales->where('fecha', '<=', $fechaHasta);
-                $volquetasTotales->where('fecha', '<=', $fechaHasta);
-            }
-
-            $reporteBocamina[] = [
-                'bocamina' => $bocamina,
-                'cantidad_trabajadores' => $cantTrabajadores,
-                'total_pagado' => $totalPagado,
-                'total_produccion' => $totalProduccion,
-                'metros' => $metrosTotales->sum('cantidad_trabajada'),
-                'volquetas' => $volquetasTotales->sum('cantidad_trabajada'),
+        // Chart Data 2: Gastos por Bocamina
+        $bocaminasChart = $bocaminas->map(function($b) {
+            $workersIds = Trabajador::where('bocamina_id', $b->id)->pluck('id');
+            $pagosSum = Pago::whereIn('trabajador_id', $workersIds)->sum('monto_pagado');
+            $anticiposSum = Anticipo::whereIn('trabajador_id', $workersIds)->sum('monto');
+            return [
+                'nombre' => $b->nombre,
+                'total' => (float)($pagosSum + $anticiposSum),
             ];
+        });
+
+        // ==========================================
+        // TAB 2: REPORTES POR TRABAJADOR
+        // ==========================================
+        $trabId = $request->input('trabajador_id');
+        $trabRol = $request->input('rol');
+        $trabContratoId = $request->input('tipo_contrato_id');
+        $trabBocaminaId = $request->input('bocamina_id');
+
+        $pagosTrabajadorQuery = Pago::with(['trabajador.bocamina', 'trabajador.tipoContrato'])->orderBy('fecha', 'desc');
+        $anticiposTrabajadorQuery = Anticipo::with(['trabajador.bocamina'])->orderBy('fecha', 'desc');
+
+        if ($trabId) {
+            $pagosTrabajadorQuery->where('trabajador_id', $trabId);
+            $anticiposTrabajadorQuery->where('trabajador_id', $trabId);
         }
-
-        $reporteBocaminaDetalle = null;
-        if ($request->filled('bocamina_id')) {
-            $b = Bocamina::findOrFail($request->bocamina_id);
-            $workers = Trabajador::where('bocamina_id', $b->id)->get();
-            $workersIds = $workers->pluck('id');
-
-            $totalPagadoQuery = Pago::whereIn('trabajador_id', $workersIds);
-            $totalProduccionQuery = Pago::whereIn('trabajador_id', $workersIds);
-            $totalAnticiposQuery = Anticipo::whereIn('trabajador_id', $workersIds);
-            $saldoAnticiposQuery = Anticipo::whereIn('trabajador_id', $workersIds);
-
-            if ($fechaDesde) {
-                $totalPagadoQuery->where('fecha', '>=', $fechaDesde);
-                $totalProduccionQuery->where('fecha', '>=', $fechaDesde);
-                $totalAnticiposQuery->where('fecha', '>=', $fechaDesde);
-                $saldoAnticiposQuery->where('fecha', '>=', $fechaDesde);
-            }
-            if ($fechaHasta) {
-                $totalPagadoQuery->where('fecha', '<=', $fechaHasta);
-                $totalProduccionQuery->where('fecha', '<=', $fechaHasta);
-                $totalAnticiposQuery->where('fecha', '<=', $fechaHasta);
-                $saldoAnticiposQuery->where('fecha', '<=', $fechaHasta);
-            }
-
-            $totalPagado = $totalPagadoQuery->sum('neto');
-            $totalProduccion = $totalProduccionQuery->sum('subtotal');
-            $totalAnticipos = $totalAnticiposQuery->sum('monto');
-            $saldoAnticipos = $saldoAnticiposQuery->sum('saldo');
-
-            $metrosQuery = Pago::whereIn('trabajador_id', $workersIds)->where('tipo_contrato_nombre', 'like', '%metro%');
-            $volquetasQuery = Pago::whereIn('trabajador_id', $workersIds)->where('tipo_contrato_nombre', 'like', '%volqueta%');
-
-            if ($fechaDesde) {
-                $metrosQuery->where('fecha', '>=', $fechaDesde);
-                $volquetasQuery->where('fecha', '>=', $fechaDesde);
-            }
-            if ($fechaHasta) {
-                $metrosQuery->where('fecha', '<=', $fechaHasta);
-                $volquetasQuery->where('fecha', '<=', $fechaHasta);
-            }
-
-            $metros = $metrosQuery->sum('cantidad_trabajada');
-            $volquetas = $volquetasQuery->sum('cantidad_trabajada');
-
-            $recentTrabajosQuery = Pago::whereIn('trabajador_id', $workersIds)->with('trabajador');
-            $recentPagosQuery = Pago::whereIn('trabajador_id', $workersIds)->with('trabajador');
-
-            if ($fechaDesde) {
-                $recentTrabajosQuery->where('fecha', '>=', $fechaDesde);
-                $recentPagosQuery->where('fecha', '>=', $fechaDesde);
-            }
-            if ($fechaHasta) {
-                $recentTrabajosQuery->where('fecha', '<=', $fechaHasta);
-                $recentPagosQuery->where('fecha', '<=', $fechaHasta);
-            }
-
-            $recentTrabajos = $recentTrabajosQuery->orderBy('fecha', 'desc')->take(15)->get();
-            $recentPagos = $recentPagosQuery->orderBy('fecha', 'desc')->take(15)->get();
-
-            // Calculate workers detail
-            $workersData = [];
-            foreach ($workers as $worker) {
-                $wTrabajos = $worker->pagos();
-                $wPagos = $worker->pagos();
-
-                if ($fechaDesde) {
-                    $wTrabajos->where('fecha', '>=', $fechaDesde);
-                    $wPagos->where('fecha', '>=', $fechaDesde);
-                }
-                if ($fechaHasta) {
-                    $wTrabajos->where('fecha', '<=', $fechaHasta);
-                    $wPagos->where('fecha', '<=', $fechaHasta);
-                }
-
-                $workersData[] = [
-                    'worker' => $worker,
-                    'total_produccion' => $wTrabajos->sum('subtotal'),
-                    'total_pagado' => $wPagos->sum('neto'),
-                ];
-            }
-
-            $reporteBocaminaDetalle = [
-                'bocamina' => $b,
-                'trabajadores_data' => $workersData,
-                'total_pagado' => $totalPagado,
-                'total_produccion' => $totalProduccion,
-                'total_anticipos' => $totalAnticipos,
-                'saldo_anticipos' => $saldoAnticipos,
-                'metros' => $metros,
-                'volquetas' => $volquetas,
-                'recientes_trabajos' => $recentTrabajos,
-                'recientes_pagos' => $recentPagos,
-                'desde' => $fechaDesde,
-                'hasta' => $fechaHasta,
-            ];
+        if ($trabBocaminaId) {
+            $pagosTrabajadorQuery->whereHas('trabajador', fn($q) => $q->where('bocamina_id', $trabBocaminaId));
+            $anticiposTrabajadorQuery->whereHas('trabajador', fn($q) => $q->where('bocamina_id', $trabBocaminaId));
         }
-
-        // 3. Reporte de Anticipos (Filtrable por fechas y estado de saldo)
-        $antEstado = $request->input('ant_estado', 'todos');
-        $anticiposQuery = Anticipo::with('trabajador.bocamina')->orderBy('fecha', 'desc');
-
+        if ($trabRol) {
+            $pagosTrabajadorQuery->whereHas('trabajador', fn($q) => $q->where('rol', $trabRol));
+            $anticiposTrabajadorQuery->whereHas('trabajador', fn($q) => $q->where('rol', $trabRol));
+        }
+        if ($trabContratoId) {
+            $pagosTrabajadorQuery->whereHas('trabajador', fn($q) => $q->where('tipo_contrato_id', $trabContratoId));
+            $anticiposTrabajadorQuery->whereHas('trabajador', fn($q) => $q->where('tipo_contrato_id', $trabContratoId));
+        }
         if ($fechaDesde) {
-            $anticiposQuery->where('fecha', '>=', $fechaDesde);
+            $pagosTrabajadorQuery->where('fecha', '>=', $fechaDesde);
+            $anticiposTrabajadorQuery->where('fecha', '>=', $fechaDesde);
         }
         if ($fechaHasta) {
-            $anticiposQuery->where('fecha', '<=', $fechaHasta);
-        }
-        
-        if ($antEstado === 'pendiente') {
-            $anticiposQuery->where('saldo', '>', 0);
-        } elseif ($antEstado === 'pagado') {
-            $anticiposQuery->where('saldo', '<=', 0);
+            $pagosTrabajadorQuery->where('fecha', '<=', $fechaHasta);
+            $anticiposTrabajadorQuery->where('fecha', '<=', $fechaHasta);
         }
 
-        $reporteAnticipos = $anticiposQuery->get();
+        $listPagosTrabajador = $pagosTrabajadorQuery->get();
+        $listAnticiposTrabajador = $anticiposTrabajadorQuery->get();
 
-        // 4. Reporte General (Weekly breakdown / Dates range)
-        $genFechaDesde = $request->gen_fecha_desde;
-        $genFechaHasta = $request->gen_fecha_hasta;
-        $genFiltro = $request->gen_filtro_fecha ?: 'personalizado';
+        $totPagadoTrabajador = $listPagosTrabajador->sum('monto_pagado');
+        $totAnticiposTrabajador = $listAnticiposTrabajador->sum('monto');
+        $netoRecibidoTrabajador = $listPagosTrabajador->sum('neto');
 
-        if ($request->filled('gen_filtro_fecha')) {
-            $hoy = Carbon::today();
-            if ($genFiltro === 'esta_semana') {
-                $genFechaDesde = $hoy->copy()->startOfWeek()->toDateString();
-                $genFechaHasta = $hoy->copy()->endOfWeek()->toDateString();
-            } elseif ($genFiltro === 'semana_pasada') {
-                $genFechaDesde = $hoy->copy()->subWeek()->startOfWeek()->toDateString();
-                $genFechaHasta = $hoy->copy()->subWeek()->endOfWeek()->toDateString();
-            } elseif ($genFiltro === 'este_mes') {
-                $genFechaDesde = $hoy->copy()->startOfMonth()->toDateString();
-                $genFechaHasta = $hoy->copy()->endOfMonth()->toDateString();
-            } elseif ($genFiltro === 'mes_pasado') {
-                $genFechaDesde = $hoy->copy()->subMonth()->startOfMonth()->toDateString();
-                $genFechaHasta = $hoy->copy()->subMonth()->endOfMonth()->toDateString();
+        // ==========================================
+        // TAB 3: REPORTES POR BOCAMINA
+        // ==========================================
+        $bocFiltroId = $request->input('boc_bocamina_id');
+        $bocRol = $request->input('boc_rol');
+        $bocContratoId = $request->input('boc_tipo_contrato_id');
+
+        $bocaminasResumen = $bocaminas->map(function($b) use ($bocFiltroId, $bocRol, $bocContratoId, $fechaDesde, $fechaHasta) {
+            if ($bocFiltroId && $b->id != $bocFiltroId) {
+                return null;
             }
-        }
 
-        $reporteGeneral = null;
-        if ($genFechaDesde && $genFechaHasta) {
-            $pagosRango = Pago::with('trabajador.bocamina')
-                              ->whereBetween('fecha', [$genFechaDesde, $genFechaHasta])
-                              ->orderBy('fecha', 'desc')
-                              ->get();
+            $workersQuery = Trabajador::where('bocamina_id', $b->id);
+            if ($bocRol) $workersQuery->where('rol', $bocRol);
+            if ($bocContratoId) $workersQuery->where('tipo_contrato_id', $bocContratoId);
 
-            $trabajosRango = Pago::with('trabajador.bocamina')
-                                    ->whereBetween('fecha', [$genFechaDesde, $genFechaHasta])
-                                    ->orderBy('fecha', 'desc')
-                                    ->get();
+            $workers = $workersQuery->get();
+            $wIds = $workers->pluck('id');
 
-            $anticiposRango = Anticipo::with('trabajador.bocamina')
-                                      ->whereBetween('fecha', [$genFechaDesde, $genFechaHasta])
-                                      ->orderBy('fecha', 'desc')
-                                      ->get();
+            $pQuery = Pago::whereIn('trabajador_id', $wIds);
+            $aQuery = Anticipo::whereIn('trabajador_id', $wIds);
 
-            // Calculate weekly summaries inside range
-            $semanasResumen = [];
-            $start = Carbon::parse($genFechaDesde)->startOfWeek();
-            $end = Carbon::parse($genFechaHasta)->endOfWeek();
+            if ($fechaDesde) {
+                $pQuery->where('fecha', '>=', $fechaDesde);
+                $aQuery->where('fecha', '>=', $fechaDesde);
+            }
+            if ($fechaHasta) {
+                $pQuery->where('fecha', '<=', $fechaHasta);
+                $aQuery->where('fecha', '<=', $fechaHasta);
+            }
 
-            $current = $start->copy();
-            while ($current->lte($end)) {
-                $weekStart = $current->copy()->startOfWeek();
-                $weekEnd = $current->copy()->endOfWeek();
+            $totPagos = $pQuery->sum('monto_pagado');
+            $totAnticipos = $aQuery->sum('monto');
+            $totGastado = $totPagos + $totAnticipos;
 
-                // Group transactions that fall within this week and the query range
-                $wStartStr = $weekStart->copy()->max(Carbon::parse($genFechaDesde))->toDateString();
-                $wEndStr = $weekEnd->copy()->min(Carbon::parse($genFechaHasta))->toDateString();
-
-                $pSem = Pago::whereBetween('fecha', [$wStartStr, $wEndStr])->get();
-                $tSem = Pago::whereBetween('fecha', [$wStartStr, $wEndStr])->get();
-                $aSem = Anticipo::whereBetween('fecha', [$wStartStr, $wEndStr])->get();
-
-                if ($pSem->count() > 0 || $tSem->count() > 0 || $aSem->count() > 0) {
-                    $semanasResumen[] = [
-                        'semana_nombre' => 'Semana ' . $weekStart->weekOfYear . ' (' . Carbon::parse($wStartStr)->format('d/m/Y') . ' al ' . Carbon::parse($wEndStr)->format('d/m/Y') . ')',
-                        'total_pagado' => $pSem->sum('neto'),
-                        'total_produccion' => $tSem->sum('subtotal'),
-                        'total_anticipos' => $aSem->sum('monto'),
-                        'cantidad_pagos' => $pSem->count(),
-                        'cantidad_trabajos' => $tSem->count(),
-                    ];
+            $workersDetalle = $workers->map(function($w) use ($fechaDesde, $fechaHasta) {
+                $wpQuery = Pago::where('trabajador_id', $w->id);
+                $waQuery = Anticipo::where('trabajador_id', $w->id);
+                if ($fechaDesde) {
+                    $wpQuery->where('fecha', '>=', $fechaDesde);
+                    $waQuery->where('fecha', '>=', $fechaDesde);
                 }
+                if ($fechaHasta) {
+                    $wpQuery->where('fecha', '<=', $fechaHasta);
+                    $waQuery->where('fecha', '<=', $fechaHasta);
+                }
+                return [
+                    'trabajador' => $w,
+                    'pagos' => $wpQuery->sum('monto_pagado'),
+                    'anticipos' => $waQuery->sum('monto'),
+                    'total' => $wpQuery->sum('monto_pagado') + $waQuery->sum('monto'),
+                ];
+            });
 
-                $current->addWeek();
-            }
-
-            $reporteGeneral = [
-                'desde' => $genFechaDesde,
-                'hasta' => $genFechaHasta,
-                'pagos' => $pagosRango,
-                'trabajos' => $trabajosRango,
-                'anticipos' => $anticiposRango,
-                'semanas' => array_reverse($semanasResumen),
-                'total_pagos' => $pagosRango->sum('neto'),
-                'total_trabajos' => $trabajosRango->sum('subtotal'),
-                'total_anticipos' => $anticiposRango->sum('monto'),
+            return [
+                'bocamina' => $b,
+                'cant_trabajadores' => $workers->count(),
+                'total_pagos' => $totPagos,
+                'total_anticipos' => $totAnticipos,
+                'total_gastado' => $totGastado,
+                'trabajadores_detalle' => $workersDetalle,
             ];
+        })->filter()->values();
+
+        // ==========================================
+        // TAB 4: REPORTES DE ANTICIPOS
+        // ==========================================
+        $antTrabId = $request->input('ant_trabajador_id');
+        $antRol = $request->input('ant_rol');
+        $antContratoId = $request->input('ant_tipo_contrato_id');
+        $antBocaminaId = $request->input('ant_bocamina_id');
+        $antEstado = $request->input('ant_estado', 'todos');
+
+        $anticiposTabQuery = Anticipo::with(['trabajador.bocamina', 'trabajador.tipoContrato'])->orderBy('fecha', 'desc');
+
+        if ($antTrabId) $anticiposTabQuery->where('trabajador_id', $antTrabId);
+        if ($antBocaminaId) $anticiposTabQuery->whereHas('trabajador', fn($q) => $q->where('bocamina_id', $antBocaminaId));
+        if ($antRol) $anticiposTabQuery->whereHas('trabajador', fn($q) => $q->where('rol', $antRol));
+        if ($antContratoId) $anticiposTabQuery->whereHas('trabajador', fn($q) => $q->where('tipo_contrato_id', $antContratoId));
+        if ($fechaDesde) $anticiposTabQuery->where('fecha', '>=', $fechaDesde);
+        if ($fechaHasta) $anticiposTabQuery->where('fecha', '<=', $fechaHasta);
+
+        if ($antEstado === 'pendiente') {
+            $anticiposTabQuery->where('saldo', '>', 0);
+        } elseif ($antEstado === 'descontado') {
+            $anticiposTabQuery->where('saldo', '<=', 0);
         }
+
+        $listAnticiposTab = $anticiposTabQuery->get();
+
+        $antConteo = $listAnticiposTab->count();
+        $antMontoTotal = $listAnticiposTab->sum('monto');
+        $antMontoPendiente = $listAnticiposTab->sum('saldo');
+        $antMontoDescontado = $listAnticiposTab->sum(fn($a) => $a->monto - $a->saldo);
 
         return view('reportes.index', compact(
-            'trabajadores',
-            'bocaminas',
             'tab',
-            'reporteTrabajador',
-            'reporteBocamina',
-            'reporteBocaminaDetalle',
-            'reporteAnticipos',
-            'reporteGeneral',
+            'trabajadores',
+            'allTrabajadores',
+            'bocaminas',
+            'tiposContrato',
+            'roles',
             'filtroFecha',
             'fechaDesde',
             'fechaHasta',
-            'genFiltro',
-            'genFechaDesde',
-            'genFechaHasta',
+
+            // Tab 1 Data
+            'genTotalPagado',
+            'genTotalAnticipos',
+            'genSaldoCaja',
+            'genTrabajadoresActivos',
+            'semanasChart',
+            'bocaminasChart',
+
+            // Tab 2 Data
+            'trabId',
+            'trabRol',
+            'trabContratoId',
+            'trabBocaminaId',
+            'listPagosTrabajador',
+            'listAnticiposTrabajador',
+            'totPagadoTrabajador',
+            'totAnticiposTrabajador',
+            'netoRecibidoTrabajador',
+
+            // Tab 3 Data
+            'bocFiltroId',
+            'bocRol',
+            'bocContratoId',
+            'bocaminasResumen',
+
+            // Tab 4 Data
+            'antTrabId',
+            'antRol',
+            'antContratoId',
+            'antBocaminaId',
             'antEstado',
-            'recentPagos',
-            'recentAnticipos'
+            'listAnticiposTab',
+            'antConteo',
+            'antMontoTotal',
+            'antMontoPendiente',
+            'antMontoDescontado'
         ));
     }
 
@@ -441,7 +358,6 @@ class ReporteController extends Controller
     {
         $bocaminas = Bocamina::orderBy('nombre', 'asc')->get();
 
-        // Date filters
         $filtroFecha = $request->input('filtro_fecha', 'personalizado');
         $fechaDesde  = $request->input('fecha_desde');
         $fechaHasta  = $request->input('fecha_hasta');
@@ -453,7 +369,7 @@ class ReporteController extends Controller
                 $fechaHasta = $hoy->copy()->endOfWeek()->toDateString();
             } elseif ($filtroFecha === 'semana_pasada') {
                 $fechaDesde = $hoy->copy()->subWeek()->startOfWeek()->toDateString();
-                $fechaHasta = $hoy->copy()->subWeek()->endOfWeek()->toDateString();
+                $fechaHasta = $hoy->copy()->endOfWeek()->toDateString();
             } elseif ($filtroFecha === 'este_mes') {
                 $fechaDesde = $hoy->copy()->startOfMonth()->toDateString();
                 $fechaHasta = $hoy->copy()->endOfMonth()->toDateString();
@@ -463,7 +379,6 @@ class ReporteController extends Controller
             }
         }
 
-        // Build query for mineral transactions
         $query = \App\Models\TransaccionMineral::with('bocamina')->orderBy('fecha', 'desc');
 
         if ($fechaDesde) $query->where('fecha', '>=', $fechaDesde);
@@ -478,13 +393,11 @@ class ReporteController extends Controller
 
         $transacciones = $query->get();
 
-        // Summary totals
         $totalVentas  = $transacciones->where('tipo', 'venta')->sum('monto_total');
         $totalCompras = $transacciones->where('tipo', 'compra')->sum('monto_total');
         $totalPesoNetoVentas  = $transacciones->where('tipo', 'venta')->sum('peso_neto_seco');
         $totalPesoNetoCompras = $transacciones->where('tipo', 'compra')->sum('peso_neto_seco');
 
-        // Per-bocamina summary
         $resumenBocaminas = $bocaminas->map(function ($b) use ($transacciones) {
             $bTx = $transacciones->where('bocamina_id', $b->id);
             return [
@@ -496,7 +409,6 @@ class ReporteController extends Controller
             ];
         })->filter(fn($r) => $r['cantidad'] > 0);
 
-        // Monthly chart data (last 6 months)
         $meses = collect();
         for ($i = 5; $i >= 0; $i--) {
             $mes = Carbon::today()->subMonths($i);

@@ -11,17 +11,15 @@ class AnticipoController extends Controller
 {
     public function index(Request $request)
     {
-        $query = Anticipo::with(['trabajador.contratos' => function($q) {
-            $q->where('estado', 'activo');
-        }, 'trabajador.contratos.bocamina']);
+        $query = Anticipo::with(['trabajador.bocamina', 'trabajador.tipoContrato']);
 
         if ($request->filled('trabajador_id')) {
             $query->where('trabajador_id', $request->trabajador_id);
         }
 
         if ($request->filled('bocamina_id')) {
-            $query->whereHas('trabajador.contratos', function($q) use ($request) {
-                $q->where('bocamina_id', $request->bocamina_id)->where('estado', 'activo');
+            $query->whereHas('trabajador', function($q) use ($request) {
+                $q->where('bocamina_id', $request->bocamina_id);
             });
         }
 
@@ -34,7 +32,7 @@ class AnticipoController extends Controller
         }
 
         $anticipos = $query->orderBy('fecha', 'desc')->get();
-        $trabajadores = Trabajador::where('estado', 'activo')->get();
+        $trabajadores = Trabajador::where('estado', 'activo')->orderBy('nombre')->get();
         $bocaminas = Bocamina::orderBy('nombre')->get();
 
         return view('anticipos.index', compact('anticipos', 'trabajadores', 'bocaminas'));
@@ -42,17 +40,49 @@ class AnticipoController extends Controller
 
     public function store(Request $request)
     {
-        abort(403, 'No se permite registrar anticipos manualmente.');
+        $request->validate([
+            'trabajador_id' => 'required|exists:trabajadores,id',
+            'fecha' => 'required|date',
+            'monto' => 'required|numeric|min:0.01',
+            'observacion' => 'nullable|string|max:255',
+        ]);
+
+        Anticipo::create([
+            'trabajador_id' => $request->trabajador_id,
+            'fecha' => $request->fecha,
+            'monto' => $request->monto,
+            'saldo' => $request->monto,
+            'observacion' => $request->observacion,
+        ]);
+
+        return redirect()->route('anticipos.index')->with('success', 'Anticipo registrado con éxito.');
     }
 
     public function update(Request $request, Anticipo $anticipo)
     {
-        abort(403, 'No se permite modificar anticipos manualmente.');
+        $request->validate([
+            'fecha' => 'required|date',
+            'monto' => 'required|numeric|min:0.01',
+            'observacion' => 'nullable|string|max:255',
+        ]);
+
+        $diferencia = $request->monto - $anticipo->monto;
+        $nuevoSaldo = max(0, $anticipo->saldo + $diferencia);
+
+        $anticipo->update([
+            'fecha' => $request->fecha,
+            'monto' => $request->monto,
+            'saldo' => $nuevoSaldo,
+            'observacion' => $request->observacion,
+        ]);
+
+        return redirect()->route('anticipos.index')->with('success', 'Anticipo actualizado con éxito.');
     }
 
     public function destroy(Anticipo $anticipo)
     {
-        abort(403, 'No se permite eliminar anticipos manualmente.');
+        $anticipo->delete();
+        return redirect()->route('anticipos.index')->with('success', 'Anticipo eliminado con éxito.');
     }
 
     public function recibo(Anticipo $anticipo)
@@ -61,4 +91,3 @@ class AnticipoController extends Controller
         return view('anticipos.recibo', compact('anticipo'));
     }
 }
-

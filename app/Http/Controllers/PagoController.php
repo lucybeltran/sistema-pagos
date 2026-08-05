@@ -33,30 +33,118 @@ class PagoController extends Controller
         $pagos = $query->orderBy('fecha', 'desc')->get();
 
         // Calculate totals for summary cards
-        $total_recargado = \App\Models\FondoPago::sum('monto');
-        $total_gastado_pagos = Pago::sum('monto_pagado');
-        $total_gastado_anticipos = \App\Models\Anticipo::sum('monto');
-        $total_gastado = $total_gastado_pagos + $total_gastado_anticipos;
-        $saldo_caja = $total_recargado - $total_gastado;
+        $hasFondos = \App\Models\FondoPago::count() > 0;
+        if ($hasFondos) {
+            $total_recargado = \App\Models\FondoPago::sum('monto');
+            $total_gastado_pagos = Pago::sum('monto_pagado');
+            $total_gastado_anticipos = \App\Models\Anticipo::sum('monto');
+            $total_gastado = $total_gastado_pagos + $total_gastado_anticipos;
+            $saldo_caja = $total_recargado - $total_gastado;
+        } else {
+            $total_recargado = 0;
+            $total_gastado_pagos = 0;
+            $total_gastado_anticipos = 0;
+            $total_gastado = 0;
+            $saldo_caja = 0;
+        }
 
-        return view('pagos.index', compact('pagos', 'total_recargado', 'total_gastado', 'saldo_caja'));
+        return view('pagos.index', compact('pagos', 'total_recargado', 'total_gastado_pagos', 'total_gastado_anticipos', 'total_gastado', 'saldo_caja'));
     }
 
-    public function fondosIndex()
+    public function fondosIndex(Request $request)
     {
-        $fondos = \App\Models\FondoPago::orderBy('fecha', 'desc')->get();
-        
-        $total_recargado = \App\Models\FondoPago::sum('monto');
-        $total_gastado_pagos = Pago::sum('monto_pagado');
-        $total_gastado_anticipos = \App\Models\Anticipo::sum('monto');
-        $total_gastado = $total_gastado_pagos + $total_gastado_anticipos;
-        $saldo_caja = $total_recargado - $total_gastado;
+        $rango = $request->rango;
+        $fecha_desde = $request->fecha_desde;
+        $fecha_hasta = $request->fecha_hasta;
+
+        if ($rango === '1_mes') {
+            $fecha_desde = now()->subMonth()->toDateString();
+            $fecha_hasta = now()->toDateString();
+        } elseif ($rango === '3_meses') {
+            $fecha_desde = now()->subMonths(3)->toDateString();
+            $fecha_hasta = now()->toDateString();
+        } elseif ($rango === 'este_mes') {
+            $fecha_desde = now()->startOfMonth()->toDateString();
+            $fecha_hasta = now()->endOfMonth()->toDateString();
+        }
+
+        $query = \App\Models\FondoPago::query();
+        if ($fecha_desde) {
+            $query->whereDate('fecha', '>=', $fecha_desde);
+        }
+        if ($fecha_hasta) {
+            $query->whereDate('fecha', '<=', $fecha_hasta);
+        }
+
+        // Fetch chronological order to compute running balances & carryover
+        $allFondos = \App\Models\FondoPago::orderBy('fecha', 'asc')->get();
+
+        $remanente_acumulado = 0;
+        $processedFondos = collect();
+
+        foreach ($allFondos as $index => $fondo) {
+            $fechaInicio = $fondo->fecha;
+            $sigFondo = isset($allFondos[$index + 1]) ? $allFondos[$index + 1] : null;
+
+            // Expenses during this funding interval
+            $queryPagos = Pago::whereDate('fecha', '>=', $fechaInicio);
+            $queryAnticipos = \App\Models\Anticipo::whereDate('fecha', '>=', $fechaInicio);
+
+            if ($sigFondo) {
+                $queryPagos->whereDate('fecha', '<', $sigFondo->fecha);
+                $queryAnticipos->whereDate('fecha', '<', $sigFondo->fecha);
+            }
+
+            $gastosPagos = $queryPagos->sum('monto_pagado');
+            $gastosAnticipos = $queryAnticipos->sum('monto');
+            $gastadoIntervalo = $gastosPagos + $gastosAnticipos;
+
+            $fondo->remanente_anterior = $remanente_acumulado;
+            $fondo->total_disponible = $remanente_acumulado + $fondo->monto;
+            $fondo->gastado_periodo = $gastadoIntervalo;
+            $fondo->sobrante_remanente = max(0, $fondo->total_disponible - $gastadoIntervalo);
+
+            // Carryover to next recarga
+            $remanente_acumulado = $fondo->sobrante_remanente;
+
+            // Filter by requested date range if set
+            $inRange = true;
+            if ($fecha_desde && $fondo->fecha->format('Y-m-d') < $fecha_desde) $inRange = false;
+            if ($fecha_hasta && $fondo->fecha->format('Y-m-d') > $fecha_hasta) $inRange = false;
+
+            if ($inRange) {
+                $processedFondos->push($fondo);
+            }
+        }
+
+        // Display newest first
+        $fondos = $processedFondos->reverse();
+
+        $hasFondos = \App\Models\FondoPago::count() > 0;
+        if ($hasFondos) {
+            $total_recargado = \App\Models\FondoPago::sum('monto');
+            $total_gastado_pagos = Pago::sum('monto_pagado');
+            $total_gastado_anticipos = \App\Models\Anticipo::sum('monto');
+            $total_gastado = $total_gastado_pagos + $total_gastado_anticipos;
+            $saldo_caja = $total_recargado - $total_gastado;
+        } else {
+            $total_recargado = 0;
+            $total_gastado_pagos = 0;
+            $total_gastado_anticipos = 0;
+            $total_gastado = 0;
+            $saldo_caja = 0;
+        }
 
         return view('pagos.fondos', compact(
             'fondos',
             'total_recargado',
+            'total_gastado_pagos',
+            'total_gastado_anticipos',
             'total_gastado',
-            'saldo_caja'
+            'saldo_caja',
+            'rango',
+            'fecha_desde',
+            'fecha_hasta'
         ));
     }
 
@@ -79,6 +167,35 @@ class PagoController extends Controller
         $fondo->delete();
 
         return redirect()->route('fondos-caja.index')->with('success', 'Registro de recarga eliminado con éxito.');
+    }
+
+    public function reiniciarCaja(Request $request)
+    {
+        $request->validate([
+            'monto_inicial' => 'nullable|numeric|min:0',
+            'observacion' => 'nullable|string|max:255',
+        ]);
+
+        \App\Models\FondoPago::truncate();
+
+        $montoInicial = $request->filled('monto_inicial') ? (float)$request->monto_inicial : 0;
+        if ($montoInicial > 0) {
+            \App\Models\FondoPago::create([
+                'fecha' => now()->toDateString(),
+                'monto' => $montoInicial,
+                'observacion' => $request->observacion ?: 'Fondeo Inicial — Reinicio de Caja Chica',
+            ]);
+        }
+
+        return redirect()->route('fondos-caja.index')->with('success', 'Caja chica reiniciada con éxito. Se ha empezado de cero un nuevo período.');
+    }
+
+    public function limpiarAnteriores(Request $request)
+    {
+        $fechaCorte = $request->fecha_corte ?: now()->toDateString();
+        \App\Models\FondoPago::whereDate('fecha', '<=', $fechaCorte)->delete();
+
+        return redirect()->route('fondos-caja.index')->with('success', 'Recargas anteriores eliminadas con éxito.');
     }
 
     public function create()
@@ -296,5 +413,40 @@ class PagoController extends Controller
         ]);
 
         return view('pagos.recibo', compact('pago'));
+    }
+
+    public function edit(Pago $pago)
+    {
+        $pago->load('trabajador.bocamina');
+        return view('pagos.edit', compact('pago'));
+    }
+
+    public function update(Request $request, Pago $pago)
+    {
+        $request->validate([
+            'fecha' => 'required|date',
+            'monto_pagado' => 'required|numeric|min:0',
+            'observacion' => 'nullable|string|max:255',
+        ]);
+
+        $nuevoMontoPagado = (float)$request->monto_pagado;
+        $diferencia = $pago->neto - $nuevoMontoPagado;
+
+        $pago->update([
+            'fecha' => $request->fecha,
+            'monto_pagado' => $nuevoMontoPagado,
+            'saldo_pendiente' => max(0, $diferencia),
+            'saldo_liquidado' => $diferencia <= 0.01,
+            'observacion' => $request->observacion ?: $pago->observacion,
+            'es_editado' => true,
+        ]);
+
+        return redirect()->route('pagos.index')->with('success', 'Pago actualizado con éxito. El comprobante fue marcado como editado.');
+    }
+
+    public function destroy(Pago $pago)
+    {
+        $pago->delete();
+        return redirect()->route('pagos.index')->with('success', 'Registro de pago eliminado con éxito.');
     }
 }

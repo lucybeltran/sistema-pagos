@@ -50,11 +50,18 @@ Route::middleware('auth')->group(function () {
     Route::post('/pagos', [PagoController::class, 'store'])->name('pagos.store');
     Route::get('/pagos/trabajador-data/{id}', [PagoController::class, 'getTrabajadorData'])->name('pagos.trabajador-data');
     Route::get('/pagos/{pago}', [PagoController::class, 'show'])->name('pagos.show');
+    Route::get('/pagos/{pago}/editar', [PagoController::class, 'edit'])->name('pagos.edit');
+    Route::put('/pagos/{pago}', [PagoController::class, 'update'])->name('pagos.update');
+    Route::delete('/pagos/{pago}', [PagoController::class, 'destroy'])->name('pagos.destroy');
     Route::get('/fondos-caja', [PagoController::class, 'fondosIndex'])->name('fondos-caja.index');
     Route::post('/fondos-pagos', [PagoController::class, 'storeFondo'])->name('fondos-pagos.store');
     Route::delete('/fondos-pagos/{id}', [PagoController::class, 'destroyFondo'])->name('fondos-pagos.destroy');
+    Route::post('/fondos-caja/reiniciar', [PagoController::class, 'reiniciarCaja'])->name('fondos-caja.reiniciar');
+    Route::delete('/fondos-caja/limpiar-anteriores', [PagoController::class, 'limpiarAnteriores'])->name('fondos-caja.limpiar-anteriores');
 
-    // Compra y Venta de Concentrados/Sacos
+    // Compra y Venta de Concentrados/Sacos & Caja del Módulo 2
+    Route::post('/caja-minerales/recarga', [TransaccionMineralController::class, 'storeRecarga'])->name('caja-minerales.store-recarga');
+    Route::delete('/caja-minerales/recarga/{id}', [TransaccionMineralController::class, 'destroyRecarga'])->name('caja-minerales.destroy-recarga');
     Route::resource('transacciones-minerales', TransaccionMineralController::class);
 
     // Reportes

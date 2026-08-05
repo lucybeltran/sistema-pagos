@@ -4,177 +4,356 @@
 
 @section('content')
 <style>
-/* ============================================================
-   DISEÑO ERP PREMIUM - MÓDULO DE MINERALES (COMPRAS Y VENTAS)
-   ============================================================ */
+/* ══════════════════════════════════════════════════════════════
+   SISTEMA ERP PREMIUM — MÓDULO DE MINERALES v3.0
+   Inspirado en: SAP Fiori · Oracle Fusion · Stripe Dashboard
+   ══════════════════════════════════════════════════════════════ */
 
-.erp-container {
-    --erp-border: rgba(255, 255, 255, 0.06);
-    --erp-bg-card: rgba(15, 23, 42, 0.45);
-    --erp-text-main: #f8fafc;
-    --erp-text-muted: #64748b;
-    --erp-glow-amber: 0 0 20px rgba(245, 158, 11, 0.12);
-    --erp-glow-emerald: 0 0 20px rgba(16, 185, 129, 0.12);
-    --erp-depth-3d: 0 10px 25px -5px rgba(0,0,0,0.3), 0 8px 10px -6px rgba(0,0,0,0.3);
-}
-
-.light-theme .erp-container {
-    --erp-border: rgba(15, 23, 42, 0.08);
-    --erp-bg-card: #ffffff;
-    --erp-text-main: #0f172a;
-    --erp-text-muted: #64748b;
-    --erp-glow-amber: 0 0 20px rgba(245, 158, 11, 0.06);
-    --erp-glow-emerald: 0 0 20px rgba(16, 185, 129, 0.06);
-    --erp-depth-3d: 0 10px 20px -3px rgba(0,0,0,0.06), 0 4px 6px -2px rgba(0,0,0,0.04);
+:root {
+    --m-bg: #0a0f1e;
+    --m-card: rgba(15,23,42,0.7);
+    --m-border: rgba(148,163,184,0.08);
+    --m-border-hover: rgba(148,163,184,0.18);
+    --m-text: #f1f5f9;
+    --m-muted: #64748b;
+    --m-amber: #f59e0b;
+    --m-emerald: #10b981;
+    --m-indigo: #6366f1;
+    --m-cyan: #06b6d4;
+    --m-rose: #f43f5e;
 }
 
-/* Card 3D Sutil */
-.erp-card {
-    background: var(--erp-bg-card);
-    border: 1.5px solid var(--erp-border);
-    border-radius: 18px;
-    box-shadow: var(--erp-depth-3d);
-    transition: all 0.28s cubic-bezier(0.4, 0, 0.2, 1);
-    position: relative;
+/* ─── Base Container ─── */
+.m-container { font-family: 'Inter', system-ui, sans-serif; }
+
+/* ─── Cards ─── */
+.m-card {
+    background: var(--m-card);
+    border: 1px solid var(--m-border);
+    border-radius: 16px;
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    transition: all 0.2s ease;
 }
-.erp-card:hover {
-    transform: translateY(-3px);
-    box-shadow: 0 20px 35px -8px rgba(0,0,0,0.35), 0 10px 20px -6px rgba(0,0,0,0.3);
-}
-.light-theme .erp-card:hover {
-    box-shadow: 0 20px 25px -5px rgba(0,0,0,0.08), 0 10px 10px -5px rgba(0,0,0,0.04);
+.m-card-hover:hover {
+    border-color: var(--m-border-hover);
+    box-shadow: 0 8px 32px rgba(0,0,0,0.3);
+    transform: translateY(-1px);
 }
 
-/* Resplandores temáticos sutiles */
-.compra-glow:hover {
-    border-color: rgba(245, 158, 11, 0.35);
-    box-shadow: var(--erp-glow-amber), var(--erp-depth-3d);
-}
-.venta-glow:hover {
-    border-color: rgba(16, 185, 129, 0.35);
-    box-shadow: var(--erp-glow-emerald), var(--erp-depth-3d);
-}
-
-/* Tab Navigation */
-.erp-tabs-bar {
+/* ─── Section Header ─── */
+.m-section-header {
     display: flex;
-    gap: 8px;
-    padding: 8px;
-    border-radius: 20px;
-    border: 1.5px solid var(--erp-border);
-    background: var(--erp-bg-card);
-    box-shadow: inset 0 2px 4px rgba(0,0,0,0.1);
+    align-items: center;
+    justify-content: space-between;
+    padding: 18px 24px;
+    border-bottom: 1px solid var(--m-border);
+    background: rgba(255,255,255,0.015);
+    border-radius: 16px 16px 0 0;
 }
-.erp-tab-btn {
+
+/* ─── Tab Navigation ─── */
+.m-tabs {
+    display: flex;
+    gap: 4px;
+    padding: 6px;
+    background: rgba(15,23,42,0.8);
+    border: 1px solid var(--m-border);
+    border-radius: 14px;
+    backdrop-filter: blur(12px);
+}
+.m-tab {
     flex: 1;
     display: flex;
     align-items: center;
     justify-content: center;
-    gap: 10px;
-    padding: 14px;
-    border-radius: 14px;
+    gap: 8px;
+    padding: 10px 16px;
+    border-radius: 10px;
     font-size: 11px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    color: var(--m-muted);
+    border: none;
+    cursor: pointer;
+    background: transparent;
+    transition: all 0.2s ease;
+    white-space: nowrap;
+}
+.m-tab:hover { color: var(--m-text); background: rgba(255,255,255,0.05); }
+.m-tab-caja.active    { background: linear-gradient(135deg,#3b82f6,#1d4ed8); color:#fff; box-shadow:0 4px 12px rgba(59,130,246,0.35); }
+.m-tab-compras.active { background: linear-gradient(135deg,#f59e0b,#d97706); color:#fff; box-shadow:0 4px 12px rgba(245,158,11,0.35); }
+.m-tab-ventas.active  { background: linear-gradient(135deg,#10b981,#059669); color:#fff; box-shadow:0 4px 12px rgba(16,185,129,0.35); }
+.m-tab-stock.active   { background: linear-gradient(135deg,#06b6d4,#0891b2); color:#fff; box-shadow:0 4px 12px rgba(6,182,212,0.35); }
+.m-tab-reportes.active{ background: linear-gradient(135deg,#6366f1,#4f46e5); color:#fff; box-shadow:0 4px 12px rgba(99,102,241,0.35); }
+
+/* ─── Table Premium ─── */
+.m-table { width:100%; border-collapse:collapse; font-size:12px; }
+.m-table thead tr {
+    background: rgba(15,23,42,0.9);
+    border-bottom: 1px solid var(--m-border);
+}
+.m-table thead th {
+    padding: 12px 16px;
+    font-size: 10px;
     font-weight: 800;
     text-transform: uppercase;
     letter-spacing: 0.08em;
-    color: var(--erp-text-muted);
-    transition: all 0.25s ease;
-    background: transparent;
+    color: var(--m-muted);
+}
+.m-table tbody tr {
+    border-bottom: 1px solid rgba(148,163,184,0.05);
+    transition: background 0.15s ease;
+}
+.m-table tbody tr:hover { background: rgba(255,255,255,0.03); }
+.m-table tbody td { padding: 14px 16px; color: var(--m-text); vertical-align: middle; }
+
+/* ─── Badges ─── */
+.m-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    padding: 3px 10px;
+    border-radius: 99px;
+    font-size: 10px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    border: 1px solid transparent;
+}
+.m-badge-amber  { background:rgba(245,158,11,0.12);  color:#f59e0b;  border-color:rgba(245,158,11,0.25); }
+.m-badge-emerald{ background:rgba(16,185,129,0.12);  color:#10b981;  border-color:rgba(16,185,129,0.25); }
+.m-badge-rose   { background:rgba(244,63,94,0.12);   color:#f43f5e;  border-color:rgba(244,63,94,0.25); }
+.m-badge-cyan   { background:rgba(6,182,212,0.12);   color:#06b6d4;  border-color:rgba(6,182,212,0.25); }
+.m-badge-indigo { background:rgba(99,102,241,0.12);  color:#818cf8;  border-color:rgba(99,102,241,0.25); }
+.m-badge-slate  { background:rgba(100,116,139,0.12); color:#94a3b8;  border-color:rgba(100,116,139,0.2); }
+
+/* ─── Buttons ─── */
+.m-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 7px;
+    padding: 9px 18px;
+    border-radius: 10px;
+    font-size: 11px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
     border: none;
     cursor: pointer;
+    transition: all 0.15s ease;
 }
-.erp-tab-btn:hover {
-    color: var(--erp-text-main);
-    background: rgba(255,255,255,0.04);
-}
-.light-theme .erp-tab-btn:hover {
-    background: rgba(0,0,0,0.03);
-}
-.erp-tab-btn.active-compra {
-    background: linear-gradient(135deg, #f59e0b, #d97706);
-    color: #ffffff !important;
-    box-shadow: 0 4px 15px rgba(245,158,11,0.3);
-}
-.erp-tab-btn.active-venta {
-    background: linear-gradient(135deg, #10b981, #059669);
-    color: #ffffff !important;
-    box-shadow: 0 4px 15px rgba(16,185,129,0.3);
-}
-.erp-tab-btn.active-stock {
-    background: linear-gradient(135deg, #06b6d4, #0891b2);
-    color: #ffffff !important;
-    box-shadow: 0 4px 15px rgba(6,182,212,0.3);
-}
-.erp-tab-btn.active-reportes {
-    background: linear-gradient(135deg, #6366f1, #4f46e5);
-    color: #ffffff !important;
-    box-shadow: 0 4px 15px rgba(99,102,241,0.3);
-}
+.m-btn:active { transform: scale(0.97); }
+.m-btn-amber  { background:linear-gradient(135deg,#f59e0b,#d97706); color:#fff; box-shadow:0 4px 12px rgba(245,158,11,0.25); }
+.m-btn-amber:hover  { background:linear-gradient(135deg,#d97706,#b45309); }
+.m-btn-emerald{ background:linear-gradient(135deg,#10b981,#059669); color:#fff; box-shadow:0 4px 12px rgba(16,185,129,0.25); }
+.m-btn-emerald:hover{ background:linear-gradient(135deg,#059669,#047857); }
+.m-btn-ghost  { background:rgba(255,255,255,0.05); color:#94a3b8; border:1px solid var(--m-border); }
+.m-btn-ghost:hover  { background:rgba(255,255,255,0.09); color:#f1f5f9; }
+.m-btn-rose   { background:rgba(244,63,94,0.1); color:#f43f5e; border:1px solid rgba(244,63,94,0.2); }
+.m-btn-rose:hover { background:rgba(244,63,94,0.2); }
+.m-btn-icon { padding:7px; border-radius:8px; }
 
-/* Indicators */
-.badge-in { background: rgba(245,158,11,0.12); color: #f59e0b; border: 1.5px solid rgba(245,158,11,0.22); }
-.badge-out { background: rgba(16,185,129,0.12); color: #10b981; border: 1.5px solid rgba(16,185,129,0.22); }
-
-/* Custom Form Styles */
-.erp-label {
-    display: block; font-size: 10px; font-weight: 800; text-transform: uppercase;
-    letter-spacing: 0.08em; color: var(--erp-text-muted); margin-bottom: 8px;
+/* ─── Form Controls ─── */
+.m-label {
+    display: block;
+    font-size: 10px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.07em;
+    color: var(--m-muted);
+    margin-bottom: 6px;
 }
-.erp-input {
-    width: 100%; padding: 12px 16px; border-radius: 12px; font-size: 13px; font-weight: 600;
-    border: 1.5px solid var(--erp-border); background: var(--erp-bg-card); color: var(--erp-text-main);
-    outline: none; transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
-}
-.erp-input:focus {
-    border-color: #f59e0b;
-    box-shadow: 0 0 0 3px rgba(245,158,11,0.15);
-}
-.erp-input-select {
+.m-input {
+    width: 100%;
+    padding: 10px 14px;
+    background: rgba(15,23,42,0.6);
+    border: 1px solid var(--m-border);
+    border-radius: 10px;
+    color: var(--m-text);
+    font-size: 13px;
+    font-weight: 500;
+    outline: none;
+    transition: all 0.15s ease;
     appearance: none;
-    cursor: pointer;
 }
-.erp-input-select option {
-    background: #0f172a; color: #f8fafc;
+.m-input:focus { border-color: #6366f1; box-shadow: 0 0 0 3px rgba(99,102,241,0.15); }
+.m-input::placeholder { color: #475569; }
+.m-input-amber:focus { border-color:#f59e0b; box-shadow:0 0 0 3px rgba(245,158,11,0.12); }
+.m-input-emerald:focus { border-color:#10b981; box-shadow:0 0 0 3px rgba(16,185,129,0.12); }
+.m-input option { background:#0f172a; color:#f1f5f9; }
+
+/* ─── KPI Cards ─── */
+.m-kpi {
+    position: relative;
+    overflow: hidden;
+    padding: 22px;
+    border-radius: 16px;
+    color: #fff;
+    transition: all 0.25s ease;
 }
-.light-theme .erp-input-select option {
-    background: #ffffff; color: #0f172a;
+.m-kpi:hover { transform: translateY(-2px); }
+.m-kpi::before {
+    content: '';
+    position: absolute;
+    top: -30%;
+    right: -10%;
+    width: 120px;
+    height: 120px;
+    background: rgba(255,255,255,0.08);
+    border-radius: 50%;
+    pointer-events: none;
+}
+.m-kpi::after {
+    content: '';
+    position: absolute;
+    bottom: -20%;
+    right: 15%;
+    width: 70px;
+    height: 70px;
+    background: rgba(255,255,255,0.05);
+    border-radius: 50%;
+    pointer-events: none;
 }
 
-/* 3D Button style */
-.btn-3d-amber {
-    box-shadow: 0 4px 0 #b45309, 0 8px 15px rgba(245,158,11,0.25);
-    transform: translateY(0);
-    transition: all 0.15s ease;
-}
-.btn-3d-amber:active {
-    transform: translateY(3px);
-    box-shadow: 0 1px 0 #b45309, 0 4px 6px rgba(245,158,11,0.2);
-}
-.btn-3d-emerald {
-    box-shadow: 0 4px 0 #047857, 0 8px 15px rgba(16,185,129,0.25);
-    transform: translateY(0);
-    transition: all 0.15s ease;
-}
-.btn-3d-emerald:active {
-    transform: translateY(3px);
-    box-shadow: 0 1px 0 #047857, 0 4px 6px rgba(16,185,129,0.2);
+/* ─── Step Badge ─── */
+.m-step {
+    width: 22px; height: 22px;
+    border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 10px; font-weight: 900;
+    flex-shrink: 0;
 }
 
-/* Progress bar stock */
-.stock-bar-bg { width: 100%; height: 7px; background: rgba(255,255,255,0.06); border-radius: 99px; overflow: hidden; }
-.light-theme .stock-bar-bg { background: #e2e8f0; }
-.stock-bar-fill { height: 100%; border-radius: 99px; transition: width 0.4s ease; }
+/* ─── Modal ─── */
+.m-modal-overlay {
+    position: fixed; inset: 0; z-index: 50;
+    display: flex; align-items: center; justify-content: center;
+    padding: 16px;
+    background: rgba(2,6,23,0.85);
+    backdrop-filter: blur(8px);
+}
+.m-modal {
+    width: 100%;
+    max-width: 680px;
+    background: #0d1527;
+    border: 1px solid rgba(148,163,184,0.12);
+    border-radius: 20px;
+    overflow: hidden;
+    box-shadow: 0 25px 60px rgba(0,0,0,0.5);
+}
+.m-modal-header {
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 18px 24px;
+    border-bottom: 1px solid rgba(148,163,184,0.08);
+}
+.m-modal-body { max-height: 78vh; overflow-y: auto; }
+.m-modal-footer {
+    display: flex; align-items: center; justify-content: flex-end; gap: 10px;
+    padding: 16px 24px;
+    border-top: 1px solid rgba(148,163,184,0.08);
+    background: rgba(15,23,42,0.5);
+}
+.m-modal-section {
+    padding: 20px 24px;
+    border-bottom: 1px solid rgba(148,163,184,0.06);
+}
+.m-modal-section:last-child { border-bottom: none; }
+
+/* ─── Stock progress bar ─── */
+.m-stock-bar { height: 5px; background: rgba(255,255,255,0.06); border-radius:99px; overflow:hidden; }
+.m-stock-bar-fill { height:100%; border-radius:99px; transition: width 0.5s ease; }
+
+/* ─── Scrollbar ─── */
+.m-modal-body::-webkit-scrollbar { width: 5px; }
+.m-modal-body::-webkit-scrollbar-track { background: transparent; }
+.m-modal-body::-webkit-scrollbar-thumb { background: #334155; border-radius: 99px; }
+
+/* ─── Animations ─── */
+@keyframes fadeIn { from { opacity:0; transform:translateY(4px); } to { opacity:1; transform:none; } }
+.m-fade-in { animation: fadeIn 0.25s ease forwards; }
+
+/* ─── Responsive ─── */
+@media (max-width: 640px) {
+    .m-tab span.tab-label { display: none; }
+    .m-tab { padding: 10px 12px; }
+}
+
+/* ─── Light Theme overrides ─── */
+.light-theme .m-card    { background: #ffffff; border-color: #e2e8f0; }
+.light-theme .m-tabs    { background: #f8fafc; border-color: #e2e8f0; }
+.light-theme .m-tab:hover { background: rgba(0,0,0,0.03); }
+.light-theme .m-table thead tr { background: #f8fafc; }
+.light-theme .m-table tbody tr:hover { background: rgba(0,0,0,0.02); }
+.light-theme .m-input   { background: #f8fafc; border-color: #e2e8f0; color: #0f172a; }
+.light-theme .m-input option { background: #ffffff; color: #0f172a; }
+.light-theme .m-modal   { background: #ffffff; border-color: #e2e8f0; }
+.light-theme .m-modal-header { border-color: #e2e8f0; }
+.light-theme .m-modal-section { border-color: #f1f5f9; }
+.light-theme .m-modal-footer { background: #f8fafc; border-color: #e2e8f0; }
+.light-theme .m-section-header { background: rgba(0,0,0,0.01); }
+
+/* ─── Backwards compat ─── */
+.erp-card  { background:var(--m-card,rgba(15,23,42,0.7)); border:1px solid var(--m-border,rgba(148,163,184,0.08)); border-radius:16px; }
+.erp-input { width:100%; padding:10px 14px; background:rgba(15,23,42,0.6); border:1px solid rgba(148,163,184,0.08); border-radius:10px; color:#f1f5f9; font-size:13px; outline:none; transition:border-color 0.15s; appearance:none; }
+.erp-input:focus { border-color:#6366f1; box-shadow:0 0 0 3px rgba(99,102,241,0.12); }
+.erp-input-select { cursor:pointer; }
+.erp-input option { background:#0f172a; color:#f1f5f9; }
+.erp-label { display:block; font-size:10px; font-weight:700; text-transform:uppercase; letter-spacing:0.07em; color:#64748b; margin-bottom:6px; }
+.erp-container { font-family:'Inter',system-ui,sans-serif; }
+.premium-filter-input { width:100%; padding:10px 14px; background:rgba(15,23,42,0.6); border:1px solid rgba(148,163,184,0.08); border-radius:10px; color:#f1f5f9; font-size:12px; font-weight:500; outline:none; transition:all 0.15s; appearance:none; cursor:pointer; }
+.premium-filter-input:focus { border-color:#6366f1; box-shadow:0 0 0 3px rgba(99,102,241,0.12); }
+.premium-filter-input option { background:#0f172a; color:#f1f5f9; }
+.light-theme .erp-input { background:#f8fafc; border-color:#e2e8f0; color:#0f172a; }
+.light-theme .erp-input option { background:#fff; color:#0f172a; }
+.light-theme .premium-filter-input { background:#f8fafc; border-color:#e2e8f0; color:#0f172a; }
+.light-theme .premium-filter-input option { background:#fff; color:#0f172a; }
 </style>
 
-<div class="erp-container space-y-6"
+<div class="m-container erp-container space-y-5"
      x-data="{
         activeTab: '{{ request('tab', 'compras') }}',
         openCompraModal: false,
         openVentaModal: false,
         openDetailModal: false,
+        openRecargaModal: false,
         isEditMode: false,
         actionUrl: '',
-        
+
+        // Movimientos Caja Filters
+        searchMov: '',
+        filterTipo: '',
+        filterRange: 'all',
+        matchesFilter(glosa, monto, tipo, fechaStr) {
+            if (this.filterTipo && tipo !== this.filterTipo) return false;
+            if (this.searchMov) {
+                const q = this.searchMov.toLowerCase();
+                if (!glosa.toLowerCase().includes(q) && !String(monto).includes(q)) return false;
+            }
+            if (this.filterRange === 'today') {
+                const today = '{{ now()->toDateString() }}';
+                if (fechaStr !== today) return false;
+            }
+            if (this.filterRange === 'month') {
+                const currentMonth = '{{ now()->format('Y-m') }}';
+                if (!fechaStr.startsWith(currentMonth)) return false;
+            }
+            return true;
+        },
+
+        // Stock Filters
+        searchStock: '',
+        filterStockEstado: '',
+        matchesStockFilter(loteId, proveedor, presentacion, estado) {
+            if (this.filterStockEstado && estado !== this.filterStockEstado) return false;
+            if (this.searchStock) {
+                const q = this.searchStock.toLowerCase();
+                if (!String(loteId).toLowerCase().includes(q) && !proveedor.toLowerCase().includes(q) && !presentacion.toLowerCase().includes(q)) return false;
+            }
+            return true;
+        },
+
         // Form Compra (Lote) Fields
         compraId: '',
         compraFecha: '{{ now()->toDateString() }}',
@@ -185,9 +364,11 @@
         compraCantidad: '',
         compraPeso: '',
         compraPrecio: '',
+        compraPesoToneladas: '',
+        compraPrecioToneladas: '',
         compraTotal: 0,
         compraObservacion: '',
-        compraAnalisis: [], // [{mineral: '', ley: ''}]
+        compraAnalisis: [],
 
         // Form Venta Fields
         ventaId: '',
@@ -195,17 +376,14 @@
         ventaCliente: '',
         ventaDestino: '',
         ventaObservacion: '',
-        ventaLotes: [], // [{ lote_id: '', cantidad: '', peso_neto_seco: '', precio_unidad: '', monto_total: 0, info: null }]
+        ventaLotes: [],
 
-        // Fields used ONLY for edit mode (single-row update fallback):
         ventaLoteId: '',
         ventaCantidad: '',
         ventaPeso: '',
         ventaPrecio: '',
         ventaTotal: 0,
         loteInfo: null,
-
-        // Modal de Ficha/Detalle
         fichaLote: null,
 
         // Methods Compra
@@ -221,9 +399,15 @@
             this.compraCantidad = '';
             this.compraPeso = '';
             this.compraPrecio = '';
+            this.compraPesoToneladas = '';
+            this.compraPrecioToneladas = '';
             this.compraTotal = 0;
             this.compraObservacion = '';
-            this.compraAnalisis = [{ mineral: 'Zinc', ley: 48.50 }, { mineral: 'Plomo', ley: 12.30 }, { mineral: 'Plata', ley: 1.80 }];
+            this.compraAnalisis = [
+                { mineral: 'Zinc', mineral_custom: '', ley: 48.50 },
+                { mineral: 'Plomo', mineral_custom: '', ley: 12.30 },
+                { mineral: 'Plata', mineral_custom: '', ley: 1.80 }
+            ];
             this.openCompraModal = true;
         },
 
@@ -239,27 +423,48 @@
             this.compraCantidad = item.cantidad;
             this.compraPeso = item.peso_neto_seco;
             this.compraPrecio = item.precio_unidad;
+
+            if (item.presentacion === 'Volqueta') {
+                this.compraPesoToneladas = (parseFloat(item.peso_neto_seco) / 1000).toFixed(3);
+                this.compraPrecioToneladas = (parseFloat(item.precio_unidad) * 1000).toFixed(2);
+            } else {
+                this.compraPesoToneladas = '';
+                this.compraPrecioToneladas = '';
+            }
+
             this.compraTotal = item.monto_total;
             this.compraObservacion = item.observacion || '';
-            this.compraAnalisis = item.analisis.map(a => ({ mineral: a.mineral, ley: parseFloat(a.ley) }));
+
+            const stdMinerals = ['Zinc', 'Plomo', 'Plata', 'Cobre', 'Estaño'];
+            this.compraAnalisis = item.analisis.map(a => {
+                const isStd = stdMinerals.includes(a.mineral);
+                return {
+                    mineral: isStd ? a.mineral : 'Otro',
+                    mineral_custom: isStd ? '' : a.mineral,
+                    ley: parseFloat(a.ley)
+                };
+            });
             this.openCompraModal = true;
         },
 
-        addMineral() {
-            this.compraAnalisis.push({ mineral: '', ley: '' });
-        },
-
-        removeMineral(index) {
-            this.compraAnalisis.splice(index, 1);
-        },
+        addMineral() { this.compraAnalisis.push({ mineral: '', mineral_custom: '', ley: '' }); },
+        removeMineral(index) { this.compraAnalisis.splice(index, 1); },
 
         calcCompraTotal() {
-            let p = parseFloat(this.compraPeso) || 0;
-            let pr = parseFloat(this.compraPrecio) || 0;
-            this.compraTotal = (p * pr).toFixed(2);
+            if (this.compraPresentacion === 'Volqueta') {
+                let t = parseFloat(this.compraPesoToneladas) || 0;
+                let prT = parseFloat(this.compraPrecioToneladas) || 0;
+                this.compraPeso = (t * 1000).toFixed(2);
+                this.compraPrecio = (prT / 1000).toFixed(4);
+                this.compraTotal = (t * prT).toFixed(2);
+            } else {
+                let p = parseFloat(this.compraPeso) || 0;
+                let pr = parseFloat(this.compraPrecio) || 0;
+                this.compraTotal = (p * pr).toFixed(2);
+            }
         },
 
-        // Methods Venta (Multi-Lote Creation & Single-Lote Edit)
+        // Methods Venta
         initVenta() {
             this.isEditMode = false;
             this.actionUrl = '{{ route('transacciones-minerales.store') }}';
@@ -268,7 +473,7 @@
             this.ventaCliente = '';
             this.ventaDestino = '';
             this.ventaObservacion = '';
-            this.ventaLotes = [{ lote_id: '', cantidad: '', peso_neto_seco: '', precio_unidad: '', monto_total: 0, info: null }];
+            this.ventaLotes = [{ lote_id: '', cantidad: '', peso_neto_seco: '', precio_unidad: '', monto_total: 0, info: null, analisis: [] }];
             this.openVentaModal = true;
         },
 
@@ -285,8 +490,6 @@
             this.ventaPrecio = item.precio_unidad;
             this.ventaTotal = item.monto_total;
             this.ventaObservacion = item.observacion || '';
-            
-            // Load lote details for the single edited sale record
             if (item.lote) {
                 this.loteInfo = {
                     presentacion: item.lote.presentacion,
@@ -300,20 +503,27 @@
         },
 
         addVentaLote() {
-            this.ventaLotes.push({ lote_id: '', cantidad: '', peso_neto_seco: '', precio_unidad: '', monto_total: 0, info: null });
+            this.ventaLotes.push({ lote_id: '', cantidad: '', peso_neto_seco: '', precio_unidad: '', monto_total: 0, info: null, analisis: [] });
         },
+        removeVentaLote(index) { this.ventaLotes.splice(index, 1); },
 
-        removeVentaLote(index) {
-            this.ventaLotes.splice(index, 1);
+        addVentaAnalisis(index) {
+            if (!this.ventaLotes[index].analisis) this.ventaLotes[index].analisis = [];
+            this.ventaLotes[index].analisis.push({ mineral: '', ley: '' });
+        },
+        removeVentaAnalisis(index, anIdx) {
+            if (this.ventaLotes[index].analisis) {
+                this.ventaLotes[index].analisis.splice(anIdx, 1);
+            }
         },
 
         onVentaLoteSelected(index) {
             const lotId = this.ventaLotes[index].lote_id;
             if (!lotId) {
                 this.ventaLotes[index].info = null;
+                this.ventaLotes[index].analisis = [];
                 return;
             }
-            // Fetch Lote data
             fetch('/transacciones-minerales/' + lotId)
                 .then(r => r.json())
                 .then(data => {
@@ -324,29 +534,58 @@
                         cantidad_disponible: parseFloat(data.cantidad_disponible),
                         analisis: data.analisis
                     };
+
+                    // Auto-fill disponible values as defaults
+                    this.ventaLotes[index].peso_neto_seco = parseFloat(data.peso_disponible).toFixed(2);
+                    this.ventaLotes[index].cantidad = parseFloat(data.cantidad_disponible).toFixed(2);
+                    if (data.precio_unidad) {
+                        this.ventaLotes[index].precio_unidad = parseFloat(data.precio_unidad).toFixed(2);
+                    }
+
+                    if (data.presentacion === 'Volqueta') {
+                        this.ventaLotes[index].pesoToneladas = (parseFloat(data.peso_disponible) / 1000).toFixed(3);
+                        if (data.precio_unidad) {
+                            this.ventaLotes[index].precioToneladas = (parseFloat(data.precio_unidad) * 1000).toFixed(2);
+                        }
+                    } else {
+                        this.ventaLotes[index].pesoToneladas = '';
+                        this.ventaLotes[index].precioToneladas = '';
+                    }
+
+                    // Copy editable lab analysis for the sale
+                    this.ventaLotes[index].analisis = (data.analisis || []).map(a => ({
+                        mineral: a.mineral,
+                        ley: parseFloat(a.ley)
+                    }));
+
+                    this.calcVentaItemTotal(index);
                 });
         },
 
         calcVentaItemTotal(index) {
-            let p = parseFloat(this.ventaLotes[index].peso_neto_seco) || 0;
-            let pr = parseFloat(this.ventaLotes[index].precio_unidad) || 0;
-            this.ventaLotes[index].monto_total = (p * pr).toFixed(2);
+            const item = this.ventaLotes[index];
+            if (item.info && item.info.presentacion === 'Volqueta') {
+                let t = parseFloat(item.pesoToneladas) || 0;
+                let prT = parseFloat(item.precioToneladas) || 0;
+                item.peso_neto_seco = (t * 1000).toFixed(2);
+                item.precio_unidad = (prT / 1000).toFixed(4);
+                item.monto_total = (t * prT).toFixed(2);
+            } else {
+                let p = parseFloat(item.peso_neto_seco) || 0;
+                let pr = parseFloat(item.precio_unidad) || 0;
+                item.monto_total = (p * pr).toFixed(2);
+            }
         },
-
         calcVentaTotal() {
             let p = parseFloat(this.ventaPeso) || 0;
             let pr = parseFloat(this.ventaPrecio) || 0;
             this.ventaTotal = (p * pr).toFixed(2);
         },
 
-        // Ficha Detalles Lote
         showFicha(id) {
             fetch('/transacciones-minerales/' + id)
                 .then(r => r.json())
-                .then(data => {
-                    this.fichaLote = data;
-                    this.openDetailModal = true;
-                });
+                .then(data => { this.fichaLote = data; this.openDetailModal = true; });
         }
      }"
      x-init="
@@ -357,156 +596,383 @@
         }
      ">
 
-    {{-- ═══════════════ HEADER ═══════════════ --}}
-    <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
-        <div>
-            <h1 class="text-2xl font-black flex items-center gap-2.5" style="color:var(--text-main)">
-                <span style="width:36px;height:36px;background:linear-gradient(135deg,#6366f1,#4f46e5);border-radius:10px;display:inline-flex;align-items:center;justify-content:center;box-shadow: 0 4px 15px rgba(99,102,241,0.2);">
-                    <i class="fa-solid fa-boxes-stacked text-white text-sm animate-pulse"></i>
-                </span>
-                <span x-show="activeTab === 'compras'">Compras - Lotes de Minerales</span>
-                <span x-show="activeTab === 'ventas'">Ventas de Minerales</span>
-                <span x-show="activeTab === 'stock'">Stock e Inventario de Lotes</span>
-                <span x-show="activeTab === 'reportes'">Reportes de Comercialización</span>
-            </h1>
-            <p class="text-sm mt-1 ml-11" style="color:var(--text-muted)">
-                <span x-show="activeTab === 'compras'">Registra compras de minerales, genera números de lote únicos (LT-000001) e ingresa análisis de laboratorio.</span>
-                <span x-show="activeTab === 'ventas'">Registra despachos y salidas utilizando los lotes disponibles en almacén.</span>
-                <span x-show="activeTab === 'stock'">Consulta la disponibilidad, saldo de peso y valor en inventario de cada lote.</span>
-                <span x-show="activeTab === 'reportes'">Analiza volumen comercializado, ingresos, egresos y balances financieros.</span>
-            </p>
-        </div>
-
-        <div class="flex gap-3 ml-11 md:ml-0">
-            <button x-show="activeTab === 'compras' || activeTab === 'stock'" @click="initCompra()"
-                    class="px-5 py-3 rounded-xl font-black text-xs uppercase tracking-wider bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-600 hover:to-amber-700 text-white btn-3d-amber flex items-center gap-2 transition duration-200">
-                <i class="fa-solid fa-file-import text-sm"></i> 📥 Registrar Compra (Lote)
-            </button>
-            <button x-show="activeTab === 'ventas' || activeTab === 'stock'" @click="initVenta()"
-                    class="px-5 py-3 rounded-xl font-black text-xs uppercase tracking-wider bg-gradient-to-r from-emerald-500 to-emerald-600 hover:from-emerald-600 hover:to-emerald-700 text-white btn-3d-emerald flex items-center gap-2 transition duration-200">
-                <i class="fa-solid fa-file-export text-sm"></i> 📤 Registrar Venta
-            </button>
+    {{-- ══════════ HEADER PREMIUM ══════════ --}}
+    <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+        <div class="flex items-center gap-4">
+            <div class="w-11 h-11 rounded-2xl flex items-center justify-center flex-shrink-0 shadow-lg"
+                 style="background:linear-gradient(135deg,#6366f1,#4338ca);">
+                <i class="fa-solid fa-gem text-white text-base"></i>
+            </div>
+            <div>
+                <div class="flex items-center gap-2 flex-wrap">
+                    <h1 class="text-xl font-black text-slate-100 leading-tight">
+                        <span x-show="activeTab === 'caja'">Caja del Módulo de Minerales</span>
+                        <span x-show="activeTab === 'compras'">Compras — Ingreso de Lotes</span>
+                        <span x-show="activeTab === 'ventas'">Ventas — Despacho de Mineral</span>
+                        <span x-show="activeTab === 'stock'">Stock e Inventario</span>
+                        <span x-show="activeTab === 'reportes'">Reportes de Comercialización</span>
+                    </h1>
+                    <span class="m-badge m-badge-indigo text-[9px]">Módulo 2</span>
+                </div>
+                <p class="text-xs text-slate-500 mt-0.5">
+                    <span x-show="activeTab === 'caja'">Control financiero operativo del módulo de minerales</span>
+                    <span x-show="activeTab === 'compras'">Registra compras, genera lotes y análisis de laboratorio</span>
+                    <span x-show="activeTab === 'ventas'">Despacha mineral disponible en almacén a clientes</span>
+                    <span x-show="activeTab === 'stock'">Consulta disponibilidad, peso y valor de cada lote</span>
+                    <span x-show="activeTab === 'reportes'">Analiza volumen, ingresos, egresos y balances</span>
+                </p>
+            </div>
         </div>
     </div>
 
-    {{-- Error displaying block --}}
+    {{-- ══════════ ERRORES ══════════ --}}
     @if($errors->any())
-        <div class="p-4 bg-rose-100 dark:bg-rose-950/30 border border-rose-200 dark:border-rose-900 text-rose-700 dark:text-rose-450 rounded-xl text-xs font-semibold">
-            <ul class="list-disc pl-5 space-y-1">
-                @foreach($errors->all() as $err)
-                    <li>{{ $err }}</li>
-                @endforeach
-            </ul>
+        <div class="p-4 rounded-xl bg-rose-500/10 border border-rose-500/25 text-rose-400 text-xs font-semibold space-y-1">
+            @foreach($errors->all() as $err)
+                <div class="flex items-start gap-2"><i class="fa-solid fa-circle-exclamation mt-0.5 flex-shrink-0"></i>{{ $err }}</div>
+            @endforeach
         </div>
     @endif
 
-    {{-- ═══════════════ NAVIGATION TABS ═══════════════ --}}
-    <div class="erp-tabs-bar">
-        <button class="erp-tab-btn" :class="activeTab === 'compras' ? 'active-compra' : ''" @click="activeTab = 'compras'">
-            <i class="fa-solid fa-circle-arrow-down"></i>
-            <span>Compras (Lotes)</span>
+    {{-- ══════════ TAB BAR ══════════ --}}
+    <div class="m-tabs">
+        <button class="m-tab m-tab-caja" :class="activeTab === 'caja' ? 'active' : ''" @click="activeTab='caja'">
+            <i class="fa-solid fa-vault text-sm"></i>
+            <span class="tab-label">Caja</span>
         </button>
-        <button class="erp-tab-btn" :class="activeTab === 'ventas' ? 'active-venta' : ''" @click="activeTab = 'ventas'">
-            <i class="fa-solid fa-circle-arrow-up"></i>
-            <span>Ventas</span>
+        <button class="m-tab m-tab-compras" :class="activeTab === 'compras' ? 'active' : ''" @click="activeTab='compras'">
+            <i class="fa-solid fa-boxes-stacked text-sm"></i>
+            <span class="tab-label">Compras</span>
         </button>
-        <button class="erp-tab-btn" :class="activeTab === 'stock' ? 'active-stock' : ''" @click="activeTab = 'stock'">
-            <i class="fa-solid fa-boxes-stacked"></i>
-            <span>Stock (Inventario)</span>
+        <button class="m-tab m-tab-ventas" :class="activeTab === 'ventas' ? 'active' : ''" @click="activeTab='ventas'">
+            <i class="fa-solid fa-truck-loading text-sm"></i>
+            <span class="tab-label">Ventas</span>
         </button>
-        <button class="erp-tab-btn" :class="activeTab === 'reportes' ? 'active-reportes' : ''" @click="activeTab = 'reportes'">
-            <i class="fa-solid fa-chart-line"></i>
-            <span>Reportes Avanzados</span>
+        <button class="m-tab m-tab-stock" :class="activeTab === 'stock' ? 'active' : ''" @click="activeTab='stock'">
+            <i class="fa-solid fa-warehouse text-sm"></i>
+            <span class="tab-label">Stock</span>
+        </button>
+        <button class="m-tab m-tab-reportes" :class="activeTab === 'reportes' ? 'active' : ''" @click="activeTab='reportes'">
+            <i class="fa-solid fa-chart-column text-sm"></i>
+            <span class="tab-label">Reportes</span>
         </button>
     </div>
 
-    {{-- ═══════════════ TAB 1: COMPRAS (LOTES) ═══════════════ --}}
-    <div x-show="activeTab === 'compras'" class="space-y-6">
-        <div class="erp-card">
-            <div class="px-5 py-4 border-b border-slate-200 dark:border-slate-800/80 flex items-center justify-between" style="background:rgba(255,255,255,0.02)">
-                <h3 class="text-sm font-bold uppercase tracking-wider" style="color:var(--text-main)"><i class="fa-solid fa-warehouse mr-2 text-amber-500"></i> Lotes Ingresados al Almacén</h3>
-                <span class="px-2.5 py-1 rounded-md text-[10px] font-black uppercase bg-amber-500/10 text-amber-500">Entradas</span>
+    {{-- ══════════════════════════════════════════════════
+         TAB 0: CAJA DEL MÓDULO
+    ══════════════════════════════════════════════════ --}}
+    <div x-show="activeTab === 'caja'" class="space-y-5 m-fade-in">
+
+        {{-- 4 KPI Cards --}}
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+            <div class="m-kpi shadow-xl border border-cyan-400/20" style="background:linear-gradient(135deg,#0ea5e9,#1d4ed8)">
+                <div class="flex items-center justify-between mb-3 relative z-10">
+                    <span class="text-[11px] font-bold uppercase tracking-widest text-white/80 flex items-center gap-1.5">
+                        <i class="fa-solid fa-crown text-amber-300"></i> Saldo Actual
+                    </span>
+                    <div class="w-9 h-9 rounded-xl bg-white/15 flex items-center justify-center"><i class="fa-solid fa-wallet"></i></div>
+                </div>
+                <div class="text-2xl font-black font-mono relative z-10">Bs. {{ number_format($saldoCajaModulo, 2) }}</div>
+                <div class="mt-2 text-[10px] text-white/70 font-semibold relative z-10">
+                    <i class="fa-solid {{ $saldoCajaModulo >= 0 ? 'fa-circle-check text-emerald-300' : 'fa-circle-exclamation text-rose-300' }} mr-1"></i>
+                    {{ $saldoCajaModulo >= 0 ? 'Efectivo disponible' : 'Caja en déficit' }}
+                </div>
+            </div>
+            <div class="m-kpi shadow-xl border border-indigo-400/20" style="background:linear-gradient(135deg,#6366f1,#4338ca)">
+                <div class="flex items-center justify-between mb-3 relative z-10">
+                    <span class="text-[11px] font-bold uppercase tracking-widest text-white/80">Total Recargado</span>
+                    <div class="w-9 h-9 rounded-xl bg-white/15 flex items-center justify-center"><i class="fa-solid fa-hand-holding-dollar"></i></div>
+                </div>
+                <div class="text-2xl font-black font-mono relative z-10">Bs. {{ number_format($totalRecargadoCaja, 2) }}</div>
+                <div class="mt-2 text-[10px] text-white/70 font-semibold relative z-10">Capital de control inyectado</div>
+            </div>
+            <div class="m-kpi shadow-xl border border-rose-400/20" style="background:linear-gradient(135deg,#f43f5e,#be123c)">
+                <div class="flex items-center justify-between mb-3 relative z-10">
+                    <span class="text-[11px] font-bold uppercase tracking-widest text-white/80">Total Compras</span>
+                    <div class="w-9 h-9 rounded-xl bg-white/15 flex items-center justify-center"><i class="fa-solid fa-cart-shopping"></i></div>
+                </div>
+                <div class="text-2xl font-black font-mono relative z-10">Bs. {{ number_format($totalComprasModulo, 2) }}</div>
+                <div class="mt-2 text-[10px] text-white/70 font-semibold relative z-10">Egresos por lotes ingresados</div>
+            </div>
+            <div class="m-kpi shadow-xl border border-emerald-400/20" style="background:linear-gradient(135deg,#10b981,#047857)">
+                <div class="flex items-center justify-between mb-3 relative z-10">
+                    <span class="text-[11px] font-bold uppercase tracking-widest text-white/80">Total Ventas</span>
+                    <div class="w-9 h-9 rounded-xl bg-white/15 flex items-center justify-center"><i class="fa-solid fa-chart-line-up"></i></div>
+                </div>
+                <div class="text-2xl font-black font-mono relative z-10">Bs. {{ number_format($totalVentasModulo, 2) }}</div>
+                <div class="mt-2 text-[10px] text-white/70 font-semibold relative z-10">Ingresos por venta de mineral</div>
+            </div>
+        </div>
+
+        {{-- Gauge --}}
+        @php
+            $barColor = $porcentajeUsoCaja >= 90 ? 'from-rose-500 to-rose-600' : ($porcentajeUsoCaja >= 70 ? 'from-amber-500 to-orange-500' : 'from-emerald-500 to-teal-500');
+            $txtColor = $porcentajeUsoCaja >= 90 ? 'text-rose-400' : ($porcentajeUsoCaja >= 70 ? 'text-amber-400' : 'text-emerald-400');
+            $badgeStatus = $porcentajeUsoCaja >= 90 ? '🔴 Crítico' : ($porcentajeUsoCaja >= 70 ? '🟠 Moderado' : '🟢 Saludable');
+            $fondosTotales = $totalRecargadoCaja + $totalVentasModulo;
+        @endphp
+        <div class="m-card p-5">
+            <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 mb-4">
+                <div class="flex items-center gap-3">
+                    <div class="w-8 h-8 rounded-xl bg-amber-500/10 border border-amber-500/25 flex items-center justify-center text-amber-400">
+                        <i class="fa-solid fa-gauge-high text-xs"></i>
+                    </div>
+                    <div>
+                        <h3 class="text-xs font-bold text-slate-200">Indicador de Utilización de Fondos</h3>
+                        <p class="text-[10px] text-slate-500">Proporción de capital gastado en compras vs fondos totales</p>
+                    </div>
+                </div>
+                <div class="flex items-center gap-3">
+                    <span class="m-badge {{ $porcentajeUsoCaja >= 90 ? 'm-badge-rose' : ($porcentajeUsoCaja >= 70 ? 'm-badge-amber' : 'm-badge-emerald') }}">{{ $badgeStatus }}</span>
+                    <span class="text-lg font-black font-mono {{ $txtColor }}">{{ $porcentajeUsoCaja }}%</span>
+                </div>
+            </div>
+            <div class="h-2.5 w-full bg-slate-900 rounded-full overflow-hidden border border-slate-800">
+                <div class="h-full bg-gradient-to-r {{ $barColor }} rounded-full transition-all duration-700" style="width:{{ $porcentajeUsoCaja }}%"></div>
+            </div>
+            <div class="grid grid-cols-3 gap-4 mt-4 pt-4 border-t border-slate-800/60">
+                <div class="text-[11px] text-slate-400 flex items-center gap-1.5"><span class="w-2 h-2 rounded-full bg-emerald-500 flex-shrink-0"></span>Disponible: <strong class="text-emerald-400 font-mono">Bs.{{ number_format($saldoCajaModulo,2) }}</strong></div>
+                <div class="text-[11px] text-slate-400 flex items-center gap-1.5"><span class="w-2 h-2 rounded-full bg-rose-500 flex-shrink-0"></span>Utilizado: <strong class="text-rose-400 font-mono">Bs.{{ number_format($totalComprasModulo,2) }}</strong></div>
+                <div class="text-[11px] text-slate-400 flex items-center gap-1.5 sm:justify-end"><span class="w-2 h-2 rounded-full bg-indigo-500 flex-shrink-0"></span>Total Fondos: <strong class="text-indigo-400 font-mono">Bs.{{ number_format($fondosTotales,2) }}</strong></div>
+            </div>
+        </div>
+
+        {{-- Grid: Recarga + Historial --}}
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-5">
+            {{-- Recarga Form --}}
+            <div class="m-card overflow-hidden border border-amber-500/15">
+                <div class="m-section-header" style="background:rgba(245,158,11,0.05);border-color:rgba(245,158,11,0.1)">
+                    <div class="flex items-center gap-3">
+                        <div class="w-9 h-9 rounded-xl flex items-center justify-center text-white" style="background:linear-gradient(135deg,#f59e0b,#d97706)">
+                            <i class="fa-solid fa-plus-circle text-sm"></i>
+                        </div>
+                        <div>
+                            <h3 class="text-sm font-bold text-slate-200">Inyectar a Caja</h3>
+                            <p class="text-[10px] text-slate-500">Registrar recarga operativa</p>
+                        </div>
+                    </div>
+                </div>
+                <form action="{{ route('caja-minerales.store-recarga') }}" method="POST" class="p-5 space-y-4">
+                    @csrf
+                    <div>
+                        <label class="m-label"><i class="fa-regular fa-calendar mr-1 text-amber-500"></i>Fecha de Inyección</label>
+                        <input name="fecha" type="date" required value="{{ now()->toDateString() }}" class="m-input m-input-amber font-mono">
+                    </div>
+                    <div>
+                        <label class="m-label" style="color:#f59e0b"><i class="fa-solid fa-coins mr-1"></i>Monto a Recargar (Bs.)</label>
+                        <div class="relative">
+                            <span class="absolute left-3.5 top-1/2 -translate-y-1/2 text-xs font-black text-amber-400 font-mono pointer-events-none">Bs.</span>
+                            <input name="monto" type="number" step="0.01" required min="0.01" placeholder="0.00" class="m-input m-input-amber !pl-11 text-base font-black">
+                        </div>
+                    </div>
+                    <div>
+                        <label class="m-label"><i class="fa-solid fa-note-sticky mr-1 text-amber-500"></i>Concepto / Origen</label>
+                        <textarea name="observacion" rows="2" placeholder="Ej. Inyección de capital operativo..." class="m-input text-xs resize-none"></textarea>
+                    </div>
+                    <button type="submit" class="m-btn m-btn-amber w-full justify-center py-3">
+                        <i class="fa-solid fa-check-circle"></i> Confirmar Recarga
+                    </button>
+                    <div class="flex gap-2 bg-slate-900/50 border border-slate-800 rounded-xl px-3 py-2.5 text-[10px] text-slate-500">
+                        <i class="fa-solid fa-shield-halved text-amber-500 flex-shrink-0 mt-0.5"></i>
+                        <span>Las recargas aumentan el saldo disponible en tiempo real y quedan en el libro diario.</span>
+                    </div>
+                </form>
             </div>
 
+            {{-- Historial --}}
+            <div class="m-card overflow-hidden lg:col-span-2">
+                <div class="m-section-header">
+                    <div class="flex items-center gap-3">
+                        <div class="w-9 h-9 rounded-xl bg-indigo-500/10 border border-indigo-500/25 flex items-center justify-center text-indigo-400">
+                            <i class="fa-solid fa-book-journal-whills text-sm"></i>
+                        </div>
+                        <div>
+                            <h3 class="text-sm font-bold text-slate-200">Libro Diario de Caja</h3>
+                            <p class="text-[10px] text-slate-500">Historial completo de Recargas, Compras y Ventas</p>
+                        </div>
+                    </div>
+                    <span class="m-badge m-badge-indigo">{{ count($movimientosCaja) }} registros</span>
+                </div>
+
+                <div class="px-5 py-4 border-b border-slate-800/50 grid grid-cols-1 sm:grid-cols-3 gap-3">
+                    <div class="relative">
+                        <i class="fa-solid fa-magnifying-glass absolute left-3 top-1/2 -translate-y-1/2 text-xs text-slate-500"></i>
+                        <input type="text" x-model="searchMov" placeholder="Buscar..." class="m-input !pl-8 text-xs">
+                    </div>
+                    <select x-model="filterTipo" class="m-input text-xs">
+                        <option value="">Todos los tipos</option>
+                        <option value="recarga">📥 Recargas</option>
+                        <option value="compra">🛒 Compras</option>
+                        <option value="venta">📈 Ventas</option>
+                    </select>
+                    <select x-model="filterRange" class="m-input text-xs">
+                        <option value="all">Todas las fechas</option>
+                        <option value="today">Hoy</option>
+                        <option value="month">Este Mes</option>
+                    </select>
+                </div>
+
+                @if(count($movimientosCaja) === 0)
+                    <div class="py-16 text-center text-slate-600">
+                        <i class="fa-solid fa-vault text-4xl block mb-3 opacity-30"></i>
+                        <p class="text-sm text-slate-500">Sin movimientos registrados aún</p>
+                    </div>
+                @else
+                    <div class="overflow-x-auto">
+                        <table class="m-table">
+                            <thead><tr>
+                                <th class="text-center w-10">#</th>
+                                <th>Fecha</th>
+                                <th class="text-center">Tipo</th>
+                                <th class="text-right">Monto</th>
+                                <th class="text-right">Saldo</th>
+                                <th>Concepto</th>
+                                <th class="text-center w-16"></th>
+                            </tr></thead>
+                            <tbody>
+                                @foreach($movimientosCaja as $i => $mov)
+                                <tr x-show="matchesFilter('{{ str_replace("'", "\'", $mov->glosa) }}','{{ number_format($mov->monto,2) }}','{{ $mov->tipo }}','{{ $mov->fecha->format('Y-m-d') }}')">
+                                    <td class="text-center font-mono text-slate-600 font-bold text-[10px]">{{ str_pad(count($movimientosCaja) - $i, 2, '0', STR_PAD_LEFT) }}</td>
+                                    <td class="font-mono font-bold text-slate-300 whitespace-nowrap text-xs">{{ $mov->fecha->format('d/m/Y') }}</td>
+                                    <td class="text-center">
+                                        @if($mov->tipo === 'recarga')
+                                            <span class="m-badge m-badge-cyan">📥 Recarga</span>
+                                        @elseif($mov->tipo === 'venta')
+                                            <span class="m-badge m-badge-emerald">📈 Venta</span>
+                                        @else
+                                            <span class="m-badge m-badge-rose">🛒 Compra</span>
+                                        @endif
+                                    </td>
+                                    <td class="text-right font-mono font-black text-xs whitespace-nowrap {{ $mov->es_ingreso ? 'text-emerald-400' : 'text-rose-400' }}">
+                                        {{ $mov->es_ingreso ? '+' : '-' }}Bs. {{ number_format($mov->monto, 2) }}
+                                    </td>
+                                    <td class="text-right font-mono font-black text-xs whitespace-nowrap {{ $mov->saldo_resultante >= 0 ? 'text-amber-400' : 'text-rose-400' }}">
+                                        Bs. {{ number_format($mov->saldo_resultante, 2) }}
+                                    </td>
+                                    <td class="text-slate-400 text-xs">{{ $mov->glosa }}</td>
+                                    <td class="text-center">
+                                        @if($mov->delete_route)
+                                            <form action="{{ $mov->delete_route }}" method="POST" onsubmit="return confirm('¿Eliminar esta recarga?');" class="inline">
+                                                @csrf @method('DELETE')
+                                                <button type="submit" class="m-btn m-btn-rose m-btn-icon cursor-pointer">
+                                                    <i class="fa-solid fa-trash-can text-xs"></i>
+                                                </button>
+                                            </form>
+                                        @else
+                                            <span class="text-[10px] text-slate-700 font-mono">Auto</span>
+                                        @endif
+                                    </td>
+                                </tr>
+                                @endforeach
+                            </tbody>
+                        </table>
+                    </div>
+                @endif
+            </div>
+        </div>
+    </div>
+
+    {{-- ══════════════════════════════════════════════════
+         TAB 1: COMPRAS (LOTES DE MINERAL)
+    ══════════════════════════════════════════════════ --}}
+    <div x-show="activeTab === 'compras'" class="m-fade-in">
+        <div class="m-card overflow-hidden">
+            <div class="m-section-header">
+                <div class="flex items-center gap-3">
+                    <div class="w-9 h-9 rounded-xl bg-amber-500/10 border border-amber-500/25 flex items-center justify-center text-amber-400">
+                        <i class="fa-solid fa-boxes-stacked text-sm"></i>
+                    </div>
+                    <div>
+                        <h3 class="text-sm font-bold text-slate-200">Lotes Ingresados al Almacén</h3>
+                        <p class="text-[10px] text-slate-500">Historial de minerales comprados · Haz clic en el ID para ver la Ficha Técnica</p>
+                    </div>
+                </div>
+                <div class="flex items-center gap-3">
+                    <span class="m-badge m-badge-amber">{{ count($transacciones->where('tipo', 'compra')) }} lotes</span>
+                    <button @click="initCompra()" type="button" class="m-btn m-btn-amber">
+                        <i class="fa-solid fa-plus text-xs"></i> Nueva Compra
+                    </button>
+                </div>
+            </div>
             <div class="overflow-x-auto">
-                <table class="w-full text-left border-collapse">
-                    <thead>
-                        <tr class="text-xs uppercase tracking-wider" style="background:rgba(255,255,255,0.01); border-bottom:1.5px solid var(--erp-border)">
-                            <th class="px-6 py-4 font-bold" style="color:var(--erp-text-muted)">Lote ID</th>
-                            <th class="px-6 py-4 font-bold" style="color:var(--erp-text-muted)">Fecha</th>
-                            <th class="px-6 py-4 font-bold" style="color:var(--erp-text-muted)">Proveedor</th>
-                            <th class="px-6 py-4 font-bold" style="color:var(--erp-text-muted)">Presentación</th>
-                            <th class="px-6 py-4 font-bold" style="color:var(--erp-text-muted)">Ley de Minerales</th>
-                            <th class="px-6 py-4 font-bold" style="color:var(--erp-text-muted)">Peso Original</th>
-                            <th class="px-6 py-4 font-bold" style="color:var(--erp-text-muted)">Stock Restante</th>
-                            <th class="px-6 py-4 font-bold text-right" style="color:var(--erp-text-muted)">Total Pagado</th>
-                            <th class="px-6 py-4 text-center" style="color:var(--erp-text-muted)">Acciones</th>
-                        </tr>
-                    </thead>
-                    <tbody class="divide-y divide-slate-100 dark:divide-slate-800/60">
+                <table class="m-table">
+                    <thead><tr>
+                        <th class="text-center">Lote ID</th>
+                        <th>Fecha</th>
+                        <th>Proveedor</th>
+                        <th class="text-center">Presentación</th>
+                        <th>Leyes</th>
+                        <th class="text-right">Peso Original</th>
+                        <th class="text-center" style="min-width:130px">Stock Restante</th>
+                        <th class="text-right">Total Pagado</th>
+                        <th class="text-center">Acciones</th>
+                    </tr></thead>
+                    <tbody>
                         @forelse($transacciones->where('tipo', 'compra') as $item)
                         @php
-                            $pctStock = $item->peso_neto_seco > 0 ? ($item->peso_disponible / $item->peso_neto_seco) * 100 : 0;
-                            $stockColor = $pctStock > 50 ? 'bg-emerald-500' : ($pctStock > 20 ? 'bg-amber-500' : 'bg-rose-500');
+                            $pct = $item->peso_neto_seco > 0 ? ($item->peso_disponible / $item->peso_neto_seco) * 100 : 0;
+                            $barCls = $pct > 50 ? 'bg-emerald-500' : ($pct > 20 ? 'bg-amber-500' : 'bg-rose-500');
                         @endphp
-                        <tr class="hover:bg-slate-50 dark:hover:bg-slate-800/20 transition duration-150">
-                            <td class="px-6 py-4 font-mono font-bold text-xs" style="color:var(--text-main)">
-                                <a href="javascript:void(0)" @click="showFicha({{ $item->id }})" class="hover:underline text-indigo-400">LOT-{{ str_pad($item->id, 5, '0', STR_PAD_LEFT) }}</a>
+                        <tr>
+                            <td class="text-center">
+                                <button @click="showFicha({{ $item->id }})" class="m-badge m-badge-indigo font-mono hover:bg-indigo-500/25 transition cursor-pointer">
+                                    LOT-{{ str_pad($item->id, 5, '0', STR_PAD_LEFT) }}
+                                </button>
                             </td>
-                            <td class="px-6 py-4 font-mono text-xs">{{ $item->fecha->format('d/m/Y') }}</td>
-                            <td class="px-6 py-4 font-bold" style="color:var(--text-main)">{{ $item->cliente_proveedor }}</td>
-                            <td class="px-6 py-4 text-xs font-semibold">
-                                {{ $item->presentacion === 'Otro' ? ($item->presentacion_otro ?: 'Otro') : $item->presentacion }}
+                            <td class="font-mono text-slate-300 font-bold whitespace-nowrap text-xs">{{ $item->fecha->format('d/m/Y') }}</td>
+                            <td class="font-bold text-slate-100 uppercase text-xs whitespace-nowrap">{{ $item->cliente_proveedor }}</td>
+                            <td class="text-center">
+                                <span class="m-badge m-badge-slate">
+                                    {{ $item->presentacion === 'Otro' ? ($item->presentacion_otro ?: 'Otro') : $item->presentacion }}
+                                </span>
                             </td>
-                            <td class="px-6 py-4">
+                            <td>
                                 <div class="flex flex-wrap gap-1">
                                     @forelse($item->analisis as $an)
-                                        <span class="px-2 py-0.5 rounded-md text-[10px] font-mono font-bold bg-amber-500/10 dark:bg-amber-500/15 text-amber-500 dark:text-amber-400 border border-amber-500/25 inline-block shadow-sm">
-                                            {{ $an->mineral }}: {{ number_format($an->ley, 2) }}%
-                                        </span>
+                                        <span class="m-badge m-badge-amber font-mono">{{ $an->mineral }}: {{ number_format($an->ley, 2) }}%</span>
                                     @empty
-                                        <span class="text-xs italic text-slate-500">Sin análisis</span>
+                                        <span class="text-xs italic text-slate-600">Sin lab.</span>
                                     @endforelse
                                 </div>
                             </td>
-                            <td class="px-6 py-4 font-mono text-xs">{{ number_format($item->peso_neto_seco, 2) }} Kg</td>
-                            <td class="px-6 py-4">
-                                <div class="w-32">
-                                    <div class="flex justify-between items-center text-[10px] font-mono mb-1">
-                                        <span class="font-bold">{{ number_format($item->peso_disponible, 2) }} Kg</span>
-                                        <span class="text-slate-400">{{ round($pctStock) }}%</span>
+                            <td class="text-right font-mono font-bold text-slate-300 text-xs whitespace-nowrap">{{ number_format($item->peso_neto_seco, 2) }} Kg</td>
+                            <td class="px-4">
+                                <div class="w-28 mx-auto">
+                                    <div class="flex justify-between text-[10px] font-mono mb-1">
+                                        <span class="font-bold text-slate-200">{{ number_format($item->peso_disponible, 2) }} Kg</span>
+                                        <span class="text-slate-500">{{ round($pct) }}%</span>
                                     </div>
-                                    <div class="stock-bar-bg">
-                                        <div class="stock-bar-fill {{ $stockColor }}" style="width: {{ $pctStock }}%"></div>
+                                    <div class="m-stock-bar">
+                                        <div class="m-stock-bar-fill {{ $barCls }}" style="width:{{ $pct }}%"></div>
                                     </div>
                                 </div>
                             </td>
-                            <td class="px-6 py-4 font-mono font-extrabold text-right text-xs" style="color:var(--text-main)">Bs. {{ number_format($item->monto_total, 2) }}</td>
-                            <td class="px-6 py-4">
-                                <div class="flex justify-center items-center gap-2">
-                                    <button @click="showFicha({{ $item->id }})" class="p-1.5 rounded-lg bg-slate-100 dark:bg-slate-800 hover:bg-indigo-500 hover:text-white transition" title="Ficha Técnica">
-                                        <i class="fa-solid fa-eye text-xs"></i>
+                            <td class="text-right font-mono font-black text-amber-400 text-xs whitespace-nowrap">Bs. {{ number_format($item->monto_total, 2) }}</td>
+                            <td class="text-center">
+                                <div class="flex justify-center gap-1.5">
+                                    <button @click="showFicha({{ $item->id }})" class="m-btn m-btn-ghost m-btn-icon cursor-pointer" title="Ficha Técnica">
+                                        <i class="fa-solid fa-eye text-indigo-400 text-xs"></i>
                                     </button>
-                                    <button @click="editCompra({{ $item }})" class="p-1.5 rounded-lg bg-slate-100 dark:bg-slate-800 hover:bg-amber-500 hover:text-white transition" title="Editar Lote">
-                                        <i class="fa-solid fa-pen text-xs"></i>
+                                    <button @click="editCompra({{ $item }})" class="m-btn m-btn-ghost m-btn-icon cursor-pointer" title="Editar">
+                                        <i class="fa-solid fa-pen text-amber-400 text-xs"></i>
                                     </button>
-                                    <form action="{{ route('transacciones-minerales.destroy', $item->id) }}" method="POST" class="inline-block" onsubmit="return confirm('¿Estás seguro de eliminar este lote?')" >
-                                        @csrf
-                                        @method('DELETE')
-                                        <button type="submit" class="p-1.5 rounded-lg bg-slate-100 dark:bg-slate-800 hover:bg-rose-500 hover:text-white transition" title="Eliminar Lote">
-                                            <i class="fa-solid fa-trash text-xs"></i>
+                                    <form action="{{ route('transacciones-minerales.destroy', $item->id) }}" method="POST" class="inline" onsubmit="return confirm('¿Eliminar este lote?')">
+                                        @csrf @method('DELETE')
+                                        <button type="submit" class="m-btn m-btn-rose m-btn-icon cursor-pointer" title="Eliminar">
+                                            <i class="fa-solid fa-trash-can text-xs"></i>
                                         </button>
                                     </form>
                                 </div>
                             </td>
                         </tr>
                         @empty
-                        <tr>
-                            <td colspan="9" class="text-center py-16 text-slate-500">
-                                <i class="fa-solid fa-scale-balanced text-4xl mb-3 block opacity-30"></i>
-                                No se registran lotes comprados en el almacén.
-                            </td>
-                        </tr>
+                        <tr><td colspan="9" class="py-16 text-center text-slate-600">
+                            <i class="fa-solid fa-scale-balanced text-4xl block mb-3 opacity-20"></i>
+                            <p class="text-slate-500">No hay lotes registrados aún</p>
+                            <button @click="initCompra()" class="m-btn m-btn-amber mt-4 cursor-pointer">
+                                <i class="fa-solid fa-plus text-xs"></i> Registrar Primera Compra
+                            </button>
+                        </td></tr>
                         @endforelse
                     </tbody>
                 </table>
@@ -514,70 +980,86 @@
         </div>
     </div>
 
-    {{-- ═══════════════ TAB 2: VENTAS (SALIDAS) ═══════════════ --}}
-    <div x-show="activeTab === 'ventas'" class="space-y-6">
-        <div class="erp-card">
-            <div class="px-5 py-4 border-b border-slate-200 dark:border-slate-800/80 flex items-center justify-between" style="background:rgba(255,255,255,0.02)">
-                <h3 class="text-sm font-bold uppercase tracking-wider" style="color:var(--text-main)"><i class="fa-solid fa-truck-loading mr-2 text-emerald-500"></i> Despachos y Salidas de Lotes</h3>
-                <span class="px-2.5 py-1 rounded-md text-[10px] font-black uppercase bg-emerald-500/10 text-emerald-500">Ventas</span>
+    {{-- ══════════════════════════════════════════════════
+         TAB 2: VENTAS (DESPACHOS)
+    ══════════════════════════════════════════════════ --}}
+    <div x-show="activeTab === 'ventas'" class="m-fade-in">
+        <div class="m-card overflow-hidden">
+            <div class="m-section-header">
+                <div class="flex items-center gap-3">
+                    <div class="w-9 h-9 rounded-xl bg-emerald-500/10 border border-emerald-500/25 flex items-center justify-center text-emerald-400">
+                        <i class="fa-solid fa-truck-loading text-sm"></i>
+                    </div>
+                    <div>
+                        <h3 class="text-sm font-bold text-slate-200">Despachos y Salidas de Mineral</h3>
+                        <p class="text-[10px] text-slate-500">Ventas realizadas a clientes usando lotes disponibles en almacén</p>
+                    </div>
+                </div>
+                <div class="flex items-center gap-3">
+                    <span class="m-badge m-badge-emerald">{{ count($transacciones->where('tipo', 'venta')) }} despachos</span>
+                    <button @click="initVenta()" type="button" class="m-btn m-btn-emerald">
+                        <i class="fa-solid fa-paper-plane text-xs"></i> Registrar Venta
+                    </button>
+                </div>
             </div>
-
             <div class="overflow-x-auto">
-                <table class="w-full text-left border-collapse">
-                    <thead>
-                        <tr class="text-xs uppercase tracking-wider" style="background:rgba(255,255,255,0.01); border-bottom:1.5px solid var(--erp-border)">
-                            <th class="px-6 py-4 font-bold" style="color:var(--erp-text-muted)">Venta ID</th>
-                            <th class="px-6 py-4 font-bold" style="color:var(--erp-text-muted)">Fecha</th>
-                            <th class="px-6 py-4 font-bold" style="color:var(--erp-text-muted)">Cliente</th>
-                            <th class="px-6 py-4 font-bold" style="color:var(--erp-text-muted)">Lote Origen</th>
-                            <th class="px-6 py-4 font-bold" style="color:var(--erp-text-muted)">Destino</th>
-                            <th class="px-6 py-4 font-bold" style="color:var(--erp-text-muted)">Cantidad Despachada</th>
-                            <th class="px-6 py-4 font-bold" style="color:var(--erp-text-muted)">Peso Despachado</th>
-                            <th class="px-6 py-4 font-bold text-right" style="color:var(--erp-text-muted)">Total Venta</th>
-                            <th class="px-6 py-4 text-center" style="color:var(--erp-text-muted)">Acciones</th>
-                        </tr>
-                    </thead>
-                    <tbody class="divide-y divide-slate-100 dark:divide-slate-800/60">
+                <table class="m-table">
+                    <thead><tr>
+                        <th class="text-center">Venta ID</th>
+                        <th>Fecha</th>
+                        <th>Cliente / Empresa</th>
+                        <th class="text-center">Lote Origen</th>
+                        <th>Destino</th>
+                        <th class="text-center">Cantidad</th>
+                        <th class="text-right">Peso (Kg)</th>
+                        <th class="text-right">Total Venta</th>
+                        <th class="text-center">Acciones</th>
+                    </tr></thead>
+                    <tbody>
                         @forelse($transacciones->where('tipo', 'venta') as $item)
-                        <tr class="hover:bg-slate-50 dark:hover:bg-slate-800/20 transition duration-150">
-                            <td class="px-6 py-4 font-mono font-bold text-xs" style="color:var(--text-main)">
-                                SLD-{{ str_pad($item->id, 5, '0', STR_PAD_LEFT) }}
+                        <tr>
+                            <td class="text-center">
+                                <span class="m-badge m-badge-emerald font-mono">
+                                    SLD-{{ str_pad($item->id, 5, '0', STR_PAD_LEFT) }}
+                                </span>
                             </td>
-                            <td class="px-6 py-4 font-mono text-xs">{{ $item->fecha->format('d/m/Y') }}</td>
-                            <td class="px-6 py-4 font-bold" style="color:var(--text-main)">{{ $item->cliente_proveedor }}</td>
-                            <td class="px-6 py-4 font-mono text-xs text-indigo-400">
+                            <td class="font-mono text-slate-300 font-bold whitespace-nowrap text-xs">{{ $item->fecha->format('d/m/Y') }}</td>
+                            <td class="font-bold text-slate-100 uppercase text-xs whitespace-nowrap">{{ $item->cliente_proveedor }}</td>
+                            <td class="text-center">
                                 @if($item->lote)
-                                    <a href="javascript:void(0)" @click="showFicha({{ $item->lote_id }})" class="hover:underline">LOT-{{ str_pad($item->lote_id, 5, '0', STR_PAD_LEFT) }}</a>
+                                    <button @click="showFicha({{ $item->lote_id }})" class="m-badge m-badge-indigo font-mono hover:bg-indigo-500/25 transition cursor-pointer">
+                                        LOT-{{ str_pad($item->lote_id, 5, '0', STR_PAD_LEFT) }}
+                                    </button>
                                 @else
-                                    <span class="text-slate-500">Lote Eliminado</span>
+                                    <span class="text-slate-600 text-[10px] font-mono">Eliminado</span>
                                 @endif
                             </td>
-                            <td class="px-6 py-4 text-xs font-semibold">{{ $item->destino ?: 'No registrado' }}</td>
-                            <td class="px-6 py-4 font-mono text-xs">{{ number_format($item->cantidad, 2) }}</td>
-                            <td class="px-6 py-4 font-mono text-xs">{{ number_format($item->peso_neto_seco, 2) }} Kg</td>
-                            <td class="px-6 py-4 font-mono font-extrabold text-right text-xs" style="color:var(--text-main)">Bs. {{ number_format($item->monto_total, 2) }}</td>
-                            <td class="px-6 py-4">
-                                <div class="flex justify-center items-center gap-2">
-                                    <button @click="editVenta({{ $item }})" class="p-1.5 rounded-lg bg-slate-100 dark:bg-slate-800 hover:bg-amber-500 hover:text-white transition" title="Editar Venta">
-                                        <i class="fa-solid fa-pen text-xs"></i>
+                            <td class="text-slate-400 text-xs">{{ $item->destino ?: '—' }}</td>
+                            <td class="text-center font-mono text-slate-300 font-bold text-xs">{{ number_format($item->cantidad, 2) }}</td>
+                            <td class="text-right font-mono font-bold text-slate-200 text-xs whitespace-nowrap">{{ number_format($item->peso_neto_seco, 2) }} Kg</td>
+                            <td class="text-right font-mono font-black text-emerald-400 text-xs whitespace-nowrap">Bs. {{ number_format($item->monto_total, 2) }}</td>
+                            <td class="text-center">
+                                <div class="flex justify-center gap-1.5">
+                                    <button @click="editVenta({{ $item }})" class="m-btn m-btn-ghost m-btn-icon cursor-pointer" title="Editar">
+                                        <i class="fa-solid fa-pen text-amber-400 text-xs"></i>
                                     </button>
-                                    <form action="{{ route('transacciones-minerales.destroy', $item->id) }}" method="POST" class="inline-block" onsubmit="return confirm('¿Estás seguro de cancelar esta venta? Se restituirá el stock del lote original.')" >
-                                        @csrf
-                                        @method('DELETE')
-                                        <button type="submit" class="p-1.5 rounded-lg bg-slate-100 dark:bg-slate-800 hover:bg-rose-500 hover:text-white transition" title="Eliminar Venta">
-                                            <i class="fa-solid fa-trash text-xs"></i>
+                                    <form action="{{ route('transacciones-minerales.destroy', $item->id) }}" method="POST" class="inline" onsubmit="return confirm('¿Cancelar esta venta? Se restituirá el stock del lote.')">
+                                        @csrf @method('DELETE')
+                                        <button type="submit" class="m-btn m-btn-rose m-btn-icon cursor-pointer" title="Eliminar">
+                                            <i class="fa-solid fa-trash-can text-xs"></i>
                                         </button>
                                     </form>
                                 </div>
                             </td>
                         </tr>
                         @empty
-                        <tr>
-                            <td colspan="9" class="text-center py-16 text-slate-500">
-                                <i class="fa-solid fa-truck-loading text-4xl mb-3 block opacity-30"></i>
-                                No se registran ventas/despachos en el almacén.
-                            </td>
-                        </tr>
+                        <tr><td colspan="9" class="py-16 text-center">
+                            <i class="fa-solid fa-truck-loading text-4xl block mb-3 text-slate-700 opacity-30"></i>
+                            <p class="text-slate-500">No se han registrado ventas aún</p>
+                            <button @click="initVenta()" class="m-btn m-btn-emerald mt-4 cursor-pointer">
+                                <i class="fa-solid fa-paper-plane text-xs"></i> Registrar Primera Venta
+                            </button>
+                        </td></tr>
                         @endforelse
                     </tbody>
                 </table>
@@ -585,90 +1067,146 @@
         </div>
     </div>
 
-    {{-- ═══════════════ TAB 3: STOCK (INVENTARIO) ═══════════════ --}}
-    <div x-show="activeTab === 'stock'" class="space-y-6">
+    {{-- ══════════════════════════════════════════════════
+         TAB 3: STOCK (INVENTARIO)
+    ══════════════════════════════════════════════════ --}}
+    <div x-show="activeTab === 'stock'" class="space-y-5 m-fade-in">
 
+        {{-- 5 KPI Cards --}}
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4">
+            <div class="m-kpi border border-cyan-400/20" style="background:linear-gradient(135deg,#0891b2,#164e63)">
+                <div class="flex justify-between mb-3 relative z-10">
+                    <span class="text-[10px] font-bold uppercase tracking-widest text-cyan-100/80">Lotes Disponibles</span>
+                    <div class="w-8 h-8 rounded-xl bg-white/15 flex items-center justify-center"><i class="fa-solid fa-boxes-stacked text-xs"></i></div>
+                </div>
+                <div class="text-3xl font-black font-mono relative z-10">{{ $lotesDisponiblesCount }}</div>
+                <p class="text-[10px] text-cyan-100/70 font-semibold mt-1 relative z-10">Con stock activo</p>
+            </div>
+            <div class="m-kpi border border-emerald-400/20" style="background:linear-gradient(135deg,#059669,#064e3b)">
+                <div class="flex justify-between mb-3 relative z-10">
+                    <span class="text-[10px] font-bold uppercase tracking-widest text-emerald-100/80">Peso Disponible</span>
+                    <div class="w-8 h-8 rounded-xl bg-white/15 flex items-center justify-center"><i class="fa-solid fa-weight-hanging text-xs"></i></div>
+                </div>
+                <div class="text-xl font-black font-mono relative z-10">{{ number_format($pesoDisponibleSum, 0) }} <span class="text-sm font-bold">Kg</span></div>
+                <p class="text-[10px] text-emerald-100/70 font-semibold mt-1 relative z-10">En almacén actual</p>
+            </div>
+            <div class="m-kpi border border-amber-400/20" style="background:linear-gradient(135deg,#d97706,#78350f)">
+                <div class="flex justify-between mb-3 relative z-10">
+                    <span class="text-[10px] font-bold uppercase tracking-widest text-amber-100/80">Valor del Stock</span>
+                    <div class="w-8 h-8 rounded-xl bg-white/15 flex items-center justify-center"><i class="fa-solid fa-vault text-xs"></i></div>
+                </div>
+                <div class="text-lg font-black font-mono relative z-10">Bs. {{ number_format($valorTotalStock, 0) }}</div>
+                <p class="text-[10px] text-amber-100/70 font-semibold mt-1 relative z-10">Valorización estimada</p>
+            </div>
+            <div class="m-kpi border border-rose-400/20" style="background:linear-gradient(135deg,#be123c,#4c0519)">
+                <div class="flex justify-between mb-3 relative z-10">
+                    <span class="text-[10px] font-bold uppercase tracking-widest text-rose-100/80">Compras del Mes</span>
+                    <div class="w-8 h-8 rounded-xl bg-white/15 flex items-center justify-center"><i class="fa-solid fa-cart-shopping text-xs"></i></div>
+                </div>
+                <div class="text-3xl font-black font-mono relative z-10">{{ $comprasDelMes }}</div>
+                <p class="text-[10px] text-rose-100/70 font-semibold mt-1 relative z-10">Lotes recibidos</p>
+            </div>
+            <div class="m-kpi border border-indigo-400/20" style="background:linear-gradient(135deg,#4f46e5,#1e1b4b)">
+                <div class="flex justify-between mb-3 relative z-10">
+                    <span class="text-[10px] font-bold uppercase tracking-widest text-indigo-100/80">Ventas del Mes</span>
+                    <div class="w-8 h-8 rounded-xl bg-white/15 flex items-center justify-center"><i class="fa-solid fa-chart-line-up text-xs"></i></div>
+                </div>
+                <div class="text-3xl font-black font-mono relative z-10">{{ $ventasDelMes }}</div>
+                <p class="text-[10px] text-indigo-100/70 font-semibold mt-1 relative z-10">Despachos realizados</p>
+            </div>
+        </div>
 
-        <!-- Stock Table Card -->
-        <div class="erp-card">
-            <div class="px-5 py-4 border-b border-slate-200 dark:border-slate-800/80 flex items-center justify-between" style="background:rgba(255,255,255,0.02)">
-                <h3 class="text-sm font-bold uppercase tracking-wider" style="color:var(--text-main)"><i class="fa-solid fa-warehouse mr-2 text-cyan-500"></i> Inventario de Lotes en Almacén</h3>
-                <span class="px-2.5 py-1 rounded-md text-[10px] font-black uppercase bg-cyan-500/10 text-cyan-400">Stock</span>
+        {{-- Stock Table --}}
+        <div class="m-card overflow-hidden">
+            <div class="m-section-header">
+                <div class="flex items-center gap-3">
+                    <div class="w-9 h-9 rounded-xl bg-cyan-500/10 border border-cyan-500/25 flex items-center justify-center text-cyan-400">
+                        <i class="fa-solid fa-warehouse text-sm"></i>
+                    </div>
+                    <div>
+                        <h3 class="text-sm font-bold text-slate-200">Inventario General de Lotes</h3>
+                        <p class="text-[10px] text-slate-500">Control de estados · 🟢 Disponible · 🟡 Parcial · 🔴 Vendido</p>
+                    </div>
+                </div>
+                <div class="flex items-center gap-3">
+                    <span class="m-badge m-badge-cyan">{{ count($todosLosLotes) }} lotes</span>
+                    <button @click="initCompra()" type="button" class="m-btn m-btn-amber">
+                        <i class="fa-solid fa-plus text-xs"></i> Nueva Compra
+                    </button>
+                    <button @click="initVenta()" type="button" class="m-btn m-btn-emerald">
+                        <i class="fa-solid fa-paper-plane text-xs"></i> Registrar Venta
+                    </button>
+                </div>
+            </div>
+
+            <div class="px-5 py-4 border-b border-slate-800/50 grid grid-cols-1 sm:grid-cols-2 gap-3">
+                <div class="relative">
+                    <i class="fa-solid fa-magnifying-glass absolute left-3 top-1/2 -translate-y-1/2 text-xs text-slate-500"></i>
+                    <input type="text" x-model="searchStock" placeholder="Buscar por Lote ID, Proveedor o Presentación..." class="m-input !pl-8 text-xs">
+                </div>
+                <select x-model="filterStockEstado" class="m-input text-xs">
+                    <option value="">Todos los Estados</option>
+                    <option value="Disponible">🟢 Disponible</option>
+                    <option value="Parcialmente Vendido">🟡 Parcialmente Vendido</option>
+                    <option value="Vendido">🔴 Vendido</option>
+                </select>
             </div>
 
             <div class="overflow-x-auto">
-                <table class="w-full text-left border-collapse">
-                    <thead>
-                        <tr class="text-xs uppercase tracking-wider" style="background:rgba(255,255,255,0.01); border-bottom:1.5px solid var(--erp-border)">
-                            <th class="px-6 py-4 font-bold" style="color:var(--erp-text-muted)">Lote ID</th>
-                            <th class="px-6 py-4 font-bold" style="color:var(--erp-text-muted)">Fecha</th>
-                            <th class="px-6 py-4 font-bold" style="color:var(--erp-text-muted)">Proveedor</th>
-                            <th class="px-6 py-4 font-bold" style="color:var(--erp-text-muted)">Presentación</th>
-                            <th class="px-6 py-4 font-bold text-right" style="color:var(--erp-text-muted)">Peso Disponible</th>
-                            <th class="px-6 py-4 font-bold text-right" style="color:var(--erp-text-muted)">Valor Estimado</th>
-                            <th class="px-6 py-4 font-bold text-center" style="color:var(--erp-text-muted)">Estado</th>
-                            <th class="px-6 py-4 font-bold text-center" style="color:var(--erp-text-muted)">Acciones</th>
-                        </tr>
-                    </thead>
+                <table class="m-table">
+                    <thead><tr>
+                        <th class="text-center">Lote</th>
+                        <th>Fecha</th>
+                        <th>Proveedor</th>
+                        <th class="text-center">Presentación</th>
+                        <th class="text-right">Peso Disponible</th>
+                        <th class="text-right">Valor Estimado</th>
+                        <th class="text-center">Estado</th>
+                        <th class="text-center">Detalle</th>
+                    </tr></thead>
                     <tbody>
                         @forelse($todosLosLotes as $lote)
                         @php
-                            $soldWeight = $lote->ventas->sum('peso_neto_seco');
                             $hasSales = $lote->ventas->count() > 0;
-                            
                             if ($lote->peso_disponible <= 0) {
-                                $estado = 'Vendido';
-                                $badgeClass = 'bg-slate-500/10 text-slate-400 border border-slate-500/20';
+                                $estado = 'Vendido'; $badgeCls = 'm-badge-rose'; $dot = '🔴';
                             } elseif ($hasSales && $lote->peso_disponible < $lote->peso_neto_seco) {
-                                $estado = 'Parcialmente Vendido';
-                                $badgeClass = 'bg-amber-500/10 text-amber-500 border border-amber-500/20';
+                                $estado = 'Parcialmente Vendido'; $badgeCls = 'm-badge-amber'; $dot = '🟡';
                             } else {
-                                $estado = 'Disponible';
-                                $badgeClass = 'bg-emerald-500/10 text-emerald-500 border border-emerald-500/20';
+                                $estado = 'Disponible'; $badgeCls = 'm-badge-emerald'; $dot = '🟢';
                             }
-                            
-                            $valorEstimado = $lote->peso_disponible * $lote->precio_unidad;
+                            $valorEst = $lote->peso_disponible * $lote->precio_unidad;
                         @endphp
-                        <tr class="border-b border-slate-200 dark:border-slate-800/80 hover:bg-slate-500/[0.02] transition-colors duration-150">
-                            <td class="px-6 py-4 font-mono font-bold text-sm">
-                                <a href="javascript:void(0)" @click="showFicha({{ $lote->id }})" class="hover:underline text-cyan-400">LOT-{{ str_pad($lote->id, 5, '0', STR_PAD_LEFT) }}</a>
+                        <tr x-show="matchesStockFilter('{{ $lote->id }}','{{ str_replace("'","\'", $lote->cliente_proveedor) }}','{{ str_replace("'","\'", $lote->presentacion) }}','{{ $estado }}')">
+                            <td class="text-center">
+                                <button @click="showFicha({{ $lote->id }})" class="m-badge m-badge-cyan font-mono hover:bg-cyan-500/25 transition cursor-pointer">
+                                    LOT-{{ str_pad($lote->id, 5, '0', STR_PAD_LEFT) }}
+                                </button>
                             </td>
-                            <td class="px-6 py-4 text-xs font-semibold" style="color:var(--text-main)">
-                                {{ $lote->fecha->format('d/m/Y') }}
+                            <td class="font-mono text-slate-300 font-bold whitespace-nowrap text-xs">{{ $lote->fecha->format('d/m/Y') }}</td>
+                            <td class="font-bold text-slate-100 uppercase text-xs whitespace-nowrap">{{ $lote->cliente_proveedor }}</td>
+                            <td class="text-center">
+                                <span class="m-badge m-badge-slate">{{ $lote->presentacion === 'Otro' ? ($lote->presentacion_otro ?: 'Otro') : $lote->presentacion }}</span>
                             </td>
-                            <td class="px-6 py-4 text-xs font-bold text-slate-350 dark:text-slate-200">
-                                {{ $lote->cliente_proveedor }}
+                            <td class="text-right font-mono font-bold text-xs">
+                                <span class="text-slate-100">{{ number_format($lote->peso_disponible, 2) }} Kg</span>
+                                <span class="block text-[10px] text-slate-600 font-normal">/ {{ number_format($lote->peso_neto_seco, 2) }} Kg orig.</span>
                             </td>
-                            <td class="px-6 py-4 text-xs font-semibold">
-                                <span class="px-2 py-1 bg-slate-900 border border-slate-800 text-slate-350 rounded-md font-mono">
-                                    {{ $lote->presentacion }}
-                                </span>
+                            <td class="text-right font-mono font-black text-emerald-400 text-xs whitespace-nowrap">Bs. {{ number_format($valorEst, 2) }}</td>
+                            <td class="text-center">
+                                <span class="m-badge {{ $badgeCls }}">{{ $dot }} {{ $estado }}</span>
                             </td>
-                            <td class="px-6 py-4 text-right font-mono font-bold text-xs">
-                                {{ number_format($lote->peso_disponible, 2, ',', '.') }} Kg
-                                <span class="block text-[10px] text-slate-500 font-semibold font-sans">Original: {{ number_format($lote->peso_neto_seco, 2, ',', '.') }} Kg</span>
-                            </td>
-                            <td class="px-6 py-4 text-right font-mono font-bold text-xs text-emerald-400">
-                                Bs. {{ number_format($valorEstimado, 2, ',', '.') }}
-                            </td>
-                            <td class="px-6 py-4 text-center">
-                                <span class="px-2.5 py-1 rounded-full text-[10px] font-black uppercase tracking-wider inline-block {{ $badgeClass }}">
-                                    {{ $estado }}
-                                </span>
-                            </td>
-                            <td class="px-6 py-4 text-center">
-                                <button @click="showFicha({{ $lote->id }})" class="p-1.5 rounded-lg bg-slate-100 dark:bg-slate-800 hover:bg-cyan-500 hover:text-white transition" title="Ver Detalle">
-                                    <i class="fa-solid fa-eye text-xs"></i>
+                            <td class="text-center">
+                                <button @click="showFicha({{ $lote->id }})" class="m-btn m-btn-ghost m-btn-icon cursor-pointer" title="Ver Detalle">
+                                    <i class="fa-solid fa-eye text-cyan-400 text-xs"></i>
                                 </button>
                             </td>
                         </tr>
                         @empty
-                        <tr>
-                            <td colspan="8" class="text-center py-16 text-slate-500">
-                                <i class="fa-solid fa-boxes-stacked text-4xl mb-3 block opacity-30"></i>
-                                No se registran lotes en el inventario.
-                            </td>
-                        </tr>
+                        <tr><td colspan="8" class="py-16 text-center text-slate-600">
+                            <i class="fa-solid fa-boxes-stacked text-4xl block mb-3 opacity-20"></i>
+                            <p class="text-slate-500">No hay lotes registrados en el inventario</p>
+                        </td></tr>
                         @endforelse
                     </tbody>
                 </table>
@@ -676,63 +1214,71 @@
         </div>
     </div>
 
-    {{-- ═══════════════ TAB 4: REPORTES DE MINERALES ═══════════════ --}}
-    <div x-show="activeTab === 'reportes'" class="space-y-6">
-        <!-- Executive Filter Box -->
-        <div class="erp-card p-6">
-            <div class="flex items-center justify-between pb-4 mb-5 border-b border-slate-200 dark:border-slate-800/80">
-                <div class="flex items-center space-x-2">
-                    <i class="fa-solid fa-sliders text-indigo-500 text-base"></i>
-                    <h3 class="text-sm font-extrabold uppercase tracking-wider text-slate-800 dark:text-slate-100">Filtros de Búsqueda de Comercialización</h3>
+    {{-- ══════════════════════════════════════════════════
+         TAB 4: REPORTES
+    ══════════════════════════════════════════════════ --}}
+    <div x-show="activeTab === 'reportes'" class="space-y-5 m-fade-in">
+
+        {{-- Filtros --}}
+        <div class="m-card p-5">
+            <div class="flex items-center justify-between mb-5 pb-4 border-b border-slate-800/60">
+                <div class="flex items-center gap-3">
+                    <div class="w-9 h-9 rounded-xl bg-indigo-500/10 border border-indigo-500/25 flex items-center justify-center text-indigo-400">
+                        <i class="fa-solid fa-sliders text-sm"></i>
+                    </div>
+                    <div>
+                        <h3 class="text-sm font-bold text-slate-200">Filtros de Búsqueda</h3>
+                        <p class="text-[10px] text-slate-500">Los resultados se actualizan automáticamente</p>
+                    </div>
                 </div>
-                <button type="button" 
-                        onclick="const f = this.closest('div').nextElementSibling; f.reset(); Array.from(f.elements).forEach(e => e.value = ''); submitFilterRealTime(f);" 
-                        class="px-3 py-1.5 rounded-xl bg-slate-800/40 hover:bg-slate-800 border border-slate-700/60 text-slate-300 hover:text-white text-xs font-bold transition flex items-center gap-1.5 cursor-pointer">
+                <button type="button"
+                        onclick="const f = document.getElementById('reportes-form'); if(f){ Array.from(f.elements).forEach(e=>{ if(e.type!=='hidden') e.value=''; }); submitFilterRealTime(f); }"
+                        class="m-btn m-btn-ghost">
                     <i class="fa-solid fa-rotate-left text-amber-500 text-xs"></i> Limpiar Filtros
                 </button>
             </div>
 
-            <form action="{{ route('transacciones-minerales.index') }}" method="GET"
+            <form id="reportes-form" action="{{ route('transacciones-minerales.index') }}" method="GET"
                   onchange="submitFilterRealTime(this)"
-                  class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 items-end">
+                  class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
                 <input type="hidden" name="tab" value="reportes">
 
                 <div>
-                    <label class="erp-label">Tipo Movimiento</label>
-                    <select name="tipo" class="premium-filter-input w-full">
+                    <label class="m-label">Tipo de Movimiento</label>
+                    <select name="tipo" class="m-input text-xs">
                         <option value="">Todos los movimientos</option>
-                        <option value="compra" {{ request('tipo') === 'compra' ? 'selected' : '' }}>Compras (Entradas)</option>
-                        <option value="venta" {{ request('tipo') === 'venta' ? 'selected' : '' }}>Ventas (Salidas)</option>
+                        <option value="compra" {{ request('tipo') === 'compra' ? 'selected' : '' }}>📥 Compras (Entradas)</option>
+                        <option value="venta" {{ request('tipo') === 'venta' ? 'selected' : '' }}>📤 Ventas (Salidas)</option>
                     </select>
                 </div>
 
                 <div>
-                    <label class="erp-label">Proveedor / Cliente</label>
+                    <label class="m-label">Proveedor / Cliente</label>
                     <input type="text" name="cliente_proveedor" value="{{ request('cliente_proveedor') }}"
-                           placeholder="Búsqueda por nombre..." class="premium-filter-input w-full">
+                           placeholder="Buscar por nombre..." class="m-input text-xs">
                 </div>
 
                 <div>
-                    <label class="erp-label">Filtrar por Mineral</label>
-                    <select name="mineral" class="premium-filter-input w-full">
-                        <option value="">Cualquier Mineral</option>
-                        <option value="Zinc" {{ request('mineral') === 'Zinc' ? 'selected' : '' }}>Zinc (Zn)</option>
-                        <option value="Plomo" {{ request('mineral') === 'Plomo' ? 'selected' : '' }}>Plomo (Pb)</option>
-                        <option value="Plata" {{ request('mineral') === 'Plata' ? 'selected' : '' }}>Plata (Ag)</option>
-                        <option value="Cobre" {{ request('mineral') === 'Cobre' ? 'selected' : '' }}>Cobre (Cu)</option>
-                        <option value="Estaño" {{ request('mineral') === 'Estaño' ? 'selected' : '' }}>Estaño (Sn)</option>
+                    <label class="m-label">Mineral</label>
+                    <select name="mineral" class="m-input text-xs">
+                        <option value="">Cualquier mineral</option>
+                        <option value="Zinc" {{ request('mineral') === 'Zinc' ? 'selected' : '' }}>⚡ Zinc (Zn)</option>
+                        <option value="Plomo" {{ request('mineral') === 'Plomo' ? 'selected' : '' }}>🔘 Plomo (Pb)</option>
+                        <option value="Plata" {{ request('mineral') === 'Plata' ? 'selected' : '' }}>✨ Plata (Ag)</option>
+                        <option value="Cobre" {{ request('mineral') === 'Cobre' ? 'selected' : '' }}>🟠 Cobre (Cu)</option>
+                        <option value="Estaño" {{ request('mineral') === 'Estaño' ? 'selected' : '' }}>⬜ Estaño (Sn)</option>
                     </select>
                 </div>
 
                 <div>
-                    <label class="erp-label">Ley Mínima (%)</label>
+                    <label class="m-label">Ley Mínima (%)</label>
                     <input type="number" step="0.01" name="ley" value="{{ request('ley') }}"
-                           placeholder="Ej. 10.00" class="premium-filter-input w-full">
+                           placeholder="Ej. 10.00" class="m-input text-xs font-mono">
                 </div>
 
                 <div>
-                    <label class="erp-label">Bocamina</label>
-                    <select name="bocamina_id" class="premium-filter-input w-full">
+                    <label class="m-label">Bocamina</label>
+                    <select name="bocamina_id" class="m-input text-xs">
                         <option value="">Todas las Bocaminas</option>
                         @foreach($bocaminas as $boc)
                             <option value="{{ $boc->id }}" {{ request('bocamina_id') == $boc->id ? 'selected' : '' }}>{{ $boc->nombre }}</option>
@@ -741,130 +1287,122 @@
                 </div>
 
                 <div>
-                    <label class="erp-label">Tipo de Presentación</label>
-                    <select name="presentacion" class="premium-filter-input w-full">
-                        <option value="">Todas las Presentaciones</option>
-                        <option value="Sacos" {{ request('presentacion') === 'Sacos' ? 'selected' : '' }}>Sacos</option>
-                        <option value="Volqueta" {{ request('presentacion') === 'Volqueta' ? 'selected' : '' }}>Volqueta</option>
-                        <option value="Concentrado" {{ request('presentacion') === 'Concentrado' ? 'selected' : '' }}>Concentrado</option>
-                        <option value="Otro" {{ request('presentacion') === 'Otro' ? 'selected' : '' }}>Otro</option>
+                    <label class="m-label">Presentación</label>
+                    <select name="presentacion" class="m-input text-xs">
+                        <option value="">Todas</option>
+                        <option value="Sacos" {{ request('presentacion') === 'Sacos' ? 'selected' : '' }}>📦 Sacos</option>
+                        <option value="Volqueta" {{ request('presentacion') === 'Volqueta' ? 'selected' : '' }}>🚛 Volqueta</option>
+                        <option value="Concentrado" {{ request('presentacion') === 'Concentrado' ? 'selected' : '' }}>⚗️ Concentrado</option>
+                        <option value="Otro" {{ request('presentacion') === 'Otro' ? 'selected' : '' }}>📋 Otro</option>
                     </select>
                 </div>
 
-                <div x-data="{ rango: '{{ request('rango_fecha', (request('fecha_desde') || request('fecha_hasta')) ? 'personalizado' : '') }}' }" class="sm:col-span-2 lg:col-span-2">
-                    <label class="erp-label">Periodo de Fecha</label>
-                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 items-start">
-                        <select name="rango_fecha" x-model="rango" class="premium-filter-input w-full">
+                <div x-data="{ rango: '{{ request('rango_fecha', (request('fecha_desde') || request('fecha_hasta')) ? 'personalizado' : '') }}' }" class="sm:col-span-2">
+                    <label class="m-label">Período de Fecha</label>
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                        <select name="rango_fecha" x-model="rango" class="m-input text-xs">
                             <option value="">Todas las Fechas</option>
                             <option value="hoy">Hoy</option>
-                            <option value="semanal">Esta Semana (Semanal)</option>
-                            <option value="mensual">Este Mes (Mensual)</option>
+                            <option value="semanal">Esta Semana</option>
+                            <option value="mensual">Este Mes</option>
                             <option value="personalizado">Personalizado...</option>
                         </select>
-
                         <div x-show="rango === 'personalizado'" x-cloak class="flex gap-2">
-                            <div class="flex-1">
-                                <input type="date" name="fecha_desde" value="{{ request('fecha_desde') }}" placeholder="Desde" class="premium-filter-input w-full !text-xs">
-                            </div>
-                            <div class="flex-1">
-                                <input type="date" name="fecha_hasta" value="{{ request('fecha_hasta') }}" placeholder="Hasta" class="premium-filter-input w-full !text-xs">
-                            </div>
+                            <input type="date" name="fecha_desde" value="{{ request('fecha_desde') }}" class="m-input text-xs flex-1">
+                            <input type="date" name="fecha_hasta" value="{{ request('fecha_hasta') }}" class="m-input text-xs flex-1">
                         </div>
                     </div>
                 </div>
             </form>
         </div>
 
-        <!-- Executive Summary Cards for Filtered Results -->
+        {{-- Resumen Financiero --}}
         @php
             $rptCompras = $transacciones->where('tipo', 'compra')->sum('monto_total');
-            $rptVentas = $transacciones->where('tipo', 'venta')->sum('monto_total');
+            $rptVentas  = $transacciones->where('tipo', 'venta')->sum('monto_total');
             $rptBalance = $rptVentas - $rptCompras;
         @endphp
         <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
-            <div class="erp-card p-4 rounded-xl border border-amber-500/20 bg-amber-500/5">
-                <span class="block text-[10px] font-extrabold uppercase tracking-wider text-amber-500">Total Compras Filtradas</span>
-                <p class="text-xl font-black font-mono text-amber-400 mt-1">Bs. {{ number_format($rptCompras, 2) }}</p>
+            <div class="m-card p-5 border border-amber-500/15">
+                <span class="m-label" style="color:#f59e0b"><i class="fa-solid fa-arrow-down-left mr-1"></i>Total Compras Filtradas</span>
+                <div class="text-2xl font-black font-mono text-amber-400 mt-2">Bs. {{ number_format($rptCompras, 2) }}</div>
             </div>
-            <div class="erp-card p-4 rounded-xl border border-emerald-500/20 bg-emerald-500/5">
-                <span class="block text-[10px] font-extrabold uppercase tracking-wider text-emerald-500">Total Ventas Filtradas</span>
-                <p class="text-xl font-black font-mono text-emerald-400 mt-1">Bs. {{ number_format($rptVentas, 2) }}</p>
+            <div class="m-card p-5 border border-emerald-500/15">
+                <span class="m-label" style="color:#10b981"><i class="fa-solid fa-arrow-up-right mr-1"></i>Total Ventas Filtradas</span>
+                <div class="text-2xl font-black font-mono text-emerald-400 mt-2">Bs. {{ number_format($rptVentas, 2) }}</div>
             </div>
-            <div class="erp-card p-4 rounded-xl border {{ $rptBalance >= 0 ? 'border-indigo-500/20 bg-indigo-500/5' : 'border-rose-500/20 bg-rose-500/5' }}">
-                <span class="block text-[10px] font-extrabold uppercase tracking-wider {{ $rptBalance >= 0 ? 'text-indigo-400' : 'text-rose-400' }}">Balance Neto Filtrado</span>
-                <p class="text-xl font-black font-mono mt-1 {{ $rptBalance >= 0 ? 'text-indigo-300' : 'text-rose-400' }}">Bs. {{ number_format($rptBalance, 2) }}</p>
+            <div class="m-card p-5 {{ $rptBalance >= 0 ? 'border border-indigo-500/15' : 'border border-rose-500/15' }}">
+                <span class="m-label {{ $rptBalance >= 0 ? 'text-indigo-400' : 'text-rose-400' }}"><i class="fa-solid fa-scale-balanced mr-1"></i>Balance Neto</span>
+                <div class="text-2xl font-black font-mono {{ $rptBalance >= 0 ? 'text-indigo-300' : 'text-rose-400' }} mt-2">Bs. {{ number_format($rptBalance, 2) }}</div>
             </div>
         </div>
 
-        <div id="report-output" class="erp-card">
-            <div class="px-5 py-4 border-b border-slate-200 dark:border-slate-800/80 flex items-center justify-between" style="background:rgba(255,255,255,0.02)">
-                <h3 class="text-sm font-bold uppercase tracking-wider" style="color:var(--text-main)"><i class="fa-solid fa-list-check mr-2 text-indigo-500"></i> Reporte Filtrado de Operaciones</h3>
+        {{-- Tabla de Reporte --}}
+        <div id="report-output" class="m-card overflow-hidden">
+            <div class="m-section-header">
+                <div class="flex items-center gap-3">
+                    <div class="w-9 h-9 rounded-xl bg-indigo-500/10 border border-indigo-500/25 flex items-center justify-center text-indigo-400">
+                        <i class="fa-solid fa-list-check text-sm"></i>
+                    </div>
+                    <div>
+                        <h3 class="text-sm font-bold text-slate-200">Reporte Filtrado de Operaciones</h3>
+                        <p class="text-[10px] text-slate-500">{{ count($transacciones) }} registros encontrados</p>
+                    </div>
+                </div>
                 <div class="flex gap-2">
-                    <button class="px-3 py-1.5 rounded-xl bg-emerald-500/10 hover:bg-emerald-500/20 text-emerald-400 border border-emerald-500/30 text-xs font-bold font-mono transition duration-150 flex items-center gap-1.5 shadow-[0_0_10px_rgba(16,185,129,0.1)] active:scale-95 cursor-pointer" onclick="window.doExportExcel()">
+                    <button class="m-btn m-btn-ghost cursor-pointer" onclick="window.doExportExcel()">
                         <i class="fa-solid fa-file-excel text-emerald-400"></i> Excel
                     </button>
-                    <button class="px-3 py-1.5 rounded-xl bg-rose-500/10 hover:bg-rose-500/20 text-rose-400 border border-rose-500/30 text-xs font-bold font-mono transition duration-150 flex items-center gap-1.5 shadow-[0_0_10px_rgba(244,63,94,0.1)] active:scale-95 cursor-pointer" onclick="window.doExportPDF()">
-                        <i class="fa-solid fa-file-pdf text-rose-400"></i> PDF
-                    </button>
-                </div>
-            </div>
+                    <button class="m-btn m-btn-ghost cursor-pointer" onclick="window.doExportPDF()">
                         <i class="fa-solid fa-file-pdf text-rose-400"></i> PDF
                     </button>
                 </div>
             </div>
             <div class="overflow-x-auto">
-                <table class="w-full text-left border-collapse" id="mineral-reports-table">
-                    <thead>
-                        <tr class="text-xs uppercase tracking-wider" style="background:rgba(255,255,255,0.01); border-bottom:1.5px solid var(--erp-border)">
-                            <th class="px-6 py-4 font-bold" style="color:var(--erp-text-muted)">Fecha</th>
-                            <th class="px-6 py-4 font-bold" style="color:var(--erp-text-muted)">Tipo</th>
-                            <th class="px-6 py-4 font-bold" style="color:var(--erp-text-muted)">Cliente/Proveedor</th>
-                            <th class="px-6 py-4 font-bold" style="color:var(--erp-text-muted)">Bocamina</th>
-                            <th class="px-6 py-4 font-bold" style="color:var(--erp-text-muted)">Presentación</th>
-                            <th class="px-6 py-4 font-bold" style="color:var(--erp-text-muted)">Cantidad</th>
-                            <th class="px-6 py-4 font-bold" style="color:var(--erp-text-muted)">Peso</th>
-                            <th class="px-6 py-4 font-bold" style="color:var(--erp-text-muted)">Leyes Encontradas</th>
-                            <th class="px-6 py-4 text-right font-bold" style="color:var(--erp-text-muted)">Monto Total</th>
-                        </tr>
-                    </thead>
-                    <tbody class="divide-y divide-slate-100 dark:divide-slate-800/60">
+                <table class="m-table" id="mineral-reports-table">
+                    <thead><tr>
+                        <th>Fecha</th>
+                        <th class="text-center">Tipo</th>
+                        <th>Cliente / Proveedor</th>
+                        <th>Bocamina</th>
+                        <th class="text-center">Presentación</th>
+                        <th class="text-right">Cantidad</th>
+                        <th class="text-right">Peso</th>
+                        <th>Leyes</th>
+                        <th class="text-right">Monto Total</th>
+                    </tr></thead>
+                    <tbody>
                         @forelse($transacciones as $item)
-                        <tr class="hover:bg-slate-50 dark:hover:bg-slate-800/20 transition duration-150">
-                            <td class="px-6 py-4 font-mono text-xs">{{ $item->fecha->format('d/m/Y') }}</td>
-                            <td class="px-6 py-4">
-                                <span class="inline-flex items-center px-2.5 py-1 rounded-lg text-[10px] font-bold font-mono {{ $item->tipo === 'compra' ? 'bg-amber-500/15 text-amber-400 border border-amber-500/30' : 'bg-emerald-500/15 text-emerald-400 border border-emerald-500/30' }}">
-                                    <i class="fa-solid {{ $item->tipo === 'compra' ? 'fa-arrow-down-left mr-1.5' : 'fa-arrow-up-right mr-1.5' }}"></i>
+                        <tr>
+                            <td class="font-mono text-xs text-slate-300 whitespace-nowrap">{{ $item->fecha->format('d/m/Y') }}</td>
+                            <td class="text-center">
+                                <span class="m-badge {{ $item->tipo === 'compra' ? 'm-badge-amber' : 'm-badge-emerald' }} font-mono">
+                                    <i class="fa-solid {{ $item->tipo === 'compra' ? 'fa-arrow-down-left' : 'fa-arrow-up-right' }}"></i>
                                     {{ $item->tipo === 'compra' ? 'Compra' : 'Venta' }}
                                 </span>
                             </td>
-                            <td class="px-6 py-4 font-bold" style="color:var(--text-main)">{{ $item->cliente_proveedor }}</td>
-                            <td class="px-6 py-4 text-xs font-semibold">{{ $item->bocamina->nombre ?? 'N/A' }}</td>
-                            <td class="px-6 py-4 text-xs">{{ $item->presentacion === 'Otro' ? ($item->presentacion_otro ?: 'Otro') : $item->presentacion }}</td>
-                            <td class="px-6 py-4 font-mono text-xs">{{ number_format($item->cantidad, 2) }}</td>
-                            <td class="px-6 py-4 font-mono text-xs">{{ number_format($item->peso_neto_seco, 2) }} Kg</td>
-                            <td class="px-6 py-4">
+                            <td class="font-bold text-slate-100 text-xs">{{ $item->cliente_proveedor }}</td>
+                            <td class="text-xs text-slate-400">{{ $item->bocamina->nombre ?? 'N/A' }}</td>
+                            <td class="text-center text-xs text-slate-400">{{ $item->presentacion === 'Otro' ? ($item->presentacion_otro ?: 'Otro') : $item->presentacion }}</td>
+                            <td class="text-right font-mono text-xs text-slate-300">{{ number_format($item->cantidad, 2) }}</td>
+                            <td class="text-right font-mono text-xs text-slate-300 whitespace-nowrap">{{ number_format($item->peso_neto_seco, 2) }} Kg</td>
+                            <td>
+                                @php $analisisList = $item->tipo === 'compra' ? $item->analisis : ($item->lote ? $item->lote->analisis : []); @endphp
                                 <div class="flex flex-wrap gap-1">
-                                    @php
-                                        $analisisList = $item->tipo === 'compra' ? $item->analisis : ($item->lote ? $item->lote->analisis : []);
-                                    @endphp
                                     @forelse($analisisList as $an)
-                                        <span class="px-2 py-0.5 rounded-md text-[10px] font-mono font-bold bg-amber-500/10 dark:bg-amber-500/15 text-amber-500 dark:text-amber-400 border border-amber-500/25 inline-block shadow-sm">
-                                            {{ $an->mineral }}: {{ number_format($an->ley, 2) }}%
-                                        </span>
+                                        <span class="m-badge m-badge-amber font-mono">{{ $an->mineral }}: {{ number_format($an->ley, 2) }}%</span>
                                     @empty
-                                        <span class="text-xs italic text-slate-500">—</span>
+                                        <span class="text-slate-600 text-xs">—</span>
                                     @endforelse
                                 </div>
                             </td>
-                            <td class="px-6 py-4 font-mono font-extrabold text-right text-xs text-amber-500 dark:text-amber-400">Bs. {{ number_format($item->monto_total, 2) }}</td>
+                            <td class="text-right font-mono font-black text-amber-400 text-xs whitespace-nowrap">Bs. {{ number_format($item->monto_total, 2) }}</td>
                         </tr>
                         @empty
-                        <tr>
-                            <td colspan="9" class="text-center py-16 text-slate-500">
-                                <i class="fa-solid fa-file-invoice text-4xl mb-3 block opacity-30"></i>
-                                No se encontraron registros con los filtros seleccionados.
-                            </td>
-                        </tr>
+                        <tr><td colspan="9" class="py-16 text-center text-slate-600">
+                            <i class="fa-solid fa-file-invoice text-4xl block mb-3 opacity-20"></i>
+                            <p class="text-slate-500">No se encontraron registros con los filtros seleccionados</p>
+                        </td></tr>
                         @endforelse
                     </tbody>
                 </table>
@@ -872,233 +1410,506 @@
         </div>
     </div>
 
-    {{-- ═══════════════ MODAL: COMPRA (LOTE) ═══════════════ --}}
-    <div x-show="openCompraModal" class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-950/80 backdrop-blur-sm" x-cloak>
-        <div @click.away="openCompraModal = false" class="erp-card w-full max-w-2xl overflow-hidden shadow-2xl relative" style="background:var(--erp-bg-card);">
-            <div class="px-6 py-4 border-b border-slate-200 dark:border-slate-800/80 flex items-center justify-between" style="background:rgba(255,255,255,0.02)">
-                <h3 class="text-lg font-black" style="color:var(--text-main)">
-                    <span x-text="isEditMode ? '📥 Editar Lote de Mineral' : '📥 Ingreso de Lote al Almacén'"></span>
-                </h3>
-                <button @click="openCompraModal = false" class="text-slate-400 hover:text-slate-200">
-                    <i class="fa-solid fa-xmark text-lg"></i>
+    {{-- ══════════════════════════════════════════════════
+         MODAL: COMPRA (INGRESO DE LOTE)
+    ══════════════════════════════════════════════════ --}}
+    <div x-show="openCompraModal" x-cloak style="display:none" :style="{ display: openCompraModal ? 'flex' : 'none' }"
+         @click.self="openCompraModal = false"
+         class="m-modal-overlay">
+        <div class="m-modal" style="max-height:95vh;">
+            {{-- Header --}}
+            <div class="m-modal-header" style="background:rgba(245,158,11,0.05);border-color:rgba(245,158,11,0.12)">
+                <div class="flex items-center gap-3">
+                    <div class="w-9 h-9 rounded-xl bg-amber-500/15 border border-amber-500/30 flex items-center justify-center text-amber-400">
+                        <i class="fa-solid fa-boxes-stacked text-sm"></i>
+                    </div>
+                    <div>
+                        <h3 class="text-sm font-black text-slate-100" x-text="isEditMode ? 'Editar Lote de Mineral' : 'Registrar Ingreso de Lote'"></h3>
+                        <p class="text-[10px] text-slate-500" x-text="isEditMode ? 'Modifica los datos del lote seleccionado' : 'Nuevo ingreso al almacén — Lote generado automáticamente'"></p>
+                    </div>
+                </div>
+                <button @click="openCompraModal = false" class="m-btn m-btn-ghost m-btn-icon cursor-pointer">
+                    <i class="fa-solid fa-xmark text-slate-400"></i>
                 </button>
             </div>
 
             <form :action="actionUrl" method="POST">
                 @csrf
-                <template x-if="isEditMode">
-                    <input type="hidden" name="_method" value="PUT">
-                </template>
+                <template x-if="isEditMode"><input type="hidden" name="_method" value="PUT"></template>
                 <input type="hidden" name="tipo" value="compra">
 
-                <div class="p-6 grid grid-cols-1 md:grid-cols-2 gap-4 max-h-[75vh] overflow-y-auto">
-                    <div>
-                        <label class="erp-label">Fecha de Compra</label>
-                        <input type="date" name="fecha" required x-model="compraFecha" class="erp-input font-mono">
+                <div class="m-modal-body">
+
+                    {{-- ── Sección 1: Información General ── --}}
+                    <div class="m-modal-section">
+                        <div class="flex items-center gap-2 mb-4">
+                            <div class="m-step bg-amber-500/20 text-amber-400">1</div>
+                            <h4 class="text-xs font-black uppercase tracking-widest text-amber-400">Información General del Lote</h4>
+                        </div>
+                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                            <div>
+                                <label class="m-label">Fecha de Compra <span class="text-rose-400">*</span></label>
+                                <input type="date" name="fecha" required x-model="compraFecha" class="m-input m-input-amber font-mono">
+                            </div>
+                            <div>
+                                <label class="m-label">Número de Lote</label>
+                                <div class="m-input flex items-center gap-2 opacity-60 cursor-not-allowed">
+                                    <i class="fa-solid fa-tag text-amber-500/70 text-xs"></i>
+                                    <span class="font-mono text-xs text-slate-400" x-show="!isEditMode">Se genera automáticamente al guardar</span>
+                                    <span class="font-mono text-xs text-amber-400 font-bold" x-show="isEditMode" x-text="'LOT-' + String(compraId).padStart(5,'0')"></span>
+                                </div>
+                            </div>
+                            <div>
+                                <label class="m-label">Proveedor / Persona que vende <span class="text-rose-400">*</span></label>
+                                <input type="text" name="cliente_proveedor" required x-model="compraProveedor"
+                                       placeholder="Nombre del Proveedor o Cooperativa" class="m-input m-input-amber">
+                            </div>
+                            <div>
+                                <label class="m-label">Bocamina de Origen <span class="text-slate-600 font-normal normal-case">(Opcional)</span></label>
+                                <select name="bocamina_id" x-model="compraBocaminaId" class="m-input">
+                                    <option value="">— Sin bocamina específica —</option>
+                                    @foreach($bocaminas as $boc)
+                                        <option value="{{ $boc->id }}">{{ $boc->nombre }}</option>
+                                    @endforeach
+                                </select>
+                            </div>
+                            <div>
+                                <label class="m-label">Tipo de Presentación <span class="text-rose-400">*</span></label>
+                                <select name="presentacion" x-model="compraPresentacion" class="m-input">
+                                    <option value="Sacos">📦 Sacos</option>
+                                    <option value="Volqueta">🚛 Volqueta</option>
+                                    <option value="Concentrado">⚗️ Concentrado</option>
+                                    <option value="Otro">📋 Otro</option>
+                                </select>
+                            </div>
+                            <div x-show="compraPresentacion === 'Otro'">
+                                <label class="m-label">Especificar Presentación <span class="text-rose-400">*</span></label>
+                                <input type="text" name="presentacion_otro" x-model="compraPresentacionOtro"
+                                       placeholder="Describe el tipo de presentación..." class="m-input">
+                            </div>
+                        </div>
                     </div>
 
-                    <div>
-                        <label class="erp-label">Proveedor (¿De quién compra?)</label>
-                        <input type="text" name="cliente_proveedor" required x-model="compraProveedor" placeholder="Nombre del Proveedor o Cooperativa" class="erp-input">
+                    {{-- ── Sección 2: Datos de la Compra ── --}}
+                    <div class="m-modal-section">
+                        <div class="flex items-center gap-2 mb-4">
+                            <div class="m-step bg-cyan-500/20 text-cyan-400">2</div>
+                            <h4 class="text-xs font-black uppercase tracking-widest text-cyan-400">Datos de la Compra</h4>
+                        </div>
+                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                            <div>
+                                <label class="m-label">
+                                    <span x-show="compraPresentacion === 'Sacos'">Cantidad de Sacos <span class="text-rose-400">*</span></span>
+                                    <span x-show="compraPresentacion === 'Volqueta'">Cantidad de Volquetas <span class="text-rose-400">*</span></span>
+                                    <span x-show="compraPresentacion === 'Concentrado'">Cantidad <span class="text-rose-400">*</span></span>
+                                    <span x-show="compraPresentacion === 'Otro'">Cantidad <span class="text-rose-400">*</span></span>
+                                </label>
+                                <input type="number" step="0.01" name="cantidad" required x-model="compraCantidad"
+                                       :placeholder="compraPresentacion === 'Sacos' ? 'Ej. 100 sacos' : compraPresentacion === 'Volqueta' ? 'Ej. 3 volquetadas' : 'Ej. 500'"
+                                       class="m-input font-mono">
+                                <p class="text-[10px] text-slate-500 mt-1">
+                                    <span x-show="compraPresentacion === 'Sacos'">Número total de sacos recibidos</span>
+                                    <span x-show="compraPresentacion === 'Volqueta'">Número de volquetadas entregadas</span>
+                                    <span x-show="compraPresentacion === 'Concentrado'">Unidades de concentrado</span>
+                                    <span x-show="compraPresentacion === 'Otro'">Cantidad según la presentación</span>
+                                </p>
+                            </div>
+
+                            {{-- PESO --}}
+                            <div>
+                                <template x-if="compraPresentacion === 'Volqueta'">
+                                    <div>
+                                        <label class="m-label">Peso Total (Toneladas - T) <span class="text-rose-400">*</span></label>
+                                        <input type="number" step="0.001" required x-model="compraPesoToneladas"
+                                               @input="calcCompraTotal()" placeholder="Ej. 15.5 T"
+                                               class="m-input font-mono m-input-amber">
+                                        <input type="hidden" name="peso_neto_seco" :value="compraPeso">
+                                        <p class="text-[10px] text-slate-500 mt-1 flex items-center justify-between">
+                                            <span>Ingreso directo en Toneladas</span>
+                                            <span class="text-amber-400 font-mono font-bold" x-show="compraPeso > 0" x-text="'= ' + compraPeso + ' Kg'"></span>
+                                        </p>
+                                    </div>
+                                </template>
+                                <template x-if="compraPresentacion !== 'Volqueta'">
+                                    <div>
+                                        <label class="m-label">Peso Total (Kg) <span class="text-rose-400">*</span></label>
+                                        <input type="number" step="0.01" name="peso_neto_seco" required x-model="compraPeso"
+                                               @input="calcCompraTotal()" placeholder="Ej. 5000 Kg"
+                                               class="m-input font-mono">
+                                        <p class="text-[10px] text-slate-500 mt-1">Peso neto total en Kilogramos</p>
+                                    </div>
+                                </template>
+                            </div>
+
+                            {{-- PRECIO --}}
+                            <div>
+                                <template x-if="compraPresentacion === 'Volqueta'">
+                                    <div>
+                                        <label class="m-label">Precio de Compra (Bs. por Tonelada) <span class="text-rose-400">*</span></label>
+                                        <input type="number" step="0.01" required x-model="compraPrecioToneladas"
+                                               @input="calcCompraTotal()" placeholder="Ej. 1500.00 (Bs/T)"
+                                               class="m-input font-mono m-input-amber">
+                                        <input type="hidden" name="precio_unidad" :value="compraPrecio">
+                                        <p class="text-[10px] text-slate-500 mt-1 flex items-center justify-between">
+                                            <span>Precio por Tonelada métrica</span>
+                                            <span class="text-slate-400 font-mono" x-show="compraPrecio > 0" x-text="'= ' + parseFloat(compraPrecio).toFixed(2) + ' Bs/Kg'"></span>
+                                        </p>
+                                    </div>
+                                </template>
+                                <template x-if="compraPresentacion !== 'Volqueta'">
+                                    <div>
+                                        <label class="m-label">Precio de Compra (Bs. por Kg) <span class="text-rose-400">*</span></label>
+                                        <input type="number" step="0.01" name="precio_unidad" required x-model="compraPrecio"
+                                               @input="calcCompraTotal()" placeholder="Ej. 1.50" class="m-input font-mono">
+                                    </div>
+                                </template>
+                            </div>
+
+                            <div>
+                                <label class="m-label font-black" style="color:#f59e0b">💰 Total Liquidado (Bs.) — Calculado</label>
+                                <input type="number" step="0.01" name="monto_total" required x-model="compraTotal"
+                                       class="m-input font-mono font-black" style="color:#f59e0b;border-color:rgba(245,158,11,0.3);background:rgba(245,158,11,0.05)" readonly>
+                                <p class="text-[10px] text-amber-600 mt-1">
+                                    <i class="fa-solid fa-calculator mr-1"></i>
+                                    <span x-show="compraPresentacion === 'Volqueta'">Toneladas × Precio por Tonelada</span>
+                                    <span x-show="compraPresentacion !== 'Volqueta'">Peso × Precio Unitario</span>
+                                </p>
+                            </div>
+                            <div class="sm:col-span-2">
+                                <label class="m-label">Observaciones</label>
+                                <textarea name="observacion" x-model="compraObservacion" rows="2" class="m-input resize-none text-xs"
+                                          placeholder="Notas adicionales sobre el lote..."></textarea>
+                            </div>
+                        </div>
                     </div>
 
-                    <div>
-                        <label class="erp-label">Bocamina de Origen (Opcional)</label>
-                        <select name="bocamina_id" x-model="compraBocaminaId" class="erp-input erp-input-select">
-                            <option value="">— Seleccionar Bocamina —</option>
-                            @foreach($bocaminas as $boc)
-                                <option value="{{ $boc->id }}">{{ $boc->nombre }}</option>
-                            @endforeach
-                        </select>
-                    </div>
-
-                    <div>
-                        <label class="erp-label">Presentación / Empaque</label>
-                        <select name="presentacion" x-model="compraPresentacion" class="erp-input erp-input-select">
-                            <option value="Sacos">Sacos</option>
-                            <option value="Volqueta">Volqueta</option>
-                            <option value="Concentrado">Concentrado</option>
-                            <option value="Otro">Otro</option>
-                        </select>
-                    </div>
-
-                    <div x-show="compraPresentacion === 'Otro'" class="col-span-1 md:col-span-2">
-                        <label class="erp-label">Especificar Presentación</label>
-                        <input type="text" name="presentacion_otro" x-model="compraPresentacionOtro" placeholder="Escribe el nombre de la presentación" class="erp-input">
-                    </div>
-
-                    <div>
-                        <label class="erp-label">Cantidad (Sacos, volquetadas, etc.)</label>
-                        <input type="number" step="0.01" name="cantidad" required x-model="compraCantidad" placeholder="Ej. 100" class="erp-input font-mono">
-                    </div>
-
-                    <div>
-                        <label class="erp-label">Peso Total (Kg)</label>
-                        <input type="number" step="0.01" name="peso_neto_seco" required x-model="compraPeso" @input="calcCompraTotal()" placeholder="Ej. 5000" class="erp-input font-mono">
-                    </div>
-
-                    <div>
-                        <label class="erp-label">Precio Unitario (por Kg)</label>
-                        <input type="number" step="0.01" name="precio_unidad" required x-model="compraPrecio" @input="calcCompraTotal()" placeholder="Ej. 1.50" class="erp-input font-mono">
-                    </div>
-
-                    <div>
-                        <label class="erp-label" style="color:#f59e0b">Monto Total Liquidado (Bs.)</label>
-                        <input type="number" step="0.01" name="monto_total" required x-model="compraTotal" class="erp-input font-mono border-amber-500/30" readonly style="background:rgba(255,255,255,0.02)">
-                    </div>
-
-                    <div class="col-span-1 md:col-span-2">
-                        <label class="erp-label">Observaciones</label>
-                        <textarea name="observacion" x-model="compraObservacion" rows="2" class="erp-input" placeholder="Detalles o notas sobre el lote de compra..."></textarea>
-                    </div>
-
-                    {{-- Dynamic Lab Analysis Table --}}
-                    <div class="col-span-1 md:col-span-2 border-t border-slate-200 dark:border-slate-800/80 pt-4 mt-2">
-                        <div class="flex items-center justify-between mb-3">
-                            <h4 class="text-xs font-bold uppercase tracking-widest" style="color:var(--text-main)"><i class="fa-solid fa-flask text-amber-500 mr-1.5"></i> Análisis Químico de Laboratorio</h4>
-                            <button type="button" @click="addMineral()" class="px-2.5 py-1 text-[10px] font-black uppercase rounded bg-indigo-500/10 text-indigo-400 border border-indigo-500/20 hover:bg-indigo-500 hover:text-white transition">
-                                <i class="fa-solid fa-plus mr-1"></i> Agregar Mineral
+                    {{-- ── Sección 3: Análisis de Laboratorio ── --}}
+                    <div class="m-modal-section">
+                        <div class="flex items-center justify-between mb-4">
+                            <div class="flex items-center gap-2">
+                                <div class="m-step bg-indigo-500/20 text-indigo-400">3</div>
+                                <h4 class="text-xs font-black uppercase tracking-widest text-indigo-400">
+                                    <i class="fa-solid fa-flask mr-1.5"></i>Análisis Químico de Laboratorio
+                                </h4>
+                            </div>
+                            <button type="button" @click="addMineral()"
+                                    class="m-btn m-btn-ghost cursor-pointer" style="border-color:rgba(99,102,241,0.3);color:#818cf8">
+                                <i class="fa-solid fa-plus text-xs"></i> Agregar Ley
                             </button>
                         </div>
 
-                        <div class="space-y-2">
-                            <template x-for="(an, index) in compraAnalisis" :key="index">
-                                <div class="flex items-center gap-3">
-                                    <div class="flex-1">
-                                        <select :name="'analisis['+index+'][mineral]'" x-model="an.mineral" class="erp-input erp-input-select" required>
-                                            <option value="">— Seleccionar Mineral —</option>
-                                            <option value="Zinc">Zinc (Zn)</option>
-                                            <option value="Plomo">Plomo (Pb)</option>
-                                            <option value="Plata">Plata (Ag)</option>
-                                            <option value="Cobre">Cobre (Cu)</option>
-                                            <option value="Estaño">Estaño (Sn)</option>
-                                        </select>
-                                    </div>
-                                    <div class="flex-1">
-                                        <div class="relative">
-                                            <input type="number" step="0.01" min="0" max="100" :name="'analisis['+index+'][ley]'" x-model="an.ley" placeholder="Ley en % (ej. 48.50)" class="erp-input font-mono pr-8" required>
-                                            <span class="absolute right-3 top-2 text-xs text-slate-500">%</span>
-                                        </div>
-                                    </div>
-                                    <button type="button" @click="removeMineral(index)" class="p-2 rounded bg-rose-500/10 text-rose-400 hover:bg-rose-500 hover:text-white transition">
-                                        <i class="fa-solid fa-trash-can"></i>
-                                    </button>
-                                </div>
-                            </template>
+                        <div class="rounded-xl border border-slate-800/80 overflow-hidden">
+                            <table class="w-full text-xs">
+                                <thead>
+                                    <tr class="bg-slate-900/80 border-b border-slate-800">
+                                        <th class="px-4 py-3 text-left text-[10px] font-black uppercase tracking-wider text-slate-500">Mineral</th>
+                                        <th class="px-4 py-3 text-center text-[10px] font-black uppercase tracking-wider text-slate-500">Ley (%)</th>
+                                        <th class="px-4 py-3 text-center text-[10px] w-16"></th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <template x-for="(an, index) in compraAnalisis" :key="index">
+                                        <tr class="border-b border-slate-800/50 hover:bg-slate-800/20 transition">
+                                            <td class="px-4 py-2.5">
+                                                <input type="hidden" :name="'analisis['+index+'][mineral]'" :value="an.mineral === 'Otro' ? an.mineral_custom : an.mineral">
+                                                <select x-model="an.mineral" class="m-input text-xs py-2" required>
+                                                    <option value="">— Seleccionar —</option>
+                                                    <option value="Zinc">⚡ Zinc (Zn)</option>
+                                                    <option value="Plomo">🔘 Plomo (Pb)</option>
+                                                    <option value="Plata">✨ Plata (Ag)</option>
+                                                    <option value="Cobre">🟠 Cobre (Cu)</option>
+                                                    <option value="Estaño">⬜ Estaño (Sn)</option>
+                                                    <option value="Otro">✏️ Otro (Escribir)...</option>
+                                                </select>
+                                                <div x-show="an.mineral === 'Otro'" class="mt-1.5">
+                                                    <input type="text" x-model="an.mineral_custom"
+                                                           placeholder="Escribe el mineral (ej. Oro, Bismuto...)"
+                                                           class="m-input text-xs py-1.5 font-bold text-amber-400 border-amber-500/30"
+                                                           :required="an.mineral === 'Otro'">
+                                                </div>
+                                            </td>
+                                            <td class="px-4 py-2.5">
+                                                <div class="relative">
+                                                    <input type="number" step="0.01" min="0" max="100"
+                                                           :name="'analisis['+index+'][ley]'" x-model="an.ley"
+                                                           placeholder="48.50" class="m-input font-mono text-xs py-2 text-center pr-8" required>
+                                                    <span class="absolute right-3 top-1/2 -translate-y-1/2 text-xs text-slate-500 font-bold">%</span>
+                                                </div>
+                                            </td>
+                                            <td class="px-4 py-2.5 text-center">
+                                                <button type="button" @click="removeMineral(index)"
+                                                        class="m-btn m-btn-rose m-btn-icon cursor-pointer">
+                                                    <i class="fa-solid fa-trash-can text-xs"></i>
+                                                </button>
+                                            </td>
+                                        </tr>
+                                    </template>
+                                    <template x-if="compraAnalisis.length === 0">
+                                        <tr>
+                                            <td colspan="3" class="px-4 py-5 text-center text-slate-600 text-xs italic">
+                                                <i class="fa-solid fa-flask opacity-30 mr-1"></i>
+                                                Agrega al menos un análisis de laboratorio
+                                            </td>
+                                        </tr>
+                                    </template>
+                                </tbody>
+                            </table>
                         </div>
+                        <p class="text-[10px] text-slate-500 mt-2">
+                            <i class="fa-solid fa-circle-info mr-1 text-indigo-500/60"></i>
+                            Por defecto incluye Zinc, Plomo y Plata. Puedes seleccionar un mineral estándar o elegir <strong>"Otro"</strong> para escribir un mineral personalizado.
+                        </p>
                     </div>
                 </div>
 
-                <div class="px-6 py-4 border-t border-slate-200 dark:border-slate-800/80 bg-slate-50 dark:bg-slate-900/40 flex justify-end gap-2">
-                    <button type="button" @click="openCompraModal = false" class="px-4 py-2 rounded-lg text-xs font-bold uppercase tracking-wider bg-slate-200 dark:bg-slate-800 text-slate-600 dark:text-slate-350">Cancelar</button>
-                    <button type="submit" class="px-4 py-2 rounded-lg text-xs font-bold uppercase tracking-wider bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-600 hover:to-amber-700 text-white">Guardar Lote</button>
+                <div class="m-modal-footer">
+                    <button type="button" @click="openCompraModal = false" class="m-btn m-btn-ghost cursor-pointer">Cancelar</button>
+                    <button type="submit" class="m-btn m-btn-amber cursor-pointer">
+                        <i class="fa-solid fa-floppy-disk"></i> Guardar Lote
+                    </button>
                 </div>
             </form>
         </div>
     </div>
 
-    {{-- ═══════════════ MODAL: VENTA (DESPACHO) ═══════════════ --}}
-    <div x-show="openVentaModal" class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-950/80 backdrop-blur-sm" x-cloak>
-        <div @click.away="openVentaModal = false" class="erp-card w-full max-w-2xl overflow-hidden shadow-2xl relative" style="background:var(--erp-bg-card);">
-            <div class="px-6 py-4 border-b border-slate-200 dark:border-slate-800/80 flex items-center justify-between" style="background:rgba(255,255,255,0.02)">
-                <h3 class="text-lg font-black" style="color:var(--text-main)">
-                    <span x-text="isEditMode ? '📤 Editar Registro de Venta' : '📤 Despacho de Venta (Salida)'"></span>
-                </h3>
-                <button @click="openVentaModal = false" class="text-slate-400 hover:text-slate-200">
-                    <i class="fa-solid fa-xmark text-lg"></i>
+    {{-- ══════════════════════════════════════════════════
+         MODAL: VENTA (DESPACHO DE MINERAL)
+    ══════════════════════════════════════════════════ --}}
+    <div x-show="openVentaModal" x-cloak style="display:none" :style="{ display: openVentaModal ? 'flex' : 'none' }"
+         @click.self="openVentaModal = false"
+         class="m-modal-overlay">
+        <div class="m-modal" style="max-height:95vh;">
+            {{-- Header --}}
+            <div class="m-modal-header" style="background:rgba(16,185,129,0.05);border-color:rgba(16,185,129,0.12)">
+                <div class="flex items-center gap-3">
+                    <div class="w-9 h-9 rounded-xl bg-emerald-500/15 border border-emerald-500/30 flex items-center justify-center text-emerald-400">
+                        <i class="fa-solid fa-paper-plane text-sm"></i>
+                    </div>
+                    <div>
+                        <h3 class="text-sm font-black text-slate-100" x-text="isEditMode ? 'Editar Registro de Venta' : 'Registrar Despacho de Mineral'"></h3>
+                        <p class="text-[10px] text-slate-500" x-text="isEditMode ? 'Modifica los datos de la venta' : 'Selecciona cliente y lotes a despachar'"></p>
+                    </div>
+                </div>
+                <button @click="openVentaModal = false" class="m-btn m-btn-ghost m-btn-icon cursor-pointer">
+                    <i class="fa-solid fa-xmark text-slate-400"></i>
                 </button>
             </div>
 
             <form :action="actionUrl" method="POST">
                 @csrf
-                <template x-if="isEditMode">
-                    <input type="hidden" name="_method" value="PUT">
-                </template>
+                <template x-if="isEditMode"><input type="hidden" name="_method" value="PUT"></template>
                 <input type="hidden" name="tipo" value="venta">
 
-                <div class="p-6 grid grid-cols-1 md:grid-cols-2 gap-4 max-h-[75vh] overflow-y-auto">
-                    <div>
-                        <label class="erp-label">Fecha de Venta</label>
-                        <input type="date" name="fecha" required x-model="ventaFecha" class="erp-input font-mono">
+                <div class="m-modal-body">
+
+                    {{-- ── Paso 1: Cliente y Destino ── --}}
+                    <div class="m-modal-section">
+                        <div class="flex items-center gap-2 mb-4">
+                            <div class="m-step bg-emerald-500/20 text-emerald-400">1</div>
+                            <h4 class="text-xs font-black uppercase tracking-widest text-emerald-400">Cliente y Destino del Despacho</h4>
+                        </div>
+                        <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
+                            <div>
+                                <label class="m-label">Fecha de Venta <span class="text-rose-400">*</span></label>
+                                <input type="date" name="fecha" required x-model="ventaFecha" class="m-input m-input-emerald font-mono">
+                            </div>
+                            <div>
+                                <label class="m-label">Cliente / Empresa Compradora <span class="text-rose-400">*</span></label>
+                                <input type="text" name="cliente_proveedor" required x-model="ventaCliente"
+                                       placeholder="Nombre del comprador o empresa" class="m-input m-input-emerald">
+                            </div>
+                            <div>
+                                <label class="m-label">Destino del Despacho <span class="text-slate-600 font-normal normal-case">(Opcional)</span></label>
+                                <input type="text" name="destino" x-model="ventaDestino"
+                                       placeholder="Ej. Fundición Vinto, Puerto..." class="m-input">
+                            </div>
+                        </div>
                     </div>
 
-                    <div>
-                        <label class="erp-label">Cliente (¿A quién vende?)</label>
-                        <input type="text" name="cliente_proveedor" required x-model="ventaCliente" placeholder="Nombre del Comprador / Empresa" class="erp-input">
-                    </div>
-
-                    <div>
-                        <label class="erp-label">Destino de Despacho (Opcional)</label>
-                        <input type="text" name="destino" x-model="ventaDestino" placeholder="Ej. Fundición Vinto" class="erp-input">
-                    </div>
-
-                    {{-- ═══════════════ MULTI-LOTE CREATION MODE ═══════════════ --}}
+                    {{-- ── Paso 2: Lotes a Despachar (Modo Creación) ── --}}
                     <template x-if="!isEditMode">
-                        <div class="col-span-1 md:col-span-2 space-y-4">
-                            <div class="flex items-center justify-between border-b border-slate-200 dark:border-slate-800 pb-2">
-                                <h4 class="text-xs font-black uppercase tracking-widest text-emerald-500"><i class="fa-solid fa-list-check mr-1.5"></i> Lotes a Despachar (Salidas)</h4>
-                                <button type="button" @click="addVentaLote()" class="px-2.5 py-1 text-[10px] font-black uppercase rounded bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 hover:bg-emerald-500 hover:text-white transition">
-                                    <i class="fa-solid fa-plus mr-1"></i> Agregar Lote
+                        <div class="m-modal-section">
+                            <div class="flex items-center justify-between mb-4">
+                                <div class="flex items-center gap-2">
+                                    <div class="m-step bg-cyan-500/20 text-cyan-400">2</div>
+                                    <h4 class="text-xs font-black uppercase tracking-widest text-cyan-400">
+                                        <i class="fa-solid fa-layer-group mr-1.5"></i>Lotes a Despachar
+                                    </h4>
+                                </div>
+                                <button type="button" @click="addVentaLote()"
+                                        class="m-btn m-btn-ghost cursor-pointer" style="border-color:rgba(16,185,129,0.3);color:#34d399">
+                                    <i class="fa-solid fa-plus text-xs"></i> Agregar Lote
                                 </button>
                             </div>
 
                             <div class="space-y-4">
                                 <template x-for="(item, index) in ventaLotes" :key="index">
-                                    <div class="p-4 rounded-xl border border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-900/20 space-y-3">
-                                        <div class="flex items-center justify-between">
-                                            <span class="text-xs font-bold text-slate-400" x-text="'Lote #' + (index + 1)"></span>
-                                            <button type="button" @click="removeVentaLote(index)" class="text-rose-400 hover:text-rose-600 transition" x-show="ventaLotes.length > 1">
-                                                <i class="fa-solid fa-trash-can text-xs"></i> Quitar
+                                    <div class="rounded-xl border border-slate-700/50 overflow-hidden bg-slate-900/30">
+                                        {{-- Lote Header --}}
+                                        <div class="flex items-center justify-between px-4 py-2.5 bg-slate-800/50 border-b border-slate-700/40">
+                                            <span class="text-[10px] font-black uppercase tracking-wider text-slate-300 flex items-center gap-1.5">
+                                                <i class="fa-solid fa-box text-emerald-400"></i>
+                                                <span x-text="'Lote #' + (index + 1)"></span>
+                                            </span>
+                                            <button type="button" @click="removeVentaLote(index)"
+                                                    x-show="ventaLotes.length > 1"
+                                                    class="text-[10px] text-rose-400 hover:text-rose-300 transition flex items-center gap-1 cursor-pointer">
+                                                <i class="fa-solid fa-trash-can text-[9px]"></i> Quitar
                                             </button>
                                         </div>
 
-                                        <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
+                                        <div class="p-4 space-y-3">
+                                            {{-- Selector de Lote --}}
                                             <div>
-                                                <label class="erp-label">Seleccionar Lote *</label>
-                                                <select :name="'lotes['+index+'][lote_id]'" x-model="item.lote_id" @change="onVentaLoteSelected(index)" class="erp-input erp-input-select" required>
+                                                <label class="m-label text-[9px]">Seleccionar Lote con Stock Disponible <span class="text-rose-400">*</span></label>
+                                                <select :name="'lotes['+index+'][lote_id]'" x-model="item.lote_id"
+                                                        @change="onVentaLoteSelected(index)" class="m-input text-xs" required>
                                                     <option value="">— Seleccionar Lote Disponible —</option>
                                                     @foreach($lotesDisponibles as $lot)
                                                         <option value="{{ $lot->id }}">
-                                                            LOT-{{ str_pad($lot->id, 5, '0', STR_PAD_LEFT) }} (Stock: {{ number_format($lot->peso_disponible, 2) }} Kg)
+                                                            LOT-{{ str_pad($lot->id, 5, '0', STR_PAD_LEFT) }} · {{ $lot->cliente_proveedor }} · Stock: {{ number_format($lot->peso_disponible, 2) }} Kg
                                                         </option>
                                                     @endforeach
                                                 </select>
                                             </div>
 
-                                            <div x-show="item.info" class="p-2.5 rounded-lg bg-slate-900/60 text-[11px] space-y-1 font-semibold border border-slate-800/80">
-                                                <div>Presentación: <span class="text-white" x-text="item.info?.presentacion === 'Otro' ? item.info?.presentacion_otro : item.info?.presentacion"></span></div>
-                                                <div>Disponibilidad: <span class="text-emerald-400" x-text="item.info?.peso_disponible + ' Kg / ' + item.info?.cantidad_disponible + ' Sacos'"></span></div>
-                                                <div class="flex flex-wrap gap-1 mt-1">
+                                            {{-- Info del Lote Seleccionado --}}
+                                            <div x-show="item.info" class="rounded-lg bg-slate-800/60 border border-slate-700/50 p-3">
+                                                <p class="text-[9px] font-black uppercase tracking-widest text-slate-500 mb-2">Datos del Lote</p>
+                                                <div class="grid grid-cols-2 gap-2 text-[11px]">
+                                                    <div><span class="text-slate-500">Presentación:</span>
+                                                        <span class="text-slate-200 font-bold ml-1" x-text="item.info?.presentacion === 'Otro' ? (item.info?.presentacion_otro || 'Otro') : item.info?.presentacion"></span>
+                                                    </div>
+                                                    <div><span class="text-slate-500">Disponible:</span>
+                                                        <span class="text-emerald-400 font-black ml-1" x-text="parseFloat(item.info?.peso_disponible || 0).toFixed(2) + ' Kg'"></span>
+                                                    </div>
+                                                </div>
+                                                <div class="flex flex-wrap gap-1 mt-2">
                                                     <template x-for="an in (item.info ? item.info.analisis : [])">
-                                                        <span class="px-1 py-0.5 rounded text-[9px] font-mono bg-slate-800 text-slate-300">
+                                                        <span class="m-badge m-badge-amber font-mono text-[9px]">
                                                             <span x-text="an.mineral"></span>: <span x-text="parseFloat(an.ley).toFixed(2)"></span>%
                                                         </span>
                                                     </template>
                                                 </div>
                                             </div>
-                                        </div>
 
-                                        <div class="grid grid-cols-1 md:grid-cols-4 gap-3 pt-2" x-show="item.lote_id">
-                                            <div>
-                                                <label class="erp-label">Cantidad</label>
-                                                <input type="number" step="0.01" :name="'lotes['+index+'][cantidad]'" x-model="item.cantidad" class="erp-input font-mono" required placeholder="Ej. 20">
-                                                <span class="text-[9px] text-rose-500 block mt-1" x-show="item.info && parseFloat(item.cantidad) > parseFloat(item.info.cantidad_disponible)">Supera stock!</span>
+                                            {{-- Campos de cantidad, peso, precio, total --}}
+                                            <div class="grid grid-cols-2 sm:grid-cols-4 gap-3" x-show="item.lote_id">
+                                                <div>
+                                                    <label class="m-label text-[9px]">Cantidad <span class="text-rose-400">*</span></label>
+                                                    <input type="number" step="0.01" :name="'lotes['+index+'][cantidad]'"
+                                                           x-model="item.cantidad" class="m-input font-mono text-xs py-2" required placeholder="Ej. 20">
+                                                    <p class="text-[9px] text-rose-400 mt-0.5 font-bold" x-show="item.info && parseFloat(item.cantidad) > parseFloat(item.info.cantidad_disponible)">⚠ Supera stock!</p>
+                                                </div>
+
+                                                {{-- PESO VENTA --}}
+                                                <div>
+                                                    <template x-if="item.info && item.info.presentacion === 'Volqueta'">
+                                                        <div>
+                                                            <label class="m-label text-[9px]">Peso a Vender (Toneladas - T) <span class="text-rose-400">*</span></label>
+                                                            <input type="number" step="0.001" x-model="item.pesoToneladas"
+                                                                   @input="calcVentaItemTotal(index)" class="m-input font-mono text-xs py-2 m-input-amber" required placeholder="Ej. 10.5 T">
+                                                            <p class="text-[9px] text-amber-400 font-mono font-bold mt-0.5" x-show="item.peso_neto_seco > 0" x-text="'= ' + item.peso_neto_seco + ' Kg'"></p>
+                                                        </div>
+                                                    </template>
+                                                    <template x-if="!item.info || item.info.presentacion !== 'Volqueta'">
+                                                        <div>
+                                                            <label class="m-label text-[9px]">Peso a Vender (Kg) <span class="text-rose-400">*</span></label>
+                                                            <input type="number" step="0.01"
+                                                                   x-model="item.peso_neto_seco" @input="calcVentaItemTotal(index)"
+                                                                   class="m-input font-mono text-xs py-2" required placeholder="Ej. 1000">
+                                                        </div>
+                                                    </template>
+                                                    <input type="hidden" :name="'lotes['+index+'][peso_neto_seco]'" :value="item.peso_neto_seco">
+                                                    <p class="text-[9px] text-rose-400 mt-0.5 font-bold" x-show="item.info && parseFloat(item.peso_neto_seco) > parseFloat(item.info.peso_disponible)">⚠ Supera stock!</p>
+                                                </div>
+
+                                                {{-- PRECIO VENTA --}}
+                                                <div>
+                                                    <template x-if="item.info && item.info.presentacion === 'Volqueta'">
+                                                        <div>
+                                                            <label class="m-label text-[9px]">Precio Venta (Bs/T) <span class="text-rose-400">*</span></label>
+                                                            <input type="number" step="0.01" x-model="item.precioToneladas"
+                                                                   @input="calcVentaItemTotal(index)" class="m-input font-mono text-xs py-2 m-input-amber" required placeholder="Ej. 1500.00">
+                                                        </div>
+                                                    </template>
+                                                    <template x-if="!item.info || item.info.presentacion !== 'Volqueta'">
+                                                        <div>
+                                                            <label class="m-label text-[9px]">Precio Venta (Bs/Kg) <span class="text-rose-400">*</span></label>
+                                                            <input type="number" step="0.01"
+                                                                   x-model="item.precio_unidad" @input="calcVentaItemTotal(index)"
+                                                                   class="m-input font-mono text-xs py-2" required placeholder="Ej. 2.10">
+                                                        </div>
+                                                    </template>
+                                                    <input type="hidden" :name="'lotes['+index+'][precio_unidad]'" :value="item.precio_unidad">
+                                                </div>
+
+                                                <div>
+                                                    <label class="m-label text-[9px] font-black" style="color:#10b981">Total (Bs.) — Auto</label>
+                                                    <input type="number" step="0.01" :name="'lotes['+index+'][monto_total]'"
+                                                           x-model="item.monto_total"
+                                                           class="m-input font-mono text-xs py-2 font-black" readonly
+                                                           style="color:#10b981;border-color:rgba(16,185,129,0.3);background:rgba(16,185,129,0.05)">
+                                                </div>
                                             </div>
 
-                                            <div>
-                                                <label class="erp-label">Peso (Kg)</label>
-                                                <input type="number" step="0.01" :name="'lotes['+index+'][peso_neto_seco]'" x-model="item.peso_neto_seco" @input="calcVentaItemTotal(index)" class="erp-input font-mono" required placeholder="Ej. 1000">
-                                                <span class="text-[9px] text-rose-500 block mt-1" x-show="item.info && parseFloat(item.peso_neto_seco) > parseFloat(item.info.peso_disponible)">Supera stock!</span>
+                                            {{-- Indicadores Disponible / A Vender / Restante --}}
+                                            <div x-show="item.info && item.lote_id" class="grid grid-cols-3 gap-2">
+                                                <div class="rounded-lg px-3 py-2 text-center bg-slate-800/40 border border-emerald-500/20">
+                                                    <p class="text-[9px] text-emerald-500/70 font-bold uppercase mb-0.5">Disponible</p>
+                                                    <p class="text-xs font-black text-emerald-400 font-mono"
+                                                       x-text="item.info?.presentacion === 'Volqueta' ? (parseFloat(item.info?.peso_disponible || 0)/1000).toFixed(3) + ' T' : parseFloat(item.info?.peso_disponible || 0).toFixed(2) + ' Kg'"></p>
+                                                </div>
+                                                <div class="rounded-lg px-3 py-2 text-center bg-slate-800/40 border border-amber-500/20">
+                                                    <p class="text-[9px] text-amber-500/70 font-bold uppercase mb-0.5">A Vender</p>
+                                                    <p class="text-xs font-black text-amber-400 font-mono"
+                                                       x-text="item.info?.presentacion === 'Volqueta' ? (parseFloat(item.peso_neto_seco || 0)/1000).toFixed(3) + ' T' : (parseFloat(item.peso_neto_seco || 0)).toFixed(2) + ' Kg'"></p>
+                                                </div>
+                                                <div class="rounded-lg px-3 py-2 text-center bg-slate-800/40"
+                                                     :class="(parseFloat(item.info?.peso_disponible||0) - parseFloat(item.peso_neto_seco||0)) < 0 ? 'border border-rose-500/30' : 'border border-cyan-500/20'">
+                                                    <p class="text-[9px] font-bold uppercase mb-0.5"
+                                                       :class="(parseFloat(item.info?.peso_disponible||0) - parseFloat(item.peso_neto_seco||0)) < 0 ? 'text-rose-500/70' : 'text-cyan-500/70'">Restante</p>
+                                                    <p class="text-xs font-black font-mono"
+                                                       :class="(parseFloat(item.info?.peso_disponible||0) - parseFloat(item.peso_neto_seco||0)) < 0 ? 'text-rose-400' : 'text-cyan-400'"
+                                                       x-text="item.info?.presentacion === 'Volqueta' ? ((parseFloat(item.info?.peso_disponible||0) - parseFloat(item.peso_neto_seco||0))/1000).toFixed(3) + ' T' : (parseFloat(item.info?.peso_disponible||0) - parseFloat(item.peso_neto_seco||0)).toFixed(2) + ' Kg'"></p>
+                                                </div>
                                             </div>
 
-                                            <div>
-                                                <label class="erp-label">Precio Unit. (Kg)</label>
-                                                <input type="number" step="0.01" :name="'lotes['+index+'][precio_unitario]'" x-model="item.precio_unidad" @input="calcVentaItemTotal(index)" class="erp-input font-mono" required placeholder="Ej. 2.10">
-                                            </div>
-
-                                            <div>
-                                                <label class="erp-label">Monto Item (Bs.)</label>
-                                                <input type="number" step="0.01" :name="'lotes['+index+'][monto_total]'" x-model="item.monto_total" class="erp-input font-mono bg-slate-950/20" readonly>
+                                            {{-- Leyes Químicas Editables para la Venta --}}
+                                            <div x-show="item.lote_id" class="mt-3 pt-3 border-t border-slate-700/40">
+                                                <div class="flex items-center justify-between mb-2">
+                                                    <span class="text-[10px] font-black uppercase tracking-wider text-amber-400 flex items-center gap-1.5">
+                                                        <i class="fa-solid fa-flask text-amber-400"></i> Leyes de Laboratorio (Venta)
+                                                    </span>
+                                                    <button type="button" @click="addVentaAnalisis(index)"
+                                                            class="text-[10px] text-indigo-400 hover:text-indigo-300 font-bold transition flex items-center gap-1 cursor-pointer">
+                                                        <i class="fa-solid fa-plus text-[9px]"></i> Agregar Ley
+                                                    </button>
+                                                </div>
+                                                <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-2">
+                                                    <template x-for="(an, anIdx) in (item.analisis || [])" :key="anIdx">
+                                                        <div class="flex items-center gap-1.5 bg-slate-800/80 p-1.5 rounded-lg border border-slate-700/60">
+                                                            <input type="text" x-model="an.mineral" placeholder="Mineral"
+                                                                   :name="'lotes['+index+'][analisis]['+anIdx+'][mineral]'"
+                                                                   class="m-input text-[11px] py-1 px-2 font-bold text-amber-300 flex-1" required>
+                                                            <div class="relative w-20">
+                                                                <input type="number" step="0.01" x-model="an.ley" placeholder="0.00"
+                                                                       :name="'lotes['+index+'][analisis]['+anIdx+'][ley]'"
+                                                                       class="m-input font-mono text-[11px] py-1 px-1.5 text-center font-bold" required>
+                                                                <span class="absolute right-1.5 top-1/2 -translate-y-1/2 text-[9px] text-slate-500 font-bold">%</span>
+                                                            </div>
+                                                            <button type="button" @click="removeVentaAnalisis(index, anIdx)"
+                                                                    class="text-rose-400 hover:text-rose-300 p-1 cursor-pointer">
+                                                                <i class="fa-solid fa-xmark text-xs"></i>
+                                                            </button>
+                                                        </div>
+                                                    </template>
+                                                    <template x-if="!item.analisis || item.analisis.length === 0">
+                                                        <div class="col-span-full text-[10px] text-slate-500 italic py-1">
+                                                            Sin leyes asignadas a este despacho. Haz clic en <strong>+ Agregar Ley</strong> para incluir una.
+                                                        </div>
+                                                    </template>
+                                                </div>
                                             </div>
                                         </div>
                                     </div>
@@ -1107,146 +1918,189 @@
                         </div>
                     </template>
 
-                    {{-- ═══════════════ SINGLE-LOTE EDIT MODE FALLBACK ═══════════════ --}}
+                    {{-- ── Paso 2 (Modo Edición): Datos de la Venta ── --}}
                     <template x-if="isEditMode">
-                        <div class="col-span-1 md:col-span-2 grid grid-cols-1 md:grid-cols-2 gap-4">
-                            <div>
-                                <label class="erp-label">Lote Origen</label>
-                                <select name="lote_id" x-model="ventaLoteId" class="erp-input erp-input-select" required disabled>
-                                    @foreach($lotesDisponibles as $lot)
-                                        <option value="{{ $lot->id }}">LOT-{{ str_pad($lot->id, 5, '0', STR_PAD_LEFT) }}</option>
-                                    @endforeach
-                                </select>
+                        <div class="m-modal-section">
+                            <div class="flex items-center gap-2 mb-4">
+                                <div class="m-step bg-amber-500/20 text-amber-400">2</div>
+                                <h4 class="text-xs font-black uppercase tracking-widest text-amber-400">Datos de la Venta</h4>
                             </div>
-
-                            <div x-show="loteInfo" class="p-3 rounded-lg bg-indigo-500/5 text-xs space-y-1 font-semibold border border-indigo-500/20">
-                                <div>Presentación: <span class="text-white" x-text="loteInfo?.presentacion"></span></div>
-                                <div>Peso Max: <span class="text-indigo-400" x-text="loteInfo?.peso_disponible + ' Kg'"></span></div>
-                            </div>
-
-                            <div>
-                                <label class="erp-label">Cantidad a Vender</label>
-                                <input type="number" step="0.01" name="cantidad" required x-model="ventaCantidad" class="erp-input font-mono">
-                            </div>
-
-                            <div>
-                                <label class="erp-label">Peso Neto Seco (Kg)</label>
-                                <input type="number" step="0.01" name="peso_neto_seco" required x-model="ventaPeso" @input="calcVentaTotal()" class="erp-input font-mono">
-                            </div>
-
-                            <div>
-                                <label class="erp-label">Precio Unitario Venta</label>
-                                <input type="number" step="0.01" name="precio_unidad" required x-model="ventaPrecio" @input="calcVentaTotal()" class="erp-input font-mono">
-                            </div>
-
-                            <div>
-                                <label class="erp-label" style="color:#10b981">Monto Total Cobrado (Bs.)</label>
-                                <input type="number" step="0.01" name="monto_total" required x-model="ventaTotal" class="erp-input font-mono bg-slate-950/20" readonly>
+                            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                                <div>
+                                    <label class="m-label">Lote Origen</label>
+                                    <select name="lote_id" x-model="ventaLoteId" class="m-input" required disabled>
+                                        @foreach($lotesDisponibles as $lot)
+                                            <option value="{{ $lot->id }}">LOT-{{ str_pad($lot->id, 5, '0', STR_PAD_LEFT) }}</option>
+                                        @endforeach
+                                    </select>
+                                </div>
+                                <div x-show="loteInfo" class="rounded-xl p-3 bg-emerald-500/5 border border-emerald-500/20 text-xs space-y-1">
+                                    <div>Presentación: <span class="text-slate-200 font-bold" x-text="loteInfo?.presentacion"></span></div>
+                                    <div>Stock Disponible: <span class="text-emerald-400 font-black" x-text="(loteInfo?.peso_disponible || 0) + ' Kg'"></span></div>
+                                </div>
+                                <div>
+                                    <label class="m-label">Cantidad a Vender <span class="text-rose-400">*</span></label>
+                                    <input type="number" step="0.01" name="cantidad" required x-model="ventaCantidad" class="m-input font-mono">
+                                </div>
+                                <div>
+                                    <label class="m-label">Peso Neto Seco (Kg) <span class="text-rose-400">*</span></label>
+                                    <input type="number" step="0.01" name="peso_neto_seco" required x-model="ventaPeso" @input="calcVentaTotal()" class="m-input font-mono">
+                                </div>
+                                <div>
+                                    <label class="m-label">Precio Unitario Venta (Bs/Kg) <span class="text-rose-400">*</span></label>
+                                    <input type="number" step="0.01" name="precio_unidad" required x-model="ventaPrecio" @input="calcVentaTotal()" class="m-input font-mono">
+                                </div>
+                                <div>
+                                    <label class="m-label font-black" style="color:#10b981">💰 Total Cobrado (Bs.)</label>
+                                    <input type="number" step="0.01" name="monto_total" required x-model="ventaTotal"
+                                           class="m-input font-mono font-black" style="color:#10b981;border-color:rgba(16,185,129,0.3);background:rgba(16,185,129,0.05)" readonly>
+                                </div>
                             </div>
                         </div>
                     </template>
 
-                    <div class="col-span-1 md:col-span-2">
-                        <label class="erp-label">Observaciones de la Venta</label>
-                        <textarea name="observacion" x-model="ventaObservacion" rows="2" class="erp-input" placeholder="Detalles o notas sobre el despacho..."></textarea>
+                    {{-- Observaciones --}}
+                    <div class="m-modal-section">
+                        <label class="m-label">Observaciones <span class="text-slate-600 font-normal normal-case">(Opcional)</span></label>
+                        <textarea name="observacion" x-model="ventaObservacion" rows="2" class="m-input resize-none text-xs"
+                                  placeholder="Notas adicionales sobre el despacho..."></textarea>
                     </div>
                 </div>
 
-                <div class="px-6 py-4 border-t border-slate-200 dark:border-slate-800/80 bg-slate-50 dark:bg-slate-900/40 flex justify-end gap-2">
-                    <button type="button" @click="openVentaModal = false" class="px-4 py-2 rounded-lg text-xs font-bold uppercase tracking-wider bg-slate-200 dark:bg-slate-800 text-slate-600 dark:text-slate-350">Cancelar</button>
-                    <button type="submit" class="px-4 py-2 rounded-lg text-xs font-bold uppercase tracking-wider bg-gradient-to-r from-emerald-500 to-emerald-600 hover:from-emerald-600 hover:to-emerald-700 text-white">Registrar Venta</button>
+                <div class="m-modal-footer">
+                    <button type="button" @click="openVentaModal = false" class="m-btn m-btn-ghost cursor-pointer">Cancelar</button>
+                    <button type="submit" class="m-btn m-btn-emerald cursor-pointer">
+                        <i class="fa-solid fa-paper-plane"></i> Registrar Venta
+                    </button>
                 </div>
             </form>
         </div>
     </div>
 
-    {{-- ═══════════════ MODAL: DETALLE FICHA LOTE ═══════════════ --}}
-    <div x-show="openDetailModal" class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-950/80 backdrop-blur-sm" x-cloak>
-        <div @click.away="openDetailModal = false" class="erp-card w-full max-w-2xl overflow-hidden shadow-2xl relative" style="background:var(--erp-bg-card);">
-            <div class="px-6 py-4 border-b border-slate-200 dark:border-slate-800/80 flex items-center justify-between" style="background:rgba(255,255,255,0.02)">
-                <h3 class="text-sm font-black uppercase tracking-wider" style="color:var(--text-main)"><i class="fa-solid fa-cube text-amber-500 mr-1.5"></i> Ficha del Lote de Compra</h3>
-                <button @click="openDetailModal = false" class="text-slate-400 hover:text-slate-200">
-                    <i class="fa-solid fa-xmark text-lg"></i>
+    {{-- ══════════════════════════════════════════════════
+         MODAL: FICHA TÉCNICA DEL LOTE
+    ══════════════════════════════════════════════════ --}}
+    <div x-show="openDetailModal" x-cloak style="display:none" :style="{ display: openDetailModal ? 'flex' : 'none' }"
+         class="m-modal-overlay" @click.self="openDetailModal = false">
+        <div class="m-modal" style="max-width:620px;max-height:92vh;">
+            <div class="m-modal-header">
+                <div class="flex items-center gap-3">
+                    <div class="w-9 h-9 rounded-xl bg-amber-500/15 border border-amber-500/30 flex items-center justify-center text-amber-400">
+                        <i class="fa-solid fa-cube text-sm"></i>
+                    </div>
+                    <div>
+                        <h3 class="text-sm font-black text-slate-100">Ficha Técnica del Lote</h3>
+                        <p class="text-[10px] text-slate-500 font-mono" x-text="fichaLote ? 'LOT-' + String(fichaLote.id).padStart(5,'0') : ''"></p>
+                    </div>
+                </div>
+                <button @click="openDetailModal = false" class="m-btn m-btn-ghost m-btn-icon cursor-pointer">
+                    <i class="fa-solid fa-xmark text-slate-400"></i>
                 </button>
             </div>
 
-            <div class="p-6 space-y-6 max-h-[80vh] overflow-y-auto" x-show="fichaLote">
-                <div class="grid grid-cols-2 gap-4 pb-4 border-b border-slate-100 dark:border-slate-800">
-                    <div>
-                        <span class="block text-[10px] font-bold text-slate-500 uppercase tracking-wide">Código de Lote</span>
-                        <span class="text-lg font-black text-white font-mono" x-text="fichaLote ? 'LOT-' + String(fichaLote.id).padStart(5, '0') : ''"></span>
-                    </div>
-                    <div>
-                        <span class="block text-[10px] font-bold text-slate-500 uppercase tracking-wide">Fecha Registro</span>
-                        <span class="text-sm font-semibold" style="color:var(--text-main)" x-text="fichaLote ? new Date(fichaLote.fecha).toLocaleDateString('es-BO') : ''"></span>
-                    </div>
-                    <div>
-                        <span class="block text-[10px] font-bold text-slate-500 uppercase tracking-wide">Proveedor</span>
-                        <span class="text-sm font-bold text-amber-500" x-text="fichaLote ? fichaLote.cliente_proveedor : ''"></span>
-                    </div>
-                    <div>
-                        <span class="block text-[10px] font-bold text-slate-500 uppercase tracking-wide">Bocamina de Origen</span>
-                        <span class="text-sm font-semibold" style="color:var(--text-main)" x-text="fichaLote?.bocamina ? fichaLote.bocamina.nombre : 'No asignada'"></span>
-                    </div>
-                </div>
+            <div class="m-modal-body" x-show="fichaLote">
 
-                {{-- Stock actual --}}
-                <div class="p-4 rounded-xl border border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-900/30">
-                    <span class="block text-[10px] font-black text-slate-500 uppercase tracking-widest mb-3"><i class="fa-solid fa-warehouse mr-1 text-amber-500"></i> Niveles y Stock en Almacén</span>
-                    <div class="grid grid-cols-2 gap-6 mb-3 font-mono">
+                {{-- Info General --}}
+                <div class="m-modal-section">
+                    <h4 class="text-[10px] font-black uppercase tracking-widest text-slate-500 mb-4">
+                        <i class="fa-solid fa-circle-info mr-1.5 text-amber-500/70"></i>Información General
+                    </h4>
+                    <div class="grid grid-cols-2 gap-4">
                         <div>
-                            <span class="block text-[10px] text-slate-500">Peso Stock Restante:</span>
-                            <strong class="text-base text-white" x-text="fichaLote ? parseFloat(fichaLote.peso_disponible).toFixed(2) + ' Kg' : ''"></strong>
-                            <span class="text-xs text-slate-500 block">Original: <span x-text="fichaLote ? parseFloat(fichaLote.peso_neto_seco).toFixed(2) + ' Kg' : ''"></span></span>
+                            <span class="m-label">Código de Lote</span>
+                            <span class="text-lg font-black text-amber-400 font-mono block" x-text="fichaLote ? 'LOT-' + String(fichaLote.id).padStart(5,'0') : ''"></span>
                         </div>
                         <div>
-                            <span class="block text-[10px] text-slate-500">Cantidad Stock Restante:</span>
-                            <strong class="text-base text-white" x-text="fichaLote ? parseFloat(fichaLote.cantidad_disponible).toFixed(2) : ''"></strong>
-                            <span class="text-xs text-slate-500 block">Original: <span x-text="fichaLote ? parseFloat(fichaLote.cantidad).toFixed(2) : ''"></span></span>
+                            <span class="m-label">Fecha de Registro</span>
+                            <span class="text-sm font-bold text-slate-200 font-mono block" x-text="fichaLote ? new Date(fichaLote.fecha).toLocaleDateString('es-BO') : ''"></span>
+                        </div>
+                        <div>
+                            <span class="m-label">Proveedor</span>
+                            <span class="text-sm font-bold text-slate-100 uppercase block" x-text="fichaLote ? fichaLote.cliente_proveedor : ''"></span>
+                        </div>
+                        <div>
+                            <span class="m-label">Bocamina de Origen</span>
+                            <span class="text-sm text-slate-300 block" x-text="fichaLote?.bocamina ? fichaLote.bocamina.nombre : 'No asignada'"></span>
                         </div>
                     </div>
                 </div>
 
-                {{-- Leyes químicas --}}
-                <div>
-                    <span class="block text-[10px] font-bold text-slate-500 uppercase tracking-wide mb-2"><i class="fa-solid fa-flask text-amber-500 mr-1"></i> Leyes del Laboratorio</span>
+                {{-- Inventario de Peso --}}
+                <div class="m-modal-section">
+                    <h4 class="text-[10px] font-black uppercase tracking-widest text-slate-500 mb-4">
+                        <i class="fa-solid fa-warehouse mr-1.5 text-cyan-500/70"></i>Stock en Almacén
+                    </h4>
+                    <div class="grid grid-cols-2 sm:grid-cols-4 gap-3">
+                        <div class="rounded-xl p-3 bg-slate-800/50 border border-slate-700/40 text-center">
+                            <p class="m-label mb-1">Peso Inicial</p>
+                            <p class="text-sm font-black font-mono text-slate-200" x-text="fichaLote ? parseFloat(fichaLote.peso_neto_seco).toFixed(2) + ' Kg' : ''"></p>
+                        </div>
+                        <div class="rounded-xl p-3 bg-slate-800/50 border border-rose-500/20 text-center">
+                            <p class="m-label mb-1">Peso Vendido</p>
+                            <p class="text-sm font-black font-mono text-rose-400"
+                               x-text="fichaLote ? (parseFloat(fichaLote.peso_neto_seco) - parseFloat(fichaLote.peso_disponible)).toFixed(2) + ' Kg' : ''"></p>
+                        </div>
+                        <div class="rounded-xl p-3 bg-slate-800/50 border border-emerald-500/20 text-center">
+                            <p class="m-label mb-1">Peso Disponible</p>
+                            <p class="text-sm font-black font-mono text-emerald-400" x-text="fichaLote ? parseFloat(fichaLote.peso_disponible).toFixed(2) + ' Kg' : ''"></p>
+                        </div>
+                        <div class="rounded-xl p-3 bg-slate-800/50 border border-amber-500/20 text-center">
+                            <p class="m-label mb-1">Valor Disponible</p>
+                            <p class="text-sm font-black font-mono text-amber-400"
+                               x-text="fichaLote ? 'Bs. ' + (parseFloat(fichaLote.peso_disponible) * parseFloat(fichaLote.precio_unidad)).toFixed(2) : ''"></p>
+                        </div>
+                    </div>
+                </div>
+
+                {{-- Análisis de Laboratorio --}}
+                <div class="m-modal-section">
+                    <h4 class="text-[10px] font-black uppercase tracking-widest text-slate-500 mb-4">
+                        <i class="fa-solid fa-flask mr-1.5 text-indigo-500/70"></i>Análisis Original de Laboratorio
+                    </h4>
                     <div class="grid grid-cols-3 gap-2">
                         <template x-for="an in (fichaLote ? fichaLote.analisis : [])">
-                            <div class="p-3 rounded-lg border border-slate-200 dark:border-slate-800 text-center bg-white dark:bg-slate-950/20">
-                                <span class="block text-[10px] text-slate-400 font-bold uppercase" x-text="an.mineral"></span>
-                                <strong class="text-sm text-white font-mono" x-text="parseFloat(an.ley).toFixed(2) + '%'"></strong>
+                            <div class="rounded-xl p-3 bg-slate-800/50 border border-slate-700/40 text-center">
+                                <span class="m-label mb-1" x-text="an.mineral"></span>
+                                <strong class="text-base text-amber-400 font-mono block" x-text="parseFloat(an.ley).toFixed(2) + '%'"></strong>
                             </div>
                         </template>
                     </div>
                 </div>
 
-                {{-- Historial de Despachos --}}
-                <div>
-                    <span class="block text-[10px] font-bold text-slate-500 uppercase tracking-wide mb-2"><i class="fa-solid fa-history text-indigo-500 mr-1"></i> Historial de Salidas / Ventas del Lote</span>
-                    <div class="overflow-hidden border border-slate-100 dark:border-slate-800 rounded-lg">
-                        <table class="w-full text-left text-xs font-mono">
+                {{-- Historial de Ventas --}}
+                <div class="m-modal-section">
+                    <h4 class="text-[10px] font-black uppercase tracking-widest text-slate-500 mb-4">
+                        <i class="fa-solid fa-clock-rotate-left mr-1.5 text-indigo-500/70"></i>Historial Completo del Lote
+                    </h4>
+                    <div class="rounded-xl border border-slate-800 overflow-hidden">
+                        <table class="w-full text-xs">
                             <thead>
-                                <tr class="bg-slate-100 dark:bg-slate-900">
-                                    <th class="p-2.5">Venta ID</th>
-                                    <th class="p-2.5">Fecha</th>
-                                    <th class="p-2.5">Cliente</th>
-                                    <th class="p-2.5 text-right">Peso</th>
-                                    <th class="p-2.5 text-right">Total</th>
+                                <tr class="bg-slate-900/80 border-b border-slate-800">
+                                    <th class="px-3 py-2.5 text-left text-[10px] font-black uppercase tracking-wider text-slate-500">Venta ID</th>
+                                    <th class="px-3 py-2.5 text-left text-[10px] font-black uppercase tracking-wider text-slate-500">Fecha</th>
+                                    <th class="px-3 py-2.5 text-left text-[10px] font-black uppercase tracking-wider text-slate-500">Cliente</th>
+                                    <th class="px-3 py-2.5 text-right text-[10px] font-black uppercase tracking-wider text-slate-500">Peso</th>
+                                    <th class="px-3 py-2.5 text-right text-[10px] font-black uppercase tracking-wider text-slate-500">Total</th>
                                 </tr>
                             </thead>
                             <tbody>
                                 <template x-for="vt in (fichaLote ? fichaLote.ventas : [])">
-                                    <tr class="border-t border-slate-100 dark:border-slate-800 hover:bg-slate-800/20">
-                                        <td class="p-2.5">SLD-<span x-text="String(vt.id).padStart(5, '0')"></span></td>
-                                        <td class="p-2.5" x-text="new Date(vt.fecha).toLocaleDateString('es-BO')"></td>
-                                        <td class="p-2.5" x-text="vt.cliente_proveedor"></td>
-                                        <td class="p-2.5 text-right" x-text="parseFloat(vt.peso_neto_seco).toFixed(2) + ' Kg'"></td>
-                                        <td class="p-2.5 text-right font-bold text-emerald-400" x-text="'Bs. ' + parseFloat(vt.monto_total).toFixed(2)"></td>
+                                    <tr class="border-t border-slate-800/50 hover:bg-slate-800/20 transition">
+                                        <td class="px-3 py-3 font-mono">
+                                            <span class="m-badge m-badge-emerald">SLD-<span x-text="String(vt.id).padStart(5,'0')"></span></span>
+                                        </td>
+                                        <td class="px-3 py-3 font-mono text-slate-300" x-text="new Date(vt.fecha).toLocaleDateString('es-BO')"></td>
+                                        <td class="px-3 py-3 font-bold text-slate-200 uppercase text-[11px]" x-text="vt.cliente_proveedor"></td>
+                                        <td class="px-3 py-3 font-mono text-slate-300 text-right" x-text="parseFloat(vt.peso_neto_seco).toFixed(2) + ' Kg'"></td>
+                                        <td class="px-3 py-3 font-mono font-black text-emerald-400 text-right" x-text="'Bs. ' + parseFloat(vt.monto_total).toFixed(2)"></td>
                                     </tr>
                                 </template>
                                 <template x-if="!fichaLote || !fichaLote.ventas || !fichaLote.ventas.length">
                                     <tr>
-                                        <td colspan="5" class="p-4 text-center text-slate-500 italic">No se han realizado ventas a partir de este lote aún.</td>
+                                        <td colspan="5" class="px-4 py-5 text-center text-slate-600 text-xs italic">
+                                            <i class="fa-solid fa-clock-rotate-left opacity-30 mr-1"></i>
+                                            No se han realizado ventas a partir de este lote
+                                        </td>
                                     </tr>
                                 </template>
                             </tbody>
@@ -1254,15 +2108,17 @@
                     </div>
                 </div>
 
-                {{-- Obs --}}
-                <div x-show="fichaLote?.observacion">
-                    <span class="block text-[10px] font-bold text-slate-500 uppercase tracking-wide">Observaciones</span>
-                    <p class="text-xs text-slate-400 mt-1" x-text="fichaLote?.observacion"></p>
+                {{-- Observaciones --}}
+                <div class="m-modal-section" x-show="fichaLote?.observacion">
+                    <h4 class="text-[10px] font-black uppercase tracking-widest text-slate-500 mb-2">Observaciones</h4>
+                    <p class="text-xs text-slate-400 leading-relaxed" x-text="fichaLote?.observacion"></p>
                 </div>
             </div>
 
-            <div class="px-6 py-4 border-t border-slate-200 dark:border-slate-800/80 bg-slate-50 dark:bg-slate-900/40 flex justify-end">
-                <button type="button" @click="openDetailModal = false" class="px-4 py-2 rounded-lg text-xs font-bold uppercase tracking-wider bg-slate-200 dark:bg-slate-800 text-slate-600 dark:text-slate-350">Cerrar Ficha</button>
+            <div class="m-modal-footer">
+                <button type="button" @click="openDetailModal = false" class="m-btn m-btn-ghost cursor-pointer">
+                    <i class="fa-solid fa-xmark text-xs"></i> Cerrar Ficha
+                </button>
             </div>
         </div>
     </div>
@@ -1272,7 +2128,7 @@
 
 @push('scripts')
 <script>
-// ─── Real-time AJAX Filter para Reportes de Almacén ─────────────────────
+// ─── Real-time AJAX Filter para Reportes ─────────────────────────────────────
 function submitFilterRealTime(form) {
     const url = new URL(form.action || window.location.href, window.location.origin);
     url.search = '';
@@ -1297,12 +2153,18 @@ function submitFilterRealTime(form) {
         .finally(() => { container.style.opacity = '1'; container.style.pointerEvents = ''; });
 }
 
-// ─── PDF Export (Elegante, sin fondos negros) ───────────────────────────
+// ─── Helper para cargar librerías dinámicamente ───────────────────────────────
+function ensureLibrary(checkFn, src, callback) {
+    if (checkFn()) { callback(); return; }
+    const script = document.createElement('script');
+    script.src = src;
+    script.onload = () => callback();
+    script.onerror = () => callback(new Error('Failed to load script'));
+    document.head.appendChild(script);
+}
+
+// ─── PDF Export ───────────────────────────────────────────────────────────────
 window.doExportPDF = function() {
-    if (typeof html2pdf === 'undefined') {
-        alert('Cargando librería PDF, intenta nuevamente.');
-        return;
-    }
     const tableContainer = document.getElementById('report-output');
     if (!tableContainer) return;
     const table = tableContainer.querySelector('table');
@@ -1312,72 +2174,114 @@ window.doExportPDF = function() {
     const dateStr = now.toLocaleDateString('es-BO', { day:'2-digit', month:'long', year:'numeric' });
     const timeStr = now.toLocaleTimeString('es-BO', { hour:'2-digit', minute:'2-digit' });
 
-    // CSS y HTML personalizado para la impresión del reporte
-    const elegantHtml = `
-        <div style="font-family:Arial,sans-serif;padding:30px;color:#1e293b;background:#ffffff;">
-            <!-- Header -->
-            <div style="display:flex;justify-content:space-between;align-items:center;border-bottom:3px solid #1e293b;padding-bottom:15px;margin-bottom:20px;">
-                <div>
-                    <h1 style="font-size:22px;font-weight:900;color:#0f172a;margin:0;">Reporte de Compra y Venta de Minerales</h1>
-                    <p style="font-size:10px;color:#64748b;margin:3px 0 0 0;">Generado automáticamente por el SCPM el ${dateStr} a las ${timeStr}</p>
-                </div>
-                <div style="text-align:right;">
-                    <span style="font-size:9px;text-transform:uppercase;color:#94a3b8;font-weight:700;">Documento Oficial</span>
-                    <div style="font-size:12px;font-weight:800;color:#0f172a;margin-top:2px;">ALMACÉN DE MINERALES</div>
-                </div>
-            </div>
-            
-            <!-- Table content -->
-            <div style="border:1.5px solid #cbd5e1;border-radius:8px;overflow:hidden;">
-                <table style="width:100%;border-collapse:collapse;font-size:11px;">
-                    <thead>
-                        <tr style="background:#475569;color:#ffffff;">
-                            ${Array.from(table.querySelectorAll('thead th')).map(th => `<th style="padding:10px;text-align:left;font-weight:700;text-transform:uppercase;border:1px solid #475569;">${th.innerText}</th>`).join('')}
-                        </tr>
-                    </thead>
-                    <tbody>
-                        ${Array.from(table.querySelectorAll('tbody tr')).map((tr, ri) => `
-                            <tr style="background:${ri % 2 === 0 ? '#ffffff' : '#f8fafc'};">
-                                ${Array.from(tr.querySelectorAll('td')).map(td => `<td style="padding:9px 10px;border:1px solid #e2e8f0;color:#334155;vertical-align:middle;">${td.innerHTML}</td>`).join('')}
-                            </tr>
-                        `).join('')}
-                    </tbody>
-                </table>
-            </div>
-        </div>
-    `;
-
-    const wrap = document.createElement('div');
-    wrap.style.cssText = 'position:absolute;left:-9999px;top:-9999px;width:1000px;background:#ffffff;';
-    wrap.innerHTML = elegantHtml;
-    document.body.appendChild(wrap);
-
-    html2pdf().set({
-        margin: [0.4, 0.35, 0.4, 0.35],
-        filename: 'Reporte_Minerales_' + now.toISOString().slice(0,10) + '.pdf',
-        image: { type: 'jpeg', quality: 0.98 },
-        html2canvas: { scale: 2.2, useCORS: true, backgroundColor: '#ffffff' },
-        jsPDF: { unit: 'in', format: 'letter', orientation: 'landscape' }
-    }).from(wrap).save().finally(() => {
-        document.body.removeChild(wrap);
+    const headers = Array.from(table.querySelectorAll('thead th')).map(th => th.textContent.replace(/\s+/g, ' ').trim());
+    const rows = Array.from(table.querySelectorAll('tbody tr')).map(tr => {
+        return Array.from(tr.querySelectorAll('td')).map(td => td.textContent.replace(/\s+/g, ' ').trim());
     });
+
+    const pdfHtml = `<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>Reporte_Minerales_${now.toISOString().slice(0,10)}</title>
+    <style>
+        body { font-family: 'Segoe UI', Arial, sans-serif; margin: 0; padding: 24px; color: #0f172a; background: #ffffff; }
+        .header { display: flex; justify-content: space-between; align-items: flex-start; border-bottom: 3px solid #0f172a; padding-bottom: 14px; margin-bottom: 20px; }
+        .title { font-size: 20px; font-weight: 900; color: #0f172a; margin: 0; text-transform: uppercase; letter-spacing: -0.02em; }
+        .subtitle { font-size: 11px; color: #64748b; margin: 4px 0 0 0; font-weight: 500; }
+        .badge { font-size: 9px; text-transform: uppercase; color: #64748b; font-weight: 700; text-align: right; letter-spacing: 0.05em; }
+        .company { font-size: 12px; font-weight: 800; color: #0f172a; margin-top: 2px; text-align: right; }
+        table { width: 100%; border-collapse: collapse; font-size: 10px; margin-top: 10px; }
+        th { background: #1e293b; color: #ffffff; padding: 9px 10px; text-align: left; font-weight: 700; text-transform: uppercase; border: 1px solid #1e293b; letter-spacing: 0.05em; }
+        td { padding: 8px 10px; border: 1px solid #cbd5e1; color: #334155; vertical-align: middle; }
+        tr:nth-child(even) { background: #f8fafc; }
+        .footer { margin-top: 20px; padding-top: 10px; border-top: 1px solid #e2e8f0; text-align: right; font-size: 9px; color: #94a3b8; font-weight: 600; }
+        @page { size: landscape; margin: 12mm; }
+        @media print {
+            body { padding: 0; }
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <div>
+            <h1 class="title">Reporte de Compra y Venta de Minerales</h1>
+            <p class="subtitle">Generado el ${dateStr} a las ${timeStr} · Módulo 2 (Comercialización)</p>
+        </div>
+        <div>
+            <div class="badge">Documento Oficial</div>
+            <div class="company">SISTEMA DE PAGOS Y CONTROL MINERO</div>
+        </div>
+    </div>
+    <table>
+        <thead>
+            <tr>
+                ${headers.map(h => `<th>${h}</th>`).join('')}
+            </tr>
+        </thead>
+        <tbody>
+            ${rows.map(r => `
+                <tr>
+                    ${r.map(cell => `<td>${cell}</td>`).join('')}
+                </tr>
+            `).join('')}
+        </tbody>
+    </table>
+    <div class="footer">
+        Página 1 / 1 · Reporte de Comercialización de Minerales
+    </div>
+    <script>
+        window.onload = function() {
+            setTimeout(function() {
+                window.print();
+            }, 300);
+        };
+    <\/script>
+</body>
+</html>`;
+
+    const printWin = window.open('', '_blank', 'width=1100,height=850');
+    if (printWin) {
+        printWin.document.write(pdfHtml);
+        printWin.document.close();
+        printWin.focus();
+    } else {
+        alert('Por favor permite abrir ventanas emergentes para generar el PDF.');
+    }
 };
 
-// ─── Excel Export ───────────────────────────────────────────────
+// ─── Excel Export ─────────────────────────────────────────────────────────────
 window.doExportExcel = function() {
-    if (typeof XLSX === 'undefined') {
-        alert('Cargando librería Excel, intenta nuevamente.');
-        return;
-    }
     const tableContainer = document.getElementById('report-output');
     if (!tableContainer) return;
     const table = tableContainer.querySelector('table');
     if (!table) return;
 
-    const wb = XLSX.utils.book_new();
-    const ws = XLSX.utils.table_to_sheet(table);
-    XLSX.utils.book_append_sheet(wb, ws, 'Reporte de Minerales');
-    XLSX.writeFile(wb, 'Reporte_Minerales_' + new Date().toLocaleDateString('es-BO').replace(/\//g,'-') + '.xlsx');
+    // Build data matrix using textContent so hidden CSS doesn't create blank sheets
+    const aoa = [];
+    const headers = Array.from(table.querySelectorAll('thead th')).map(th => th.textContent.replace(/\s+/g, ' ').trim());
+    aoa.push(headers);
+
+    Array.from(table.querySelectorAll('tbody tr')).forEach(tr => {
+        const rowData = Array.from(tr.querySelectorAll('td')).map(td => td.textContent.replace(/\s+/g, ' ').trim());
+        if (rowData.length > 0) {
+            aoa.push(rowData);
+        }
+    });
+
+    const filename = 'Reporte_Minerales_' + new Date().toLocaleDateString('es-BO').replace(/\//g,'-') + '.csv';
+
+    // Direct, infallible CSV export with UTF-8 BOM so Excel opens it with full formatting & zero blanks
+    const csvLines = aoa.map(row => row.map(cell => `"${cell.replace(/"/g, '""')}"`).join(","));
+    const csvContent = "\uFEFF" + csvLines.join("\r\n");
+    const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+    const link = document.createElement("a");
+    const url = URL.createObjectURL(blob);
+    link.setAttribute("href", url);
+    link.setAttribute("download", filename);
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
 };
 </script>
 @endpush

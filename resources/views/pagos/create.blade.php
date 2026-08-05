@@ -542,7 +542,7 @@
                 <div>
                     <label for="entregado_por" class="block text-xs font-semibold uppercase tracking-wider text-slate-400">Entregado por</label>
                     <input id="entregado_por" name="entregado_por" type="text" required
-                           value="{{ Auth::user()->name ?? 'Administración TORMAN' }}"
+                           value="{{ Auth::user()->name ?? 'Administración General' }}"
                            class="mt-1 block w-full px-3 py-2 bg-slate-900 border border-slate-700 rounded-lg text-slate-100 focus:outline-none focus:ring-1 focus:ring-teal-500 focus:border-teal-500 text-sm">
                 </div>
 

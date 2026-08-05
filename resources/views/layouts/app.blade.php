@@ -30,6 +30,10 @@
     <!-- AlpineJS -->
     <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
 
+    <!-- SheetJS (XLSX) & html2pdf -->
+    <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+
     <style>
         :root {
             --bg-main: #020617;
@@ -1153,6 +1157,10 @@
                     </button>
 
                     <div x-show="openAlmacen" class="pl-2 space-y-1.5 border-l border-slate-900/10 dark:border-slate-800/60 ml-5" x-collapse>
+                        <a href="{{ route('transacciones-minerales.index', ['tab' => 'caja']) }}" data-theme-color="amber" class="nav-item flex items-center px-3 py-1.5 text-xs font-semibold rounded-lg relative z-10 transition-colors duration-200 {{ (request()->routeIs('transacciones-minerales.*') && request('tab') === 'caja') ? 'active-nav-item' : 'text-slate-450 hover:text-slate-200' }}">
+                            <i class="fa-solid fa-vault w-5 text-center mr-3 text-xs text-amber-400"></i>
+                            Caja del Módulo
+                        </a>
                         <a href="{{ route('transacciones-minerales.index', ['tab' => 'compras']) }}" data-theme-color="amber" class="nav-item flex items-center px-3 py-1.5 text-xs font-semibold rounded-lg relative z-10 transition-colors duration-200 {{ (request()->routeIs('transacciones-minerales.*') && request('tab', 'compras') === 'compras') ? 'active-nav-item' : 'text-slate-450 hover:text-slate-200' }}">
                             <i class="fa-solid fa-circle-arrow-down w-5 text-center mr-3 text-xs text-amber-500"></i>
                             Compras
@@ -1196,7 +1204,7 @@
             <div class="mt-auto pt-4 px-4 border-t border-slate-900/60 dark:border-slate-800/40">
                 <div class="p-3 rounded-2xl bg-slate-900/40 dark:bg-slate-900/60 border border-slate-800/60 shadow-inner flex flex-col space-y-3">
                     <a href="{{ route('profile.edit') }}" class="flex items-center space-x-3 hover:bg-slate-800/50 p-2 rounded-xl transition duration-150 group" title="Ver mi Perfil">
-                        <div class="relative flex-shrink-0">
+                        <div class="relative w-10 h-10 flex-shrink-0">
                             @if(Auth::user() && Auth::user()->avatar)
                                 <div class="w-10 h-10 rounded-xl bg-slate-900 border border-amber-500/30 overflow-hidden shadow-[0_0_12px_rgba(245,158,11,0.15)] flex items-center justify-center">
                                     <img src="{{ asset(Auth::user()->avatar) }}" class="w-full h-full object-cover">
@@ -1206,7 +1214,7 @@
                                     <i class="fa-solid fa-user-tie text-amber-500 text-sm"></i>
                                 </div>
                             @endif
-                            <span class="absolute -bottom-0.5 -right-0.5 block h-3 w-3 rounded-full bg-emerald-500 ring-2 ring-slate-950"></span>
+                            <span class="block h-3.5 w-3.5 rounded-full bg-emerald-500 ring-2 ring-slate-900 shadow-sm" style="position: absolute; bottom: 0px; right: 0px; left: auto; top: auto; z-index: 20;"></span>
                         </div>
                         <div class="flex-1 min-w-0 pl-2">
                             <p class="user-name text-sm font-extrabold leading-tight truncate">
@@ -1268,8 +1276,10 @@
             </div>
             
             <div class="px-3 pt-3 pb-1 text-[10px] font-bold uppercase tracking-wider text-slate-500 font-mono">📦 Compra y Venta de Minerales</div>
+            <a href="{{ route('transacciones-minerales.index', ['tab' => 'caja']) }}" class="block px-6 py-1.5 rounded-md text-sm font-medium {{ (request()->routeIs('transacciones-minerales.*') && request('tab') === 'caja') ? 'bg-amber-500/10 text-amber-400' : 'text-slate-350 hover:bg-slate-800' }}">Caja del Módulo</a>
             <a href="{{ route('transacciones-minerales.index', ['tab' => 'compras']) }}" class="block px-6 py-1.5 rounded-md text-sm font-medium {{ (request()->routeIs('transacciones-minerales.*') && request('tab', 'compras') === 'compras') ? 'bg-amber-500/10 text-amber-500' : 'text-slate-350 hover:bg-slate-800' }}">Compras</a>
             <a href="{{ route('transacciones-minerales.index', ['tab' => 'ventas']) }}" class="block px-6 py-1.5 rounded-md text-sm font-medium {{ (request()->routeIs('transacciones-minerales.*') && request('tab') === 'ventas') ? 'bg-emerald-500/10 text-emerald-400' : 'text-slate-350 hover:bg-slate-800' }}">Ventas</a>
+            <a href="{{ route('transacciones-minerales.index', ['tab' => 'stock']) }}" class="block px-6 py-1.5 rounded-md text-sm font-medium {{ (request()->routeIs('transacciones-minerales.*') && request('tab') === 'stock') ? 'bg-cyan-500/10 text-cyan-400' : 'text-slate-350 hover:bg-slate-800' }}">Stock</a>
             <a href="{{ route('transacciones-minerales.index', ['tab' => 'reportes']) }}" class="block px-6 py-1.5 rounded-md text-sm font-medium {{ (request()->routeIs('transacciones-minerales.*') && request('tab') === 'reportes') ? 'bg-indigo-500/10 text-indigo-400' : 'text-slate-350 hover:bg-slate-800' }}">Reportes</a>
             
             <div class="px-3 pt-3 pb-1 text-[10px] font-bold uppercase tracking-wider text-slate-500 font-mono">⚙️ Sistema</div>
@@ -1556,6 +1566,7 @@
         // 4. Form submit glass processing overlay & Global confirm modal handler
         function showProcessingOverlay(form) {
             if (form.action && form.action.includes('logout')) return;
+            if (form.checkValidity && !form.checkValidity()) return;
             
             const card = form.closest('.glass-card') || form.closest('main') || document.body;
             
@@ -1589,6 +1600,14 @@
             card.appendChild(overlay);
             overlay.offsetHeight; // force reflow
             overlay.style.opacity = '1';
+
+            // Safety cleanup if form submission is interrupted
+            setTimeout(() => {
+                if (overlay && overlay.parentNode) {
+                    overlay.style.opacity = '0';
+                    setTimeout(() => overlay.remove(), 250);
+                }
+            }, 6000);
         }
 
         // Global Custom Confirmation Modal

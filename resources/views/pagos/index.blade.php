@@ -21,38 +21,55 @@
         </div>
     </div>
 
-    <!-- Cash Pool Ledger Summary Cards -->
+    <!-- Summary Cards (3 Tarjetas Estilo Tablero Principal) -->
     <div class="grid grid-cols-1 gap-5 sm:grid-cols-3">
-        <!-- Total Loaded (Banco) -->
-        <div class="glass-card rounded-xl p-6 relative overflow-hidden group border-cyan-500/10 hover:border-cyan-500/25 transition duration-300">
-            <div class="absolute top-0 right-0 p-3 opacity-10 text-6xl text-cyan-500 group-hover:opacity-20 transition duration-300">
-                <i class="fa-solid fa-building-columns"></i>
+        <!-- Card 1: Gastado en Pagos Totales (Planillas) -->
+        <div class="relative overflow-hidden rounded-2xl p-5 bg-gradient-to-br from-indigo-500 to-purple-650 text-white shadow-lg transition-all duration-300 transform hover:-translate-y-1 hover:shadow-xl">
+            <div class="absolute -right-6 -bottom-6 w-24 h-24 bg-white/10 rounded-full pointer-events-none"></div>
+            <div class="absolute right-8 -top-8 w-16 h-16 bg-white/10 rounded-full pointer-events-none"></div>
+            <div class="flex items-center justify-between mb-4">
+                <span class="text-[10px] font-bold uppercase tracking-wider text-indigo-100/90">Gastado en Pagos Totales</span>
+                <div class="flex items-center justify-center w-8 h-8 rounded-full bg-white/20">
+                    <i class="fa-solid fa-receipt text-xs text-white"></i>
+                </div>
             </div>
-            <p class="text-sm font-medium text-slate-400 uppercase tracking-wider">Total Recargado (Banco)</p>
-            <p class="mt-2 text-3xl font-bold text-slate-100 font-mono">Bs. {{ number_format($total_recargado, 2) }}</p>
-            <div class="mt-2 text-xs text-slate-500 font-mono">Fondos ingresados a caja chica</div>
+            <h2 class="text-2xl font-extrabold tracking-tight font-mono">Bs. {{ number_format($total_gastado_pagos, 2) }}</h2>
+            <p class="text-[10px] text-indigo-100/80 font-medium mt-2">Liquidación final de planillas</p>
         </div>
 
-        <!-- Total Spent (Personal) -->
-        <div class="glass-card rounded-xl p-6 relative overflow-hidden group border-rose-500/10 hover:border-rose-500/25 transition duration-300">
-            <div class="absolute top-0 right-0 p-3 opacity-10 text-6xl text-rose-500 group-hover:opacity-20 transition duration-300">
-                <i class="fa-solid fa-hand-holding-dollar"></i>
+        <!-- Card 2: Gastado en Anticipos -->
+        <div class="relative overflow-hidden rounded-2xl p-5 bg-gradient-to-br from-rose-500 to-red-650 text-white shadow-lg transition-all duration-300 transform hover:-translate-y-1 hover:shadow-xl">
+            <div class="absolute -right-6 -bottom-6 w-24 h-24 bg-white/10 rounded-full pointer-events-none"></div>
+            <div class="absolute right-8 -top-8 w-16 h-16 bg-white/10 rounded-full pointer-events-none"></div>
+            <div class="flex items-center justify-between mb-4">
+                <span class="text-[10px] font-bold uppercase tracking-wider text-rose-100/90">Gastado en Anticipos</span>
+                <div class="flex items-center justify-center w-8 h-8 rounded-full bg-white/20">
+                    <i class="fa-solid fa-hand-holding-dollar text-xs text-white"></i>
+                </div>
             </div>
-            <p class="text-sm font-medium text-slate-400 uppercase tracking-wider">Gastado (Pagos y Anticipos)</p>
-            <p class="mt-2 text-3xl font-bold text-rose-450 font-mono">Bs. {{ number_format($total_gastado, 2) }}</p>
-            <div class="mt-2 text-xs text-slate-500 font-mono">Egresado por planillas y adelantos</div>
+            <h2 class="text-2xl font-extrabold tracking-tight font-mono">Bs. {{ number_format($total_gastado_anticipos, 2) }}</h2>
+            <p class="text-[10px] text-rose-100/80 font-medium mt-2">Adelantos a trabajadores</p>
         </div>
 
-        <!-- Remaining Cash -->
-        <div class="glass-card rounded-xl p-6 relative overflow-hidden group border-emerald-500/10 hover:border-emerald-500/25 transition duration-300">
-            <div class="absolute top-0 right-0 p-3 opacity-10 text-6xl text-emerald-500 group-hover:opacity-20 transition duration-300">
-                <i class="fa-solid fa-vault"></i>
+        <!-- Card 3: Saldo Sobrante en Caja -->
+        @php
+            $positivoIndex = $saldo_caja >= 0;
+            $saldoGradientIndex = $positivoIndex ? 'from-emerald-500 to-teal-600' : 'from-amber-500 to-orange-650';
+            $saldoTextIndex = $positivoIndex ? 'text-emerald-100/80' : 'text-amber-100/80';
+        @endphp
+        <div class="relative overflow-hidden rounded-2xl p-5 bg-gradient-to-br {{ $saldoGradientIndex }} text-white shadow-lg transition-all duration-300 transform hover:-translate-y-1 hover:shadow-xl">
+            <div class="absolute -right-6 -bottom-6 w-24 h-24 bg-white/10 rounded-full pointer-events-none"></div>
+            <div class="absolute right-8 -top-8 w-16 h-16 bg-white/10 rounded-full pointer-events-none"></div>
+            <div class="flex items-center justify-between mb-4">
+                <span class="text-[10px] font-bold uppercase tracking-wider text-white/90">Saldo Sobrante en Caja</span>
+                <div class="flex items-center justify-center w-8 h-8 rounded-full bg-white/20">
+                    <i class="fa-solid fa-vault text-xs text-white"></i>
+                </div>
             </div>
-            <p class="text-sm font-medium text-slate-400 uppercase tracking-wider">Saldo Sobrante en Caja</p>
-            <p class="mt-2 text-3xl font-bold {{ $saldo_caja >= 0 ? 'text-emerald-400' : 'text-rose-450' }} font-mono">
-                Bs. {{ number_format($saldo_caja, 2) }}
+            <h2 class="text-2xl font-extrabold tracking-tight font-mono">Bs. {{ number_format(abs($saldo_caja), 2) }}</h2>
+            <p class="text-[10px] {{ $saldoTextIndex }} font-medium mt-2">
+                {{ $positivoIndex ? '● Efectivo físico disponible' : '▲ Caja en déficit' }}
             </p>
-            <div class="mt-2 text-xs text-slate-500 font-mono">Efectivo físico disponible</div>
         </div>
     </div>
 
@@ -93,10 +110,10 @@
                             <td class="px-6 py-4">
                                 <div class="flex flex-col">
                                     <span class="font-mono font-bold text-slate-100 text-sm">Bs. {{ number_format($pago->neto, 2) }}</span>
-                                    <span class="text-[10px] text-slate-400 mt-1 font-mono">
-                                        Pagado: Bs. {{ number_format($pago->monto_pagado, 2) }}
-                                    </span>
                                     @if($pago->saldo_pendiente > 0)
+                                        <span class="text-[10px] text-amber-400 mt-0.5 font-mono">
+                                            Efectivo Entregado: Bs. {{ number_format($pago->monto_pagado, 2) }}
+                                        </span>
                                         <span class="inline-flex items-center px-1.5 py-0.5 rounded text-[9px] font-bold mt-1 self-start 
                                             @if($pago->saldo_liquidado) bg-slate-800 text-slate-400 border border-slate-700
                                             @else bg-amber-500/10 text-amber-400 border border-amber-500/20 @endif font-mono">
@@ -110,13 +127,23 @@
                                         <span class="inline-flex items-center px-1.5 py-0.5 rounded text-[9px] font-bold bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 mt-1 self-start font-mono">
                                             Completado
                                         </span>
+                                        @if($pago->es_editado)
+                                            <span class="inline-flex items-center px-1.5 py-0.5 rounded text-[8.5px] font-extrabold bg-amber-500/10 text-amber-400 border border-amber-500/20 mt-1 self-start uppercase tracking-wider">
+                                                <i class="fa-solid fa-pen-to-square mr-1 text-[8px]"></i> Editado
+                                            </span>
+                                        @endif
                                     @endif
                                 </div>
                             </td>
                             <td class="px-6 py-4 no-print">
-                                <a href="{{ route('pagos.show', $pago->id) }}" class="inline-flex items-center px-3 py-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-200 hover:text-teal-400 text-xs font-medium transition duration-150">
-                                    <i class="fa-solid fa-print mr-1.5"></i> Imprimir Recibo
-                                </a>
+                                <div class="flex items-center space-x-2">
+                                    <a href="{{ route('pagos.show', $pago->id) }}" class="inline-flex items-center px-3 py-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-200 hover:text-teal-400 text-xs font-medium transition duration-150" title="Ver / Imprimir Recibo">
+                                        <i class="fa-solid fa-print mr-1.5"></i> Imprimir
+                                    </a>
+                                    <a href="{{ route('pagos.edit', $pago->id) }}" class="p-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-300 hover:text-amber-400 transition duration-150" title="Editar Pago">
+                                        <i class="fa-solid fa-pen-to-square text-xs"></i>
+                                    </a>
+                                </div>
                             </td>
                         </tr>
                     @empty
