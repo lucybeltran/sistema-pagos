@@ -401,6 +401,9 @@
             this.compraPrecio = '';
             this.compraPesoToneladas = '';
             this.compraPrecioToneladas = '';
+            this.compraHumedadPorcentaje = '';
+            this.compraSubtotalBruto = 0;
+            this.compraDescuentoHumedad = 0;
             this.compraTotal = 0;
             this.compraObservacion = '';
             this.compraAnalisis = [
@@ -423,6 +426,7 @@
             this.compraCantidad = item.cantidad;
             this.compraPeso = item.peso_neto_seco;
             this.compraPrecio = item.precio_unidad;
+            this.compraHumedadPorcentaje = item.humedad_porcentaje || '';
 
             if (item.presentacion === 'Volqueta') {
                 this.compraPesoToneladas = (parseFloat(item.peso_neto_seco) / 1000).toFixed(3);
@@ -432,7 +436,7 @@
                 this.compraPrecioToneladas = '';
             }
 
-            this.compraTotal = item.monto_total;
+            this.calcCompraTotal();
             this.compraObservacion = item.observacion || '';
 
             const stdMinerals = ['Zinc', 'Plomo', 'Plata', 'Cobre', 'Estaño'];
@@ -451,17 +455,32 @@
         removeMineral(index) { this.compraAnalisis.splice(index, 1); },
 
         calcCompraTotal() {
+            let subtotal = 0;
             if (this.compraPresentacion === 'Volqueta') {
                 let t = parseFloat(this.compraPesoToneladas) || 0;
                 let prT = parseFloat(this.compraPrecioToneladas) || 0;
                 this.compraPeso = (t * 1000).toFixed(2);
                 this.compraPrecio = (prT / 1000).toFixed(4);
-                this.compraTotal = (t * prT).toFixed(2);
+                subtotal = t * prT;
             } else {
                 let p = parseFloat(this.compraPeso) || 0;
                 let pr = parseFloat(this.compraPrecio) || 0;
-                this.compraTotal = (p * pr).toFixed(2);
+                subtotal = p * pr;
             }
+
+            this.compraSubtotalBruto = subtotal.toFixed(2);
+
+            let pctHumedad = parseFloat(this.compraHumedadPorcentaje) || 0;
+            if (pctHumedad < 0) pctHumedad = 0;
+            if (pctHumedad > 100) pctHumedad = 100;
+
+            let descuento = subtotal * (pctHumedad / 100);
+            this.compraDescuentoHumedad = descuento.toFixed(2);
+
+            let totalLiquidado = subtotal - descuento;
+            if (totalLiquidado < 0) totalLiquidado = 0;
+
+            this.compraTotal = totalLiquidado.toFixed(2);
         },
 
         // Methods Venta
@@ -1565,16 +1584,35 @@
                                 </template>
                             </div>
 
+                            {{-- HUMEDAD (%) --}}
                             <div>
-                                <label class="m-label font-black" style="color:#f59e0b">💰 Total Liquidado (Bs.) — Calculado</label>
-                                <input type="number" step="0.01" name="monto_total" required x-model="compraTotal"
-                                       class="m-input font-mono font-black" style="color:#f59e0b;border-color:rgba(245,158,11,0.3);background:rgba(245,158,11,0.05)" readonly>
-                                <p class="text-[10px] text-amber-600 mt-1">
-                                    <i class="fa-solid fa-calculator mr-1"></i>
-                                    <span x-show="compraPresentacion === 'Volqueta'">Toneladas × Precio por Tonelada</span>
-                                    <span x-show="compraPresentacion !== 'Volqueta'">Peso × Precio Unitario</span>
-                                </p>
+                                <label class="m-label font-bold text-sky-400"><i class="fa-solid fa-droplet text-sky-400 mr-1"></i>Humedad Total (%) — Descuento <span class="text-slate-500 font-normal">(Opcional)</span></label>
+                                <div class="relative">
+                                    <input type="number" step="0.01" min="0" max="100" name="humedad_porcentaje" x-model="compraHumedadPorcentaje"
+                                           @input="calcCompraTotal()" placeholder="Ej. 10"
+                                           class="m-input font-mono m-input-sky pr-8">
+                                    <span class="absolute right-3 top-2.5 text-xs text-sky-400 font-bold font-mono">%</span>
+                                </div>
+                                <p class="text-[10px] text-slate-400 mt-1">Descuento automático del porcentaje de humedad sobre el precio total</p>
                             </div>
+
+                            {{-- RESUMEN TOTAL LIQUIDADO --}}
+                            <div class="sm:col-span-2 p-3.5 rounded-xl border border-amber-500/25 bg-amber-500/5 space-y-2 font-mono text-xs">
+                                <div class="flex justify-between items-center text-slate-300">
+                                    <span>Subtotal Bruto:</span>
+                                    <span class="font-bold text-slate-200" x-text="'Bs. ' + parseFloat(compraSubtotalBruto || 0).toFixed(2)"></span>
+                                </div>
+                                <div class="flex justify-between items-center text-rose-400" x-show="parseFloat(compraHumedadPorcentaje || 0) > 0">
+                                    <span>Descuento por Humedad (<span x-text="compraHumedadPorcentaje"></span>%):</span>
+                                    <span class="font-bold text-rose-400" x-text="'-Bs. ' + parseFloat(compraDescuentoHumedad || 0).toFixed(2)"></span>
+                                </div>
+                                <div class="flex justify-between items-center pt-2 border-t border-amber-500/20 text-sm">
+                                    <span class="font-black uppercase tracking-wider text-amber-400">💰 Total Liquidado (A Pagar):</span>
+                                    <span class="font-black text-amber-400 text-base" x-text="'Bs. ' + parseFloat(compraTotal || 0).toFixed(2)"></span>
+                                </div>
+                                <input type="hidden" name="monto_total" :value="compraTotal">
+                            </div>
+
                             <div class="sm:col-span-2">
                                 <label class="m-label">Observaciones</label>
                                 <textarea name="observacion" x-model="compraObservacion" rows="2" class="m-input resize-none text-xs"

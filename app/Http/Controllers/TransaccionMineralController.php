@@ -249,6 +249,8 @@ class TransaccionMineralController extends Controller
             $rules['peso_neto_seco'] = 'required|numeric|min:0';
             $rules['precio_unidad'] = 'required|numeric|min:0';
             $rules['monto_total'] = 'required|numeric|min:0';
+            $rules['humedad_porcentaje'] = 'nullable|numeric|min:0|max:100';
+            $rules['peso_bruto'] = 'nullable|numeric|min:0';
             
             $rules['analisis'] = 'nullable|array';
             $rules['analisis.*.mineral'] = 'required_with:analisis|string|max:100';
@@ -277,7 +279,7 @@ class TransaccionMineralController extends Controller
             $data = $request->only([
                 'fecha', 'tipo', 'cliente_proveedor', 'bocamina_id',
                 'cantidad', 'peso_neto_seco', 'precio_unidad', 'monto_total',
-                'observacion', 'destino'
+                'observacion', 'destino', 'humedad_porcentaje', 'peso_bruto'
             ]);
 
             if (empty($data['bocamina_id'])) {
@@ -441,7 +443,7 @@ class TransaccionMineralController extends Controller
             $data = $request->only([
                 'fecha', 'tipo', 'cliente_proveedor', 'bocamina_id',
                 'cantidad', 'peso_neto_seco', 'precio_unidad', 'monto_total',
-                'observacion', 'destino'
+                'observacion', 'destino', 'humedad_porcentaje', 'peso_bruto'
             ]);
 
             if (empty($data['bocamina_id'])) {
