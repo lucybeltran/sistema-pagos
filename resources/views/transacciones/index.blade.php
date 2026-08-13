@@ -236,7 +236,7 @@
 }
 .m-modal {
     width: 100%;
-    max-width: 680px;
+    max-width: 900px;
     background: #0d1527;
     border: 1px solid rgba(148,163,184,0.12);
     border-radius: 20px;
@@ -1696,7 +1696,81 @@
                                 <input type="hidden" name="peso_neto_seco" :value="calcPesoNetoSeco.toFixed(2)">
                                 <input type="hidden" name="monto_total" :value="calcTotalLiquidado.toFixed(2)">
                             </div>
+                        </div>
+                    </div>
 
+                    {{-- ── Sección 3: Análisis Químico de Laboratorio (Leyes) ── --}}
+                    <div class="m-modal-section">
+                        <div class="flex items-center justify-between mb-4">
+                            <div class="flex items-center gap-2">
+                                <div class="m-step bg-indigo-500/20 text-indigo-400">3</div>
+                                <h4 class="text-xs font-black uppercase tracking-widest text-indigo-400">
+                                    <i class="fa-solid fa-flask mr-1.5"></i>Análisis Químico de Laboratorio (Leyes)
+                                </h4>
+                            </div>
+                            <button type="button" @click="addMineral()"
+                                    class="m-btn m-btn-ghost cursor-pointer" style="border-color:rgba(99,102,241,0.3);color:#818cf8">
+                                <i class="fa-solid fa-plus text-xs"></i> Agregar Ley
+                            </button>
+                        </div>
+
+                        <div class="rounded-xl border border-slate-800/80 overflow-hidden">
+                            <table class="w-full text-xs">
+                                <thead>
+                                    <tr class="bg-slate-900/80 border-b border-slate-800">
+                                        <th class="px-4 py-3 text-left text-[10px] font-black uppercase tracking-wider text-slate-500">Mineral</th>
+                                        <th class="px-4 py-3 text-center text-[10px] font-black uppercase tracking-wider text-slate-500">Ley (%)</th>
+                                        <th class="px-4 py-3 text-center text-[10px] w-16">Acción</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <template x-for="(an, index) in compraAnalisis" :key="index">
+                                        <tr class="border-b border-slate-800/50 hover:bg-slate-800/20 transition">
+                                            <td class="px-4 py-2.5">
+                                                <input type="hidden" :name="'analisis['+index+'][mineral]'" :value="an.mineral === 'Otro' ? an.mineral_custom : an.mineral">
+                                                <select x-model="an.mineral" class="m-input text-xs py-2" required>
+                                                    <option value="">— Seleccionar —</option>
+                                                    <option value="Zinc">⚡ Zinc (Zn)</option>
+                                                    <option value="Plomo">🔘 Plomo (Pb)</option>
+                                                    <option value="Plata">✨ Plata (Ag)</option>
+                                                    <option value="Cobre">🟠 Cobre (Cu)</option>
+                                                    <option value="Estaño">⬜ Estaño (Sn)</option>
+                                                    <option value="Otro">✏️ Otro (Escribir)...</option>
+                                                </select>
+                                                <div x-show="an.mineral === 'Otro'" class="mt-1.5">
+                                                    <input type="text" x-model="an.mineral_custom"
+                                                           placeholder="Escribe el mineral (ej. Oro, Bismuto...)"
+                                                           class="m-input text-xs py-1.5 font-bold text-amber-400 border-amber-500/30"
+                                                           :required="an.mineral === 'Otro'">
+                                                </div>
+                                            </td>
+                                            <td class="px-4 py-2.5">
+                                                <div class="relative">
+                                                    <input type="number" step="0.01" min="0" max="100"
+                                                           :name="'analisis['+index+'][ley]'" x-model="an.ley"
+                                                           placeholder="48.50" class="m-input font-mono text-xs py-2 text-center pr-8" required>
+                                                    <span class="absolute right-3 top-1/2 -translate-y-1/2 text-xs text-slate-500 font-bold">%</span>
+                                                </div>
+                                            </td>
+                                            <td class="px-4 py-2.5 text-center">
+                                                <button type="button" @click="removeMineral(index)"
+                                                        class="m-btn m-btn-rose m-btn-icon cursor-pointer">
+                                                    <i class="fa-solid fa-trash-can text-xs"></i>
+                                                </button>
+                                            </td>
+                                        </tr>
+                                    </template>
+                                    <template x-if="compraAnalisis.length === 0">
+                                        <tr>
+                                            <td colspan="3" class="px-4 py-5 text-center text-slate-600 text-xs italic">
+                                                <i class="fa-solid fa-flask opacity-30 mr-1"></i>
+                                                Agrega al menos un análisis de laboratorio
+                                            </td>
+                                        </tr>
+                                    </template>
+                                </tbody>
+                            </table>
+                        </div>
                         <p class="text-[10px] text-slate-500 mt-2">
                             <i class="fa-solid fa-circle-info mr-1 text-indigo-500/60"></i>
                             Por defecto incluye Zinc, Plomo y Plata. Puedes seleccionar un mineral estándar o elegir <strong>"Otro"</strong> para escribir un mineral personalizado.
