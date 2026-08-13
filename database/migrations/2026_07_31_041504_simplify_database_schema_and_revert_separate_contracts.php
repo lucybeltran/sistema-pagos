@@ -13,10 +13,12 @@ return new class extends Migration
     {
         Schema::disableForeignKeyConstraints();
 
-        // 1. Drop assignment contratos table with CASCADE for PostgreSQL
-        DB::statement('DROP TABLE IF EXISTS contratos CASCADE');
+        if (DB::connection()->getDriverName() === 'pgsql') {
+            DB::statement('DROP TABLE IF EXISTS contratos CASCADE');
+        } else {
+            Schema::dropIfExists('contratos');
+        }
 
-        // 2. Add columns back to trabajadores table
         Schema::table('trabajadores', function (Blueprint $table) {
             if (!Schema::hasColumn('trabajadores', 'bocamina_id')) {
                 $table->foreignId('bocamina_id')->nullable()->constrained('bocaminas')->nullOnDelete();
