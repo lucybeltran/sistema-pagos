@@ -457,53 +457,58 @@
         addMineral() { this.compraAnalisis.push({ mineral: '', mineral_custom: '', ley: '' }); },
         removeMineral(index) { this.compraAnalisis.splice(index, 1); },
 
-        calcCompraTotal() {
-            let pesoBruto = 0;
-            let precioUnit = 0;
-
+        get calcPesoBruto() {
             if (this.compraPresentacion === 'Volqueta') {
                 let valT = parseFloat(this.compraPesoToneladas) || 0;
-                let prT = parseFloat(this.compraPrecioToneladas) || 0;
-
-                // Smart unit helper: if user typed > 500 (e.g. typed 3000), treat as Kg directly!
-                if (valT > 500) {
-                    pesoBruto = valT;
-                } else {
-                    pesoBruto = valT * 1000;
-                }
-
-                precioUnit = prT / 1000;
-                this.compraPesoBruto = pesoBruto.toFixed(2);
-                this.compraPrecio = precioUnit.toFixed(4);
-            } else {
-                pesoBruto = parseFloat(this.compraPesoBruto) || 0;
-                precioUnit = parseFloat(this.compraPrecio) || 0;
+                return valT > 500 ? valT : valT * 1000;
             }
+            return parseFloat(this.compraPesoBruto) || 0;
+        },
 
-            let pctHumedad = parseFloat(this.compraHumedadPorcentaje);
-            if (isNaN(pctHumedad) || pctHumedad < 0) pctHumedad = 0;
-            if (pctHumedad > 100) pctHumedad = 100;
+        get calcPrecioUnit() {
+            if (this.compraPresentacion === 'Volqueta') {
+                let prT = parseFloat(this.compraPrecioToneladas) || 0;
+                return prT / 1000;
+            }
+            return parseFloat(this.compraPrecio) || 0;
+        },
 
-            // 1. Calculate weight discount from gross weight (Kg)
-            let descPeso = pesoBruto * (pctHumedad / 100);
-            this.compraDescuentoHumedadPeso = descPeso.toFixed(2);
+        get calcHumedadPct() {
+            let h = parseFloat(this.compraHumedadPorcentaje);
+            if (isNaN(h) || h < 0) return 0;
+            if (h > 100) return 100;
+            return h;
+        },
 
-            // 2. Calculate net dry weight (Peso Neto Seco)
-            let pesoNeto = pesoBruto - descPeso;
-            if (pesoNeto < 0) pesoNeto = 0;
-            this.compraPesoNetoSeco = pesoNeto.toFixed(2);
+        get calcDescuentoPeso() {
+            return this.calcPesoBruto * (this.calcHumedadPct / 100);
+        },
 
-            // 3. Gross price before humidity discount
-            let subtotalBruto = pesoBruto * precioUnit;
-            this.compraSubtotalBruto = subtotalBruto.toFixed(2);
+        get calcPesoNetoSeco() {
+            let net = this.calcPesoBruto - this.calcDescuentoPeso;
+            return net < 0 ? 0 : net;
+        },
 
-            // 4. Money discount due to humidity
-            let descDinero = subtotalBruto * (pctHumedad / 100);
-            this.compraDescuentoHumedadDinero = descDinero.toFixed(2);
+        get calcSubtotalBruto() {
+            return this.calcPesoBruto * this.calcPrecioUnit;
+        },
 
-            // 5. Net final payable total (based on Net Dry Weight)
-            let total = pesoNeto * precioUnit;
-            this.compraTotal = total.toFixed(2);
+        get calcDescuentoDinero() {
+            return this.calcSubtotalBruto * (this.calcHumedadPct / 100);
+        },
+
+        get calcTotalLiquidado() {
+            return this.calcSubtotalBruto - this.calcDescuentoDinero;
+        },
+
+        calcCompraTotal() {
+            this.compraPesoBruto = this.calcPesoBruto.toFixed(2);
+            this.compraPrecio = this.calcPrecioUnit.toFixed(4);
+            this.compraDescuentoHumedadPeso = this.calcDescuentoPeso.toFixed(2);
+            this.compraPesoNetoSeco = this.calcPesoNetoSeco.toFixed(2);
+            this.compraSubtotalBruto = this.calcSubtotalBruto.toFixed(2);
+            this.compraDescuentoHumedadDinero = this.calcDescuentoDinero.toFixed(2);
+            this.compraTotal = this.calcTotalLiquidado.toFixed(2);
         },
 
         numberFormat(n) {
@@ -1643,18 +1648,18 @@
                                             <span>Subtotal Bruto</span>
                                             <i class="fa-solid fa-calculator text-slate-600"></i>
                                         </div>
-                                        <div class="text-base font-black font-mono text-slate-200" x-text="'Bs. ' + numberFormat(compraSubtotalBruto)"></div>
-                                        <div class="text-[10px] text-slate-500 font-mono mt-0.5" x-text="numberFormat(compraPesoBruto) + ' Kg sin desc.'"></div>
+                                        <div class="text-base font-black font-mono text-slate-200" x-text="'Bs. ' + numberFormat(calcSubtotalBruto)"></div>
+                                        <div class="text-[10px] text-slate-500 font-mono mt-0.5" x-text="numberFormat(calcPesoBruto) + ' Kg sin desc.'"></div>
                                     </div>
 
                                     {{-- Descuento por Humedad --}}
                                     <div class="rounded-xl p-3.5 bg-sky-950/30 border border-sky-500/25 shadow-md">
                                         <div class="flex items-center justify-between text-[10px] text-sky-400 font-bold uppercase tracking-wider mb-1">
-                                            <span>Desc. Humedad (<span x-text="compraHumedadPorcentaje"></span>%)</span>
+                                            <span>Desc. Humedad (<span x-text="calcHumedadPct"></span>%)</span>
                                             <i class="fa-solid fa-droplet text-sky-400"></i>
                                         </div>
-                                        <div class="text-base font-black font-mono text-rose-400" x-text="'-Bs. ' + numberFormat(compraDescuentoHumedadDinero)"></div>
-                                        <div class="text-[10px] text-sky-400/80 font-mono mt-0.5" x-text="'- ' + numberFormat(compraDescuentoHumedadPeso) + ' Kg en peso'"></div>
+                                        <div class="text-base font-black font-mono text-rose-400" x-text="'-Bs. ' + numberFormat(calcDescuentoDinero)"></div>
+                                        <div class="text-[10px] text-sky-400/80 font-mono mt-0.5" x-text="'- ' + numberFormat(calcDescuentoPeso) + ' Kg en peso'"></div>
                                     </div>
 
                                     {{-- Peso Neto Seco --}}
@@ -1663,7 +1668,7 @@
                                             <span>Peso Neto Seco</span>
                                             <i class="fa-solid fa-box text-emerald-400"></i>
                                         </div>
-                                        <div class="text-base font-black font-mono text-emerald-400" x-text="numberFormat(compraPesoNetoSeco) + ' Kg'"></div>
+                                        <div class="text-base font-black font-mono text-emerald-400" x-text="numberFormat(calcPesoNetoSeco) + ' Kg'"></div>
                                         <div class="text-[10px] text-emerald-400/80 font-mono mt-0.5">Peso neto almacén</div>
                                     </div>
                                 </div>
@@ -1677,105 +1682,35 @@
                                         <div>
                                             <h4 class="text-xs font-black uppercase tracking-wider text-amber-400">Total Liquidado a Pagar</h4>
                                             <p class="text-[10px] text-slate-400 font-mono">
-                                                Cálculo: <strong class="text-slate-200" x-text="numberFormat(compraPesoNetoSeco) + ' Kg'"></strong> × <strong class="text-slate-200" x-text="'Bs. ' + parseFloat(compraPrecio || 0).toFixed(4)"></strong>
+                                                Cálculo: <strong class="text-slate-200" x-text="numberFormat(calcPesoNetoSeco) + ' Kg'"></strong> × <strong class="text-slate-200" x-text="'Bs. ' + calcPrecioUnit.toFixed(4)"></strong>
                                             </p>
                                         </div>
                                     </div>
                                     <div class="text-right font-mono">
-                                        <div class="text-2xl font-black text-amber-400 tracking-tight" x-text="'Bs. ' + numberFormat(compraTotal)"></div>
+                                        <div class="text-2xl font-black text-amber-400 tracking-tight" x-text="'Bs. ' + numberFormat(calcTotalLiquidado)"></div>
                                         <div class="text-[9px] text-emerald-400 font-bold uppercase tracking-widest flex items-center justify-end gap-1">
                                             <i class="fa-solid fa-circle-check"></i> Descuento de Humedad Incluido
                                         </div>
                                     </div>
                                 </div>
-                                <input type="hidden" name="peso_neto_seco" :value="compraPesoNetoSeco">
-                                <input type="hidden" name="monto_total" :value="compraTotal">
+                                <input type="hidden" name="peso_neto_seco" :value="calcPesoNetoSeco.toFixed(2)">
+                                <input type="hidden" name="monto_total" :value="calcTotalLiquidado.toFixed(2)">
                             </div>
 
-                            <div class="sm:col-span-2">
-                                <label class="m-label">Observaciones</label>
-                                <textarea name="observacion" x-model="compraObservacion" rows="2" class="m-input resize-none text-xs"
-                                          placeholder="Notas adicionales sobre el lote..."></textarea>
-                            </div>
-                        </div>
-                    </div>
-
-                    {{-- ── Sección 3: Análisis de Laboratorio ── --}}
-                    <div class="m-modal-section">
-                        <div class="flex items-center justify-between mb-4">
-                            <div class="flex items-center gap-2">
-                                <div class="m-step bg-indigo-500/20 text-indigo-400">3</div>
-                                <h4 class="text-xs font-black uppercase tracking-widest text-indigo-400">
-                                    <i class="fa-solid fa-flask mr-1.5"></i>Análisis Químico de Laboratorio
-                                </h4>
-                            </div>
-                            <button type="button" @click="addMineral()"
-                                    class="m-btn m-btn-ghost cursor-pointer" style="border-color:rgba(99,102,241,0.3);color:#818cf8">
-                                <i class="fa-solid fa-plus text-xs"></i> Agregar Ley
-                            </button>
-                        </div>
-
-                        <div class="rounded-xl border border-slate-800/80 overflow-hidden">
-                            <table class="w-full text-xs">
-                                <thead>
-                                    <tr class="bg-slate-900/80 border-b border-slate-800">
-                                        <th class="px-4 py-3 text-left text-[10px] font-black uppercase tracking-wider text-slate-500">Mineral</th>
-                                        <th class="px-4 py-3 text-center text-[10px] font-black uppercase tracking-wider text-slate-500">Ley (%)</th>
-                                        <th class="px-4 py-3 text-center text-[10px] w-16"></th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    <template x-for="(an, index) in compraAnalisis" :key="index">
-                                        <tr class="border-b border-slate-800/50 hover:bg-slate-800/20 transition">
-                                            <td class="px-4 py-2.5">
-                                                <input type="hidden" :name="'analisis['+index+'][mineral]'" :value="an.mineral === 'Otro' ? an.mineral_custom : an.mineral">
-                                                <select x-model="an.mineral" class="m-input text-xs py-2" required>
-                                                    <option value="">— Seleccionar —</option>
-                                                    <option value="Zinc">⚡ Zinc (Zn)</option>
-                                                    <option value="Plomo">🔘 Plomo (Pb)</option>
-                                                    <option value="Plata">✨ Plata (Ag)</option>
-                                                    <option value="Cobre">🟠 Cobre (Cu)</option>
-                                                    <option value="Estaño">⬜ Estaño (Sn)</option>
-                                                    <option value="Otro">✏️ Otro (Escribir)...</option>
-                                                </select>
-                                                <div x-show="an.mineral === 'Otro'" class="mt-1.5">
-                                                    <input type="text" x-model="an.mineral_custom"
-                                                           placeholder="Escribe el mineral (ej. Oro, Bismuto...)"
-                                                           class="m-input text-xs py-1.5 font-bold text-amber-400 border-amber-500/30"
-                                                           :required="an.mineral === 'Otro'">
-                                                </div>
-                                            </td>
-                                            <td class="px-4 py-2.5">
-                                                <div class="relative">
-                                                    <input type="number" step="0.01" min="0" max="100"
-                                                           :name="'analisis['+index+'][ley]'" x-model="an.ley"
-                                                           placeholder="48.50" class="m-input font-mono text-xs py-2 text-center pr-8" required>
-                                                    <span class="absolute right-3 top-1/2 -translate-y-1/2 text-xs text-slate-500 font-bold">%</span>
-                                                </div>
-                                            </td>
-                                            <td class="px-4 py-2.5 text-center">
-                                                <button type="button" @click="removeMineral(index)"
-                                                        class="m-btn m-btn-rose m-btn-icon cursor-pointer">
-                                                    <i class="fa-solid fa-trash-can text-xs"></i>
-                                                </button>
-                                            </td>
-                                        </tr>
-                                    </template>
-                                    <template x-if="compraAnalisis.length === 0">
-                                        <tr>
-                                            <td colspan="3" class="px-4 py-5 text-center text-slate-600 text-xs italic">
-                                                <i class="fa-solid fa-flask opacity-30 mr-1"></i>
-                                                Agrega al menos un análisis de laboratorio
-                                            </td>
-                                        </tr>
-                                    </template>
-                                </tbody>
-                            </table>
-                        </div>
                         <p class="text-[10px] text-slate-500 mt-2">
                             <i class="fa-solid fa-circle-info mr-1 text-indigo-500/60"></i>
                             Por defecto incluye Zinc, Plomo y Plata. Puedes seleccionar un mineral estándar o elegir <strong>"Otro"</strong> para escribir un mineral personalizado.
                         </p>
+                    </div>
+
+                    {{-- ── Sección 4: Observaciones ── --}}
+                    <div class="m-modal-section">
+                        <div class="flex items-center gap-2 mb-3">
+                            <div class="m-step bg-slate-500/20 text-slate-400"><i class="fa-solid fa-comment text-xs"></i></div>
+                            <h4 class="text-xs font-black uppercase tracking-widest text-slate-400">Observaciones y Notas Adicionales</h4>
+                        </div>
+                        <textarea name="observacion" x-model="compraObservacion" rows="2" class="m-input resize-none text-xs"
+                                  placeholder="Notas adicionales sobre el lote, transporte, entrega o proveedor..."></textarea>
                     </div>
                 </div>
 
