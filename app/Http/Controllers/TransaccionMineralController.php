@@ -246,11 +246,11 @@ class TransaccionMineralController extends Controller
             $rules['presentacion'] = 'required|string';
             $rules['presentacion_otro'] = 'nullable|string|max:100';
             $rules['cantidad'] = 'required|numeric|min:0';
+            $rules['peso_bruto'] = 'required|numeric|min:0';
+            $rules['humedad_porcentaje'] = 'required|numeric|min:0|max:100';
             $rules['peso_neto_seco'] = 'required|numeric|min:0';
             $rules['precio_unidad'] = 'required|numeric|min:0';
             $rules['monto_total'] = 'required|numeric|min:0';
-            $rules['humedad_porcentaje'] = 'nullable|numeric|min:0|max:100';
-            $rules['peso_bruto'] = 'nullable|numeric|min:0';
             
             $rules['analisis'] = 'nullable|array';
             $rules['analisis.*.mineral'] = 'required_with:analisis|string|max:100';
@@ -291,9 +291,17 @@ class TransaccionMineralController extends Controller
                 if ($request->presentacion === 'Otro') {
                     $data['presentacion_otro'] = $request->presentacion_otro;
                 }
-                // For Purchases (Lots), stock matches initially registered quantity and weight
+
+                $pesoBruto = (float) $request->input('peso_bruto', 0);
+                $humedadPct = (float) $request->input('humedad_porcentaje', 0);
+                $descuentoPeso = $pesoBruto * ($humedadPct / 100);
+                $pesoNetoSeco = round(max(0, $pesoBruto - $descuentoPeso), 2);
+
+                $data['peso_bruto'] = $pesoBruto;
+                $data['humedad_porcentaje'] = $humedadPct;
+                $data['peso_neto_seco'] = $pesoNetoSeco;
                 $data['cantidad_disponible'] = $request->cantidad;
-                $data['peso_disponible'] = $request->peso_neto_seco;
+                $data['peso_disponible'] = $pesoNetoSeco;
 
                 $transaccion = TransaccionMineral::create($data);
 
@@ -476,7 +484,7 @@ class TransaccionMineralController extends Controller
 
                 $transacciones_minerale->update($data);
             } else {
-                // Purchase (Lote) Update
+                // Actualizar Registro de Compra (Lote)
                 $data['presentacion'] = $request->presentacion;
                 if ($request->presentacion === 'Otro') {
                     $data['presentacion_otro'] = $request->presentacion_otro;
@@ -484,24 +492,33 @@ class TransaccionMineralController extends Controller
                     $data['presentacion_otro'] = null;
                 }
 
-                // Calculate already sold weight/quantity
+                $pesoBruto = (float) $request->input('peso_bruto', 0);
+                $humedadPct = (float) $request->input('humedad_porcentaje', 0);
+                $descuentoPeso = $pesoBruto * ($humedadPct / 100);
+                $pesoNetoSeco = round(max(0, $pesoBruto - $descuentoPeso), 2);
+
+                $data['peso_bruto'] = $pesoBruto;
+                $data['humedad_porcentaje'] = $humedadPct;
+                $data['peso_neto_seco'] = $pesoNetoSeco;
+
+                // Calcular el peso y cantidad ya vendidos previamente de este lote
                 $totalSoldWeight = $transacciones_minerale->ventas()->sum('peso_neto_seco');
                 $totalSoldQty = $transacciones_minerale->ventas()->sum('cantidad');
 
-                if ($request->peso_neto_seco < $totalSoldWeight) {
-                    return back()->withErrors(['peso_neto_seco' => "El peso del lote no puede ser menor al peso ya vendido ({$totalSoldWeight} Kg)"])->withInput();
+                if ($pesoNetoSeco < $totalSoldWeight) {
+                    return back()->withErrors(['peso_neto_seco' => "El peso neto del lote no puede ser menor al peso ya vendido ({$totalSoldWeight} Kg)"])->withInput();
                 }
                 if ($request->cantidad < $totalSoldQty) {
                     return back()->withErrors(['cantidad' => "La cantidad del lote no puede ser menor a la cantidad ya vendida ({$totalSoldQty})"])->withInput();
                 }
 
-                // Recalculate stock
-                $data['peso_disponible'] = $request->peso_neto_seco - $totalSoldWeight;
+                // Recalcular el stock disponible en almacén
+                $data['peso_disponible'] = $pesoNetoSeco - $totalSoldWeight;
                 $data['cantidad_disponible'] = $request->cantidad - $totalSoldQty;
 
                 $transacciones_minerale->update($data);
 
-                // Update analysis (sync lab records)
+                // Actualizar leyes de laboratorio (sincronizar registros)
                 $transacciones_minerale->analisis()->delete();
                 if ($request->has('analisis')) {
                     foreach ($request->analisis as $an) {

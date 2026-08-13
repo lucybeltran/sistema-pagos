@@ -31,6 +31,8 @@ class TransaccionMineralTest extends TestCase
             'presentacion' => 'Sacos',
             'cliente_proveedor' => 'Proveedor Juan',
             'cantidad' => 100.00,
+            'peso_bruto' => 5000.00,
+            'humedad_porcentaje' => 0.00,
             'peso_neto_seco' => 5000.00, // 5000 Kg
             'precio_unidad' => 2.00,
             'monto_total' => 10000.00,
