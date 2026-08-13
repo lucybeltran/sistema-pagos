@@ -15,8 +15,7 @@ class AuthController extends Controller
             return redirect()->route('dashboard');
         }
         
-        $hasUsers = User::exists();
-        return view('auth.login', compact('hasUsers'));
+        return view('auth.login');
     }
 
     public function login(Request $request)

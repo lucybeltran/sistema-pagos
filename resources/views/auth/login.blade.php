@@ -329,7 +329,7 @@
                         <h2 class="text-3xl font-extrabold tracking-wider uppercase text-slate-100">SCPM</h2>
                         <span class="text-[9px] text-amber-500 font-mono tracking-widest block mt-0.5">SISTEMA CONTROL DE PAGOS</span>
                         <p class="text-xs text-slate-400 mt-2">
-                            {{ $hasUsers ? 'Iniciar Sesión' : 'Primer Administrador' }}
+                            Ingresa tus credenciales para acceder al sistema
                         </p>
                     </div>
 
@@ -349,71 +349,64 @@
                         </div>
                     @endif
 
-                    @if($hasUsers)
-                        <!-- Login Form with Glass Inputs -->
-                        <form action="{{ route('login') }}" method="POST" class="space-y-5 relative z-10 animate-fade-in-up delay-200">
-                            @csrf
-                            
-                            <!-- Email Input -->
-                            <div class="glass-input-container">
-                                <label for="email" class="glass-label">Correo Electrónico</label>
-                                <div class="relative">
-                                    <input id="email" name="email" type="email" autocomplete="email" required value="{{ old('email') }}"
-                                           class="glass-input glass-input-focus-animate" placeholder="correo@ejemplo.com">
-                                    <div class="left-icon">
-                                        <i class="fa-solid fa-envelope text-sm"></i>
-                                    </div>
+                    <!-- Login Form with Glass Inputs -->
+                    <form action="{{ route('login') }}" method="POST" class="space-y-5 relative z-10 animate-fade-in-up delay-200">
+                        @csrf
+                        
+                        <!-- Email Input -->
+                        <div class="glass-input-container">
+                            <label for="email" class="glass-label">Correo Electrónico</label>
+                            <div class="relative">
+                                <input id="email" name="email" type="email" autocomplete="email" required value="{{ old('email', 'admin@mina.com') }}"
+                                       class="glass-input glass-input-focus-animate" placeholder="admin@mina.com">
+                                <div class="left-icon">
+                                    <i class="fa-solid fa-envelope text-sm"></i>
                                 </div>
                             </div>
+                        </div>
 
-                            <!-- Password Input with Ojito -->
-                            <div class="glass-input-container">
-                                <label for="password" class="glass-label">Contraseña</label>
-                                <div class="relative">
-                                    <input id="password" name="password" type="password" autocomplete="current-password" required
-                                           class="glass-input glass-input-focus-animate pr-12" placeholder="••••••••">
-                                    <div class="left-icon">
-                                        <i class="fa-solid fa-lock text-sm"></i>
-                                    </div>
-                                    <!-- Toggle eye button (Ojito) -->
-                                    <button type="button" onclick="togglePasswordVisibility('password', 'eye-icon')" 
-                                            class="absolute right-4 top-1/2 -translate-y-1/2 text-slate-500 hover:text-amber-500 transition duration-150 focus:outline-none z-20">
-                                        <i id="eye-icon" class="fa-solid fa-eye text-sm"></i>
-                                    </button>
+                        <!-- Password Input with Ojito -->
+                        <div class="glass-input-container">
+                            <label for="password" class="glass-label">Contraseña</label>
+                            <div class="relative">
+                                <input id="password" name="password" type="password" autocomplete="current-password" required
+                                       class="glass-input glass-input-focus-animate pr-12" placeholder="••••••••">
+                                <div class="left-icon">
+                                    <i class="fa-solid fa-lock text-sm"></i>
                                 </div>
-                            </div>
-
-                            <!-- Remember Me check -->
-                            <div class="flex items-center justify-between pt-1 animate-fade-in-up delay-300">
-                                <div class="flex items-center">
-                                    <input id="remember" name="remember" type="checkbox"
-                                           class="h-4 w-4 bg-slate-950/80 border-slate-800 text-orange-500 focus:ring-orange-500 rounded transition duration-150 cursor-pointer">
-                                    <label for="remember" class="ml-2.5 block text-xs text-slate-400 cursor-pointer hover:text-slate-200 transition">
-                                        Mantener sesión iniciada
-                                    </label>
-                                </div>
-                            </div>
-
-                            <!-- Action Button -->
-                            <div class="pt-3 animate-fade-in-up delay-300">
-                                <button type="submit" id="submit-btn" class="w-full flex justify-center py-3.5 px-4 molten-gold-btn focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-orange-500">
-                                    <span>Iniciar Sesión</span>
-                                    <i class="fa-solid fa-right-to-bracket ml-2 self-center text-xs"></i>
+                                <!-- Toggle eye button (Ojito) -->
+                                <button type="button" onclick="togglePasswordVisibility('password', 'eye-icon')" 
+                                        class="absolute right-4 top-1/2 -translate-y-1/2 text-slate-500 hover:text-amber-500 transition duration-150 focus:outline-none z-20">
+                                    <i id="eye-icon" class="fa-solid fa-eye text-sm"></i>
                                 </button>
                             </div>
-                        </form>
-                    @else
-                        <!-- No Users: first admin redirection -->
-                        <div class="text-center py-4 space-y-5 relative z-10 animate-fade-in-up delay-200">
-                            <p class="text-slate-400 text-xs leading-relaxed">
-                                No se ha detectado ningún usuario administrador. Por favor, registre la primera cuenta administradora para administrar el sistema.
-                            </p>
-                            <a href="{{ route('register') }}" id="submit-btn" class="w-full inline-flex justify-center py-3.5 px-4 molten-gold-btn focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-orange-500">
-                                <span>Crear Cuenta Admin</span>
-                                <i class="fa-solid fa-user-plus ml-2 self-center text-xs"></i>
-                            </a>
                         </div>
-                    @endif
+
+                        <!-- Remember Me check -->
+                        <div class="flex items-center justify-between pt-1 animate-fade-in-up delay-300">
+                            <div class="flex items-center">
+                                <input id="remember" name="remember" type="checkbox"
+                                       class="h-4 w-4 bg-slate-950/80 border-slate-800 text-orange-500 focus:ring-orange-500 rounded transition duration-150 cursor-pointer">
+                                <label for="remember" class="ml-2.5 block text-xs text-slate-400 cursor-pointer hover:text-slate-200 transition">
+                                    Mantener sesión iniciada
+                                </label>
+                            </div>
+                        </div>
+
+                        <!-- Action Button -->
+                        <div class="pt-3 animate-fade-in-up delay-300">
+                            <button type="submit" id="submit-btn" class="w-full flex justify-center py-3.5 px-4 molten-gold-btn focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-orange-500">
+                                <span>Iniciar Sesión</span>
+                                <i class="fa-solid fa-right-to-bracket ml-2 self-center text-xs"></i>
+                            </button>
+                        </div>
+                    </form>
+
+                    <div class="text-center mt-4">
+                        <a href="{{ route('register') }}" class="text-xs text-slate-400 hover:text-amber-400 transition font-mono">
+                            ¿Registrar otro administrador? Click aquí
+                        </a>
+                    </div>
 
                 </div>
             </div>
