@@ -403,6 +403,8 @@
             this.compraPrecioToneladas = '';
             this.compraHumedadPorcentaje = 0;
             this.compraDescuentoHumedadPeso = 0;
+            this.compraDescuentoHumedadDinero = 0;
+            this.compraSubtotalBruto = 0;
             this.compraPesoNetoSeco = 0;
             this.compraTotal = 0;
             this.compraObservacion = '';
@@ -460,9 +462,16 @@
             let precioUnit = 0;
 
             if (this.compraPresentacion === 'Volqueta') {
-                let t = parseFloat(this.compraPesoToneladas) || 0;
+                let valT = parseFloat(this.compraPesoToneladas) || 0;
                 let prT = parseFloat(this.compraPrecioToneladas) || 0;
-                pesoBruto = t * 1000;
+
+                // Smart unit helper: if user typed > 500 (e.g. typed 3000), treat as Kg directly!
+                if (valT > 500) {
+                    pesoBruto = valT;
+                } else {
+                    pesoBruto = valT * 1000;
+                }
+
                 precioUnit = prT / 1000;
                 this.compraPesoBruto = pesoBruto.toFixed(2);
                 this.compraPrecio = precioUnit.toFixed(4);
@@ -475,7 +484,7 @@
             if (isNaN(pctHumedad) || pctHumedad < 0) pctHumedad = 0;
             if (pctHumedad > 100) pctHumedad = 100;
 
-            // 1. Calculate weight discount from gross weight
+            // 1. Calculate weight discount from gross weight (Kg)
             let descPeso = pesoBruto * (pctHumedad / 100);
             this.compraDescuentoHumedadPeso = descPeso.toFixed(2);
 
@@ -484,9 +493,22 @@
             if (pesoNeto < 0) pesoNeto = 0;
             this.compraPesoNetoSeco = pesoNeto.toFixed(2);
 
-            // 3. Calculate total payable amount based on NET WEIGHT
+            // 3. Gross price before humidity discount
+            let subtotalBruto = pesoBruto * precioUnit;
+            this.compraSubtotalBruto = subtotalBruto.toFixed(2);
+
+            // 4. Money discount due to humidity
+            let descDinero = subtotalBruto * (pctHumedad / 100);
+            this.compraDescuentoHumedadDinero = descDinero.toFixed(2);
+
+            // 5. Net final payable total (based on Net Dry Weight)
             let total = pesoNeto * precioUnit;
             this.compraTotal = total.toFixed(2);
+        },
+
+        numberFormat(n) {
+            let num = parseFloat(n) || 0;
+            return num.toLocaleString('es-BO', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
         },
 
         // Methods Venta
@@ -1519,7 +1541,7 @@
                     <div class="m-modal-section">
                         <div class="flex items-center gap-2 mb-4">
                             <div class="m-step bg-cyan-500/20 text-cyan-400">2</div>
-                            <h4 class="text-xs font-black uppercase tracking-widest text-cyan-400">Datos de la Compra</h4>
+                            <h4 class="text-xs font-black uppercase tracking-widest text-cyan-400">Datos de la Compra y Liquidación</h4>
                         </div>
                         <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
                             <div>
@@ -1546,12 +1568,12 @@
                                     <div>
                                         <label class="m-label">Peso Bruto Total (Toneladas - T) <span class="text-rose-400">*</span></label>
                                         <input type="number" step="0.001" required x-model="compraPesoToneladas"
-                                               @input="calcCompraTotal()" placeholder="Ej. 1.000 T"
+                                               @input="calcCompraTotal()" placeholder="Ej. 3 (o 3000 Kg)"
                                                class="m-input font-mono m-input-amber">
                                         <input type="hidden" name="peso_bruto" :value="compraPesoBruto">
-                                        <p class="text-[10px] text-slate-500 mt-1 flex items-center justify-between">
-                                            <span>Peso bruto original entregado</span>
-                                            <span class="text-amber-400 font-mono font-bold" x-show="compraPesoBruto > 0" x-text="'= ' + compraPesoBruto + ' Kg'"></span>
+                                        <p class="text-[10px] text-slate-400 mt-1 flex items-center justify-between font-mono">
+                                            <span>Peso bruto ingresado:</span>
+                                            <span class="text-amber-400 font-bold" x-show="compraPesoBruto > 0" x-text="numberFormat(compraPesoBruto) + ' Kg (' + (compraPesoBruto/1000).toFixed(3) + ' T)'"></span>
                                         </p>
                                     </div>
                                 </template>
@@ -1568,29 +1590,39 @@
 
                             {{-- HUMEDAD (%) - OBLIGATORIO --}}
                             <div>
-                                <label class="m-label font-bold text-sky-400"><i class="fa-solid fa-droplet text-sky-400 mr-1"></i>Humedad Total (%) <span class="text-rose-400">*</span></label>
+                                <label class="m-label font-bold text-sky-400 flex items-center justify-between">
+                                    <span><i class="fa-solid fa-droplet text-sky-400 mr-1.5"></i>Humedad Total (%) <span class="text-rose-400">*</span></span>
+                                    <span class="text-[10px] font-normal text-slate-400">(Obligatorio)</span>
+                                </label>
                                 <div class="relative">
                                     <input type="number" step="0.01" min="0" max="100" name="humedad_porcentaje" required x-model="compraHumedadPorcentaje"
-                                           @input="calcCompraTotal()" placeholder="Ej. 10 (Ingresar 0 si no hay humedad)"
+                                           @input="calcCompraTotal()" placeholder="0.00"
                                            class="m-input font-mono m-input-sky pr-8">
                                     <span class="absolute right-3 top-2.5 text-xs text-sky-400 font-bold font-mono">%</span>
                                 </div>
-                                <p class="text-[10px] text-slate-400 mt-1">Obligatorio. Ingresar porcentaje (ej. 10% o 0%)</p>
+                                <p class="text-[10px] text-slate-400 mt-1 flex items-center justify-between font-mono" x-show="parseFloat(compraHumedadPorcentaje || 0) > 0">
+                                    <span>Descuento aplicado:</span>
+                                    <span class="text-sky-400 font-bold" x-text="'- ' + numberFormat(compraDescuentoHumedadPeso) + ' Kg'"></span>
+                                </p>
                             </div>
 
-                            {{-- PRECIO --}}
-                            <div>
+                            {{-- PRECIO DE COMPRA --}}
+                            <div class="sm:col-span-2">
                                 <template x-if="compraPresentacion === 'Volqueta'">
-                                    <div>
-                                        <label class="m-label">Precio de Compra (Bs. por Tonelada) <span class="text-rose-400">*</span></label>
-                                        <input type="number" step="0.01" required x-model="compraPrecioToneladas"
-                                               @input="calcCompraTotal()" placeholder="Ej. 1500.00 (Bs/T)"
-                                               class="m-input font-mono m-input-amber">
-                                        <input type="hidden" name="precio_unidad" :value="compraPrecio">
-                                        <p class="text-[10px] text-slate-500 mt-1 flex items-center justify-between">
-                                            <span>Precio por Tonelada métrica</span>
-                                            <span class="text-slate-400 font-mono" x-show="compraPrecio > 0" x-text="'= ' + parseFloat(compraPrecio).toFixed(2) + ' Bs/Kg'"></span>
-                                        </p>
+                                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                                        <div>
+                                            <label class="m-label">Precio de Compra (Bs. por Tonelada) <span class="text-rose-400">*</span></label>
+                                            <input type="number" step="0.01" required x-model="compraPrecioToneladas"
+                                                   @input="calcCompraTotal()" placeholder="Ej. 1500.00 (Bs/T)"
+                                                   class="m-input font-mono m-input-amber">
+                                            <input type="hidden" name="precio_unidad" :value="compraPrecio">
+                                        </div>
+                                        <div class="flex items-center">
+                                            <div class="p-3 rounded-xl bg-slate-900/80 border border-slate-800 w-full text-xs font-mono">
+                                                <span class="text-slate-400 block text-[10px] uppercase font-bold">Precio Unitario por Kg:</span>
+                                                <span class="text-amber-400 font-bold text-sm" x-text="compraPrecio > 0 ? 'Bs. ' + parseFloat(compraPrecio).toFixed(4) + ' / Kg' : '—'"></span>
+                                            </div>
+                                        </div>
                                     </div>
                                 </template>
                                 <template x-if="compraPresentacion !== 'Volqueta'">
@@ -1598,31 +1630,65 @@
                                         <label class="m-label">Precio de Compra (Bs. por Kg) <span class="text-rose-400">*</span></label>
                                         <input type="number" step="0.01" name="precio_unidad" required x-model="compraPrecio"
                                                @input="calcCompraTotal()" placeholder="Ej. 1.50" class="m-input font-mono">
-                                        <p class="text-[10px] text-slate-500 mt-1">Se aplica directamente sobre los Kg Netos</p>
                                     </div>
                                 </template>
                             </div>
 
-                            {{-- RESUMEN PESO Y TOTAL LIQUIDADO --}}
-                            <div class="sm:col-span-2 p-4 rounded-2xl border border-amber-500/30 bg-gradient-to-br from-amber-500/10 via-slate-900/60 to-slate-900 space-y-2.5 font-mono text-xs shadow-lg">
-                                <div class="flex justify-between items-center text-slate-300">
-                                    <span class="flex items-center gap-1.5"><i class="fa-solid fa-weight-hanging text-slate-400"></i>Peso Bruto:</span>
-                                    <span class="font-bold text-slate-200" x-text="parseFloat(compraPesoBruto || 0).toFixed(2) + ' Kg'"></span>
+                            {{-- TARJETAS ERP PREMIUM DE LIQUIDACIÓN Y CÁLCULO EN TIEMPO REAL --}}
+                            <div class="sm:col-span-2 space-y-3">
+                                <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
+                                    {{-- Subtotal Bruto --}}
+                                    <div class="rounded-xl p-3.5 bg-slate-900/90 border border-slate-800/80 shadow-md">
+                                        <div class="flex items-center justify-between text-[10px] text-slate-400 font-bold uppercase tracking-wider mb-1">
+                                            <span>Subtotal Bruto</span>
+                                            <i class="fa-solid fa-calculator text-slate-600"></i>
+                                        </div>
+                                        <div class="text-base font-black font-mono text-slate-200" x-text="'Bs. ' + numberFormat(compraSubtotalBruto)"></div>
+                                        <div class="text-[10px] text-slate-500 font-mono mt-0.5" x-text="numberFormat(compraPesoBruto) + ' Kg sin desc.'"></div>
+                                    </div>
+
+                                    {{-- Descuento por Humedad --}}
+                                    <div class="rounded-xl p-3.5 bg-sky-950/30 border border-sky-500/25 shadow-md">
+                                        <div class="flex items-center justify-between text-[10px] text-sky-400 font-bold uppercase tracking-wider mb-1">
+                                            <span>Desc. Humedad (<span x-text="compraHumedadPorcentaje"></span>%)</span>
+                                            <i class="fa-solid fa-droplet text-sky-400"></i>
+                                        </div>
+                                        <div class="text-base font-black font-mono text-rose-400" x-text="'-Bs. ' + numberFormat(compraDescuentoHumedadDinero)"></div>
+                                        <div class="text-[10px] text-sky-400/80 font-mono mt-0.5" x-text="'- ' + numberFormat(compraDescuentoHumedadPeso) + ' Kg en peso'"></div>
+                                    </div>
+
+                                    {{-- Peso Neto Seco --}}
+                                    <div class="rounded-xl p-3.5 bg-emerald-950/30 border border-emerald-500/25 shadow-md">
+                                        <div class="flex items-center justify-between text-[10px] text-emerald-400 font-bold uppercase tracking-wider mb-1">
+                                            <span>Peso Neto Seco</span>
+                                            <i class="fa-solid fa-box text-emerald-400"></i>
+                                        </div>
+                                        <div class="text-base font-black font-mono text-emerald-400" x-text="numberFormat(compraPesoNetoSeco) + ' Kg'"></div>
+                                        <div class="text-[10px] text-emerald-400/80 font-mono mt-0.5">Peso neto almacén</div>
+                                    </div>
                                 </div>
-                                <div class="flex justify-between items-center text-sky-400" x-show="parseFloat(compraHumedadPorcentaje || 0) > 0">
-                                    <span class="flex items-center gap-1.5"><i class="fa-solid fa-droplet text-sky-400"></i>Descuento por Humedad (<span x-text="compraHumedadPorcentaje"></span>%):</span>
-                                    <span class="font-bold text-sky-400" x-text="'- ' + parseFloat(compraDescuentoHumedadPeso || 0).toFixed(2) + ' Kg'"></span>
-                                </div>
-                                <div class="flex justify-between items-center text-emerald-400 pt-1 border-t border-slate-800">
-                                    <span class="font-bold uppercase tracking-wider text-emerald-400 flex items-center gap-1.5"><i class="fa-solid fa-box text-emerald-400"></i>Peso Neto Seco (Resultante):</span>
-                                    <span class="font-black text-emerald-400 text-sm" x-text="parseFloat(compraPesoNetoSeco || 0).toFixed(2) + ' Kg'"></span>
+
+                                {{-- Tarjeta Principal: Total Liquidado Final --}}
+                                <div class="p-4 rounded-2xl border border-amber-500/40 bg-gradient-to-r from-amber-950/40 via-slate-900 to-amber-950/30 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 shadow-xl">
+                                    <div class="flex items-center gap-3">
+                                        <div class="w-10 h-10 rounded-xl bg-amber-500/15 border border-amber-500/30 flex items-center justify-center text-amber-400 text-lg shadow-inner">
+                                            <i class="fa-solid fa-coins"></i>
+                                        </div>
+                                        <div>
+                                            <h4 class="text-xs font-black uppercase tracking-wider text-amber-400">Total Liquidado a Pagar</h4>
+                                            <p class="text-[10px] text-slate-400 font-mono">
+                                                Cálculo: <strong class="text-slate-200" x-text="numberFormat(compraPesoNetoSeco) + ' Kg'"></strong> × <strong class="text-slate-200" x-text="'Bs. ' + parseFloat(compraPrecio || 0).toFixed(4)"></strong>
+                                            </p>
+                                        </div>
+                                    </div>
+                                    <div class="text-right font-mono">
+                                        <div class="text-2xl font-black text-amber-400 tracking-tight" x-text="'Bs. ' + numberFormat(compraTotal)"></div>
+                                        <div class="text-[9px] text-emerald-400 font-bold uppercase tracking-widest flex items-center justify-end gap-1">
+                                            <i class="fa-solid fa-circle-check"></i> Descuento de Humedad Incluido
+                                        </div>
+                                    </div>
                                 </div>
                                 <input type="hidden" name="peso_neto_seco" :value="compraPesoNetoSeco">
-
-                                <div class="flex justify-between items-center pt-2.5 border-t border-amber-500/25 text-sm">
-                                    <span class="font-black uppercase tracking-wider text-amber-400">💰 Total Liquidado (A Pagar):</span>
-                                    <span class="font-black text-amber-400 text-base" x-text="'Bs. ' + parseFloat(compraTotal || 0).toFixed(2)"></span>
-                                </div>
                                 <input type="hidden" name="monto_total" :value="compraTotal">
                             </div>
 
