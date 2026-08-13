@@ -502,8 +502,6 @@
         },
 
         calcCompraTotal() {
-            this.compraPesoBruto = this.calcPesoBruto.toFixed(2);
-            this.compraPrecio = this.calcPrecioUnit.toFixed(4);
             this.compraDescuentoHumedadPeso = this.calcDescuentoPeso.toFixed(2);
             this.compraPesoNetoSeco = this.calcPesoNetoSeco.toFixed(2);
             this.compraSubtotalBruto = this.calcSubtotalBruto.toFixed(2);
@@ -1612,29 +1610,28 @@
                             </div>
 
                             {{-- PRECIO DE COMPRA --}}
-                            <div class="sm:col-span-2">
+                            <div>
                                 <template x-if="compraPresentacion === 'Volqueta'">
-                                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                                        <div>
-                                            <label class="m-label">Precio de Compra (Bs. por Tonelada) <span class="text-rose-400">*</span></label>
-                                            <input type="number" step="0.01" required x-model="compraPrecioToneladas"
-                                                   @input="calcCompraTotal()" placeholder="Ej. 1500.00 (Bs/T)"
-                                                   class="m-input font-mono m-input-amber">
-                                            <input type="hidden" name="precio_unidad" :value="compraPrecio">
-                                        </div>
-                                        <div class="flex items-center">
-                                            <div class="p-3 rounded-xl bg-slate-900/80 border border-slate-800 w-full text-xs font-mono">
-                                                <span class="text-slate-400 block text-[10px] uppercase font-bold">Precio Unitario por Kg:</span>
-                                                <span class="text-amber-400 font-bold text-sm" x-text="compraPrecio > 0 ? 'Bs. ' + parseFloat(compraPrecio).toFixed(4) + ' / Kg' : '—'"></span>
-                                            </div>
-                                        </div>
+                                    <div>
+                                        <label class="m-label">Precio de Compra (Bs. por Tonelada) <span class="text-rose-400">*</span></label>
+                                        <input type="number" step="0.01" min="0" required x-model="compraPrecioToneladas"
+                                               @input="if ($el.value < 0) $el.value = 0;"
+                                               placeholder="Ej. 1500.00 (Bs/T)"
+                                               class="m-input font-mono m-input-amber">
+                                        <input type="hidden" name="precio_unidad" :value="calcPrecioUnit.toFixed(4)">
+                                        <p class="text-[10px] text-slate-400 mt-1 flex items-center justify-between font-mono" x-show="compraPrecioToneladas > 0">
+                                            <span>Precio por Kg:</span>
+                                            <span class="text-amber-400 font-bold" x-text="'Bs. ' + calcPrecioUnit.toFixed(4) + ' / Kg'"></span>
+                                        </p>
                                     </div>
                                 </template>
                                 <template x-if="compraPresentacion !== 'Volqueta'">
                                     <div>
                                         <label class="m-label">Precio de Compra (Bs. por Kg) <span class="text-rose-400">*</span></label>
-                                        <input type="number" step="0.01" name="precio_unidad" required x-model="compraPrecio"
-                                               @input="calcCompraTotal()" placeholder="Ej. 1.50" class="m-input font-mono">
+                                        <input type="number" step="0.01" min="0" name="precio_unidad" required x-model="compraPrecio"
+                                               @input="if ($el.value < 0) $el.value = 0;"
+                                               placeholder="Ej. 1.50" class="m-input font-mono">
+                                        <p class="text-[10px] text-slate-500 mt-1">Precio unitario en bolivianos por Kilogramo</p>
                                     </div>
                                 </template>
                             </div>
