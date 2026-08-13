@@ -11,15 +11,25 @@ return new class extends Migration
      */
     public function up(): void
     {
-        // 1. Drop assignment contratos table
-        Schema::dropIfExists('contratos');
+        Schema::disableForeignKeyConstraints();
+
+        // 1. Drop assignment contratos table with CASCADE for PostgreSQL
+        DB::statement('DROP TABLE IF EXISTS contratos CASCADE');
 
         // 2. Add columns back to trabajadores table
         Schema::table('trabajadores', function (Blueprint $table) {
-            $table->foreignId('bocamina_id')->nullable()->constrained('bocaminas')->nullOnDelete();
-            $table->foreignId('tipo_contrato_id')->nullable()->constrained('tipos_contrato')->nullOnDelete();
-            $table->decimal('tarifa_acordada', 10, 2)->nullable();
+            if (!Schema::hasColumn('trabajadores', 'bocamina_id')) {
+                $table->foreignId('bocamina_id')->nullable()->constrained('bocaminas')->nullOnDelete();
+            }
+            if (!Schema::hasColumn('trabajadores', 'tipo_contrato_id')) {
+                $table->foreignId('tipo_contrato_id')->nullable()->constrained('tipos_contrato')->nullOnDelete();
+            }
+            if (!Schema::hasColumn('trabajadores', 'tarifa_acordada')) {
+                $table->decimal('tarifa_acordada', 10, 2)->nullable();
+            }
         });
+
+        Schema::enableForeignKeyConstraints();
     }
 
     /**

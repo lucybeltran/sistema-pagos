@@ -60,9 +60,18 @@ class ReporteController extends Controller
             });
 
         // Chart data: Payments by month (last 6 months)
+        $driverName = DB::connection()->getDriverName();
+        if ($driverName === 'pgsql') {
+            $mesExp = DB::raw("EXTRACT(MONTH FROM fecha) as mes");
+            $anioExp = DB::raw("EXTRACT(YEAR FROM fecha) as anio");
+        } else {
+            $mesExp = DB::raw("strftime('%m', fecha) as mes");
+            $anioExp = DB::raw("strftime('%Y', fecha) as anio");
+        }
+
         $pagosMensuales = Pago::select(
-            DB::raw("strftime('%m', fecha) as mes"),
-            DB::raw("strftime('%Y', fecha) as anio"),
+            $mesExp,
+            $anioExp,
             DB::raw("SUM(neto) as total")
         )
         ->groupBy('anio', 'mes')

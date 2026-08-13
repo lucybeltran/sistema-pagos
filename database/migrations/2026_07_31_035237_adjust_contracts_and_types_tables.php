@@ -11,8 +11,10 @@ return new class extends Migration
      */
     public function up(): void
     {
-        // 1. Drop the temporary contratos table
-        Schema::dropIfExists('contratos');
+        Schema::disableForeignKeyConstraints();
+
+        // 1. Drop the temporary contratos table with CASCADE for PostgreSQL
+        DB::statement('DROP TABLE IF EXISTS contratos CASCADE');
 
         // 2. Create the catalog table for "Tipos de Contrato"
         Schema::create('tipos_contrato', function (Blueprint $table) {
@@ -34,15 +36,28 @@ return new class extends Migration
             $table->timestamps();
         });
 
-        // 4. Clean up trabajadores table (remove labor columns because they go into contracts)
+        // 4. Clean up trabajadores table
         Schema::table('trabajadores', function (Blueprint $table) {
-            // Drop foreign keys first if any
-            $table->dropForeign(['tipo_contrato_id']);
-            $table->dropForeign(['bocamina_id']);
-            
-            // Drop columns
-            $table->dropColumn(['bocamina_id', 'tipo_contrato_id', 'tarifa_acordada']);
+            try {
+                if (Schema::hasColumn('trabajadores', 'tipo_contrato_id')) {
+                    $table->dropColumn('tipo_contrato_id');
+                }
+            } catch (\Throwable $e) {}
+
+            try {
+                if (Schema::hasColumn('trabajadores', 'bocamina_id')) {
+                    $table->dropColumn('bocamina_id');
+                }
+            } catch (\Throwable $e) {}
+
+            try {
+                if (Schema::hasColumn('trabajadores', 'tarifa_acordada')) {
+                    $table->dropColumn('tarifa_acordada');
+                }
+            } catch (\Throwable $e) {}
         });
+
+        Schema::enableForeignKeyConstraints();
     }
 
     /**
